@@ -100,8 +100,10 @@ public class OmniwheelMemelord extends OpMode
         telemetry.addData("X Direction: ", + (-gamepad1.left_stick_x));
         telemetry.addData("Y Direction: ", + (-gamepad1.left_stick_y));
 
+        leftFrontMotor.setPower(1);
         leftBackMotor.setPower(1);
         rightFrontMotor.setPower(1);
+        rightBackMotor.setPower(1);
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
         // leftMotor.setPower(-gamepad1.left_stick_y);
