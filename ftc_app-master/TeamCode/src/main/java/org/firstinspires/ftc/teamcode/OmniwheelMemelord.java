@@ -50,7 +50,7 @@ public class OmniwheelMemelord extends OpMode
     private DcMotor leftBackMotor = null;
     private DcMotor rightFrontMotor = null;
     private DcMotor rightBackMotor = null;
-
+//test
     private String approximateDirection = "";
 
 
