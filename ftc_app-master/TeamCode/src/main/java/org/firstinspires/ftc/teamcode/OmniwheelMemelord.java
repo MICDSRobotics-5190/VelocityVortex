@@ -73,8 +73,8 @@ public class OmniwheelMemelord extends OpMode
 
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
-        // leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        // rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         telemetry.addData("Status", "Initialized");
     }
 
@@ -100,10 +100,73 @@ public class OmniwheelMemelord extends OpMode
         telemetry.addData("X Direction: ", + (-gamepad1.left_stick_x));
         telemetry.addData("Y Direction: ", + (-gamepad1.left_stick_y));
 
-        leftFrontMotor.setPower(1);
-        leftBackMotor.setPower(1);
-        rightFrontMotor.setPower(1);
-        rightBackMotor.setPower(1);
+        if (gamepad1.dpad_up || gamepad1.dpad_right || gamepad1.dpad_down || gamepad1.dpad_left) {
+
+            if (gamepad1.dpad_right) {
+                if (gamepad1.dpad_down) {
+                    leftFrontMotor.setPower(0);
+                    leftBackMotor.setPower(1);
+                    rightFrontMotor.setPower(1);
+                    rightBackMotor.setPower(0);
+                } else if (gamepad1.dpad_up) {
+                    leftFrontMotor.setPower(1);
+                    leftBackMotor.setPower(0);
+                    rightFrontMotor.setPower(0);
+                    rightBackMotor.setPower(1);
+                } else {
+                    leftFrontMotor.setPower(1);
+                    leftBackMotor.setPower(1);
+                    rightFrontMotor.setPower(1);
+                    rightBackMotor.setPower(1);
+                }
+            } else if (gamepad1.dpad_up) {
+                leftFrontMotor.setPower(1);
+                leftBackMotor.setPower(-1);
+                rightFrontMotor.setPower(-1);
+                rightBackMotor.setPower(1);
+            } else if (gamepad1.dpad_down) {
+                leftFrontMotor.setPower(-1);
+                leftBackMotor.setPower(1);
+                rightFrontMotor.setPower(1);
+                rightBackMotor.setPower(-1);
+            }
+
+            if (gamepad1.dpad_left) {
+                if (gamepad1.dpad_down) {
+                    leftFrontMotor.setPower(0);
+                    leftBackMotor.setPower(-1);
+                    rightFrontMotor.setPower(-1);
+                    rightBackMotor.setPower(0);
+                } else if (gamepad1.dpad_up) {
+                    leftFrontMotor.setPower(-1);
+                    leftBackMotor.setPower(0);
+                    rightFrontMotor.setPower(0);
+                    rightBackMotor.setPower(-1);
+                } else {
+                    leftFrontMotor.setPower(-1);
+                    leftBackMotor.setPower(-1);
+                    rightFrontMotor.setPower(-1);
+                    rightBackMotor.setPower(-1);
+                }
+            }  else if (gamepad1.dpad_up) {
+                leftFrontMotor.setPower(1);
+                leftBackMotor.setPower(-1);
+                rightFrontMotor.setPower(-1);
+                rightBackMotor.setPower(1);
+            } else if (gamepad1.dpad_down) {
+                leftFrontMotor.setPower(-1);
+                leftBackMotor.setPower(1);
+                rightFrontMotor.setPower(1);
+                rightBackMotor.setPower(-1);
+            }
+
+        } else {
+            leftFrontMotor.setPower(0);
+            leftBackMotor.setPower(0);
+            rightFrontMotor.setPower(0);
+            rightBackMotor.setPower(0);
+        }
+
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
         // leftMotor.setPower(-gamepad1.left_stick_y);
