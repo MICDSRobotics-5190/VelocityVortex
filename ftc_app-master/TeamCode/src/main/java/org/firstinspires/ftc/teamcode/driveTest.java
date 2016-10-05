@@ -39,89 +39,77 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="Omniwheel Driver", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
+
+/**
+ * This file contains an example of an iterative (Non-Linear) "OpMode".
+ * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
+ * The names of OpModes appear on the menu of the FTC Driver Station.
+ * When an selection is made from the menu, the corresponding OpMode
+ * class is instantiated on the Robot Controller and executed.
+ *
+ * This particular OpMode just executes a basic Tank Drive Teleop for a PushBot
+ * It includes all the skeletal structure that all iterative OpModes contain.
+ *
+ * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ */
+
+@TeleOp(name="DriveTest", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class OmniwheelMemelord extends OpMode
+public class driveTest extends OpMode
 {
-    // Declare Objects (Hardware & Other)
+    /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
-    private DcMotor leftFrontMotor = null;
-    private DcMotor leftBackMotor = null;
-    private DcMotor rightFrontMotor = null;
-    private DcMotor rightBackMotor = null;
+     private DcMotor leftMotor = null;
+     private DcMotor rightMotor = null;
 
-    private String approximateDirection = "";
-
-
-    //Code to run ONCE when the driver hits INIT
+    /*
+     * Code to run ONCE when the driver hits INIT
+     */
     @Override
     public void init() {
-         /* eg: Initialize the hardware variables. Note that the strings used here as parameters
+        telemetry.addData("Status", "Initialized");
+
+        /* eg: Initialize the hardware variables. Note that the strings used here as parameters
          * to 'get' must correspond to the names assigned during the robot configuration
+         * step (using the FTC Robot Controller app on the phone).
          */
-
-        leftFrontMotor  = hardwareMap.dcMotor.get("left front motor");
-        leftBackMotor = hardwareMap.dcMotor.get("left back motor");
-        rightFrontMotor = hardwareMap.dcMotor.get("right front motor");
-        rightBackMotor = hardwareMap.dcMotor.get("right back motor");
-
-        leftFrontMotor.setPower(0);
-        leftBackMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        rightBackMotor.setPower(0);
+        leftMotor  = hardwareMap.dcMotor.get("left motor");
+        rightMotor = hardwareMap.dcMotor.get("right motor");
 
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         telemetry.addData("Status", "Initialized");
     }
 
-
-    //Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
+    /*
+     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
+     */
     @Override
     public void init_loop() {
-
     }
 
-
-    //Code to run ONCE when the driver hits PLAY
+    /*
+     * Code to run ONCE when the driver hits PLAY
+     */
     @Override
     public void start() {
         runtime.reset();
     }
 
-
-    //Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
+    /*
+     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
+     */
     @Override
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
-        telemetry.addData("X Direction: ", + (-gamepad1.left_stick_x));
-        telemetry.addData("Y Direction: ", + (-gamepad1.left_stick_y));
-
-        double xg = gamepad1.right_stick_x, yg = gamepad1.right_stick_y; //displacement of the joystick
-        double power_left_up, power_right_up;
-        if (xg > 0) {
-            power_left_up = Math.sqrt(2) * ((xg + yg) / 2);
-        } else {
-            power_left_up = - Math.sqrt(2) * ((xg + yg) / 2);
-        }
-        if (yg > 0) {
-            power_right_up = Math.sqrt(2) * ((yg - xg) / 2);
-        } else {
-            power_right_up = - Math.sqrt(2) * ((yg - xg) / 2);
-        }
-        double power_left_down = power_right_up;
-        double power_right_down = power_left_up;
-        leftFrontMotor.setPower(power_left_up);
-        leftBackMotor.setPower(power_left_down);
-        rightFrontMotor.setPower(power_right_up);
-        rightBackMotor.setPower(power_right_down);
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-        // leftMotor.setPower(-gamepad1.left_stick_y);
-        // rightMotor.setPower(-gamepad1.right_stick_y);
+        leftMotor.setPower(-gamepad1.left_stick_y);
+        rightMotor.setPower(-gamepad1.right_stick_y);
     }
 
     /*
@@ -129,13 +117,6 @@ public class OmniwheelMemelord extends OpMode
      */
     @Override
     public void stop() {
-
-        //Make sure the motors are stopped, yep
-        leftFrontMotor.setPower(0);
-        leftBackMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        rightBackMotor.setPower(0);
-
     }
 
 }
