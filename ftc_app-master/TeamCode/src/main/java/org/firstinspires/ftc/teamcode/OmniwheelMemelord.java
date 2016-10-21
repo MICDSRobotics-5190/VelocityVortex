@@ -39,8 +39,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+/*
+ * Now abandoned, this is where the code to run the omniwheel drive is.
+ * It worked fairly decently (with some issues on the diagonals and with
+ * the joysticks), but in the end it was scrapped because the omniwheels
+ * in particular had tons of trouble going up the ramp, no matter
+ * how they were aligned.
+ * Maybe someday we'll have the time, the reason, and the parts to experiment
+ * with this again later, or we could for fun :)
+ */
+
+
 @TeleOp(name="Omniwheel Driver", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
-//@Disabled
+@Disabled
 public class OmniwheelMemelord extends OpMode
 {
     // Declare Objects (Hardware & Other)
@@ -57,10 +68,8 @@ public class OmniwheelMemelord extends OpMode
     //Code to run ONCE when the driver hits INIT
     @Override
     public void init() {
-         /* eg: Initialize the hardware variables. Note that the strings used here as parameters
-         * to 'get' must correspond to the names assigned during the robot configuration
-         */
-
+         /* Initialize the hardware variables. The strings must
+        correspond to the names in the configuration file. */
         leftFrontMotor  = hardwareMap.dcMotor.get("left front motor");
         leftBackMotor = hardwareMap.dcMotor.get("left back motor");
         rightFrontMotor = hardwareMap.dcMotor.get("right front motor");
@@ -75,6 +84,7 @@ public class OmniwheelMemelord extends OpMode
         // Reverse the motor that runs backwards when connected directly to the battery
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+
         telemetry.addData("Status", "Initialized");
     }
 
@@ -100,8 +110,7 @@ public class OmniwheelMemelord extends OpMode
         telemetry.addData("X Direction: ", + (-gamepad1.left_stick_x));
         telemetry.addData("Y Direction: ", + (-gamepad1.left_stick_y));
 
-<<<<<<< HEAD
-=======
+        //Jack's amazing swag with joysticks
         double xg = gamepad1.right_stick_x, yg = gamepad1.right_stick_y; //displacement of the joystick
         double power_left_up, power_right_up;
         if (xg > 0) {
@@ -122,8 +131,6 @@ public class OmniwheelMemelord extends OpMode
         rightBackMotor.setPower(power_right_down);
 
         //BLAKE'S okish TRASH
-
->>>>>>> refs/remotes/origin/jacks-test-code
         if (gamepad1.dpad_up || gamepad1.dpad_right || gamepad1.dpad_down || gamepad1.dpad_left) {
 
             if (gamepad1.dpad_right) {
@@ -190,19 +197,10 @@ public class OmniwheelMemelord extends OpMode
             rightFrontMotor.setPower(0);
             rightBackMotor.setPower(0);
         }
-<<<<<<< HEAD
 
-=======
->>>>>>> refs/remotes/origin/jacks-test-code
-
-        // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-        // leftMotor.setPower(-gamepad1.left_stick_y);
-        // rightMotor.setPower(-gamepad1.right_stick_y);
     }
 
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
+    /* Code to run ONCE after the driver hits STOP */
     @Override
     public void stop() {
 

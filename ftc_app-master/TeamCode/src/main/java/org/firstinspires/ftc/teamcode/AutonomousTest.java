@@ -33,24 +33,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-/**
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
+/*
+ * This file is the linear Op-Mode made for the non-0driver controlled
+ * Autonomous period of an FTC match for Technoramic, Team 5190, in 2016-2017.
  *
- * This particular OpMode just executes a basic Tank Drive Teleop for a PushBot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * The bot this was made for had an awesome west coast drivetrain, used motor encoders for once,
+ * could use the camera to easily find the beacons and locate itself on the field, and
+ * hit the button to score tons of points and release more balls into the field.
+ * The motor encoders helped a lot in precise movement and getting on the ramp.
  */
 
 @Autonomous(name="Autonomous Test", group="Linear OpMode")  // @Autonomous(...) is the other common choice
@@ -63,42 +59,52 @@ public class AutonomousTest extends LinearOpMode {
     private DcMotor leftMotor = null;
     private DcMotor rightMotor = null;
 
+    /*Declaring constant values */
+    //final int MOTOR_PPR = 420;
+    //final int MOTOR_RPM = 105;
+    final int MOTOR_ENCODER_PULSES_PER_SECOND = 735;
+    //final int FULL_REVOLUTION = x; // 1200ish?
+    //final int FLOOR_TILE = x;
+    //final int QUARTER_TURN = x;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        /* eg: Initialize the hardware variables. Note that the strings used here as parameters
-         * to 'get' must correspond to the names assigned during the robot configuration
-         * step (using the FTC Robot Controller app on the phone).
-         */
+        /* Initialize the hardware variables. The strings must
+        correspond to the names in the configuration file. */
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
 
-        // eg: Set the drive motor directions:
-        // "Reverse" the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        // Set the drive motor directions
+        leftMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightMotor.setDirection(DcMotor.Direction.FORWARD);
 
+        //Prepare the encoders to be used
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            //Setting up some output for the user to see. (Usually for troubleshooting)
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
             telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
             telemetry.update();
 
-            leftMotor.setMaxSpeed(420);
-            rightMotor.setMaxSpeed(420);
+            //Setting up the speeds for the encoders
+            leftMotor.setMaxSpeed(MOTOR_ENCODER_PULSES_PER_SECOND);
+            rightMotor.setMaxSpeed(MOTOR_ENCODER_PULSES_PER_SECOND);
 
+            //Telling them to always run at max speed
             leftMotor.setPower(1);
             rightMotor.setPower(1);
 
