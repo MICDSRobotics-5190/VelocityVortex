@@ -100,6 +100,30 @@ public class OmniwheelMemelord extends OpMode
         telemetry.addData("X Direction: ", + (-gamepad1.left_stick_x));
         telemetry.addData("Y Direction: ", + (-gamepad1.left_stick_y));
 
+<<<<<<< HEAD
+=======
+        double xg = gamepad1.right_stick_x, yg = gamepad1.right_stick_y; //displacement of the joystick
+        double power_left_up, power_right_up;
+        if (xg > 0) {
+            power_left_up = Math.sqrt(2) * ((xg + yg) / 2);
+        } else {
+            power_left_up = - Math.sqrt(2) * ((xg + yg) / 2);
+        }
+        if (yg > 0) {
+            power_right_up = Math.sqrt(2) * ((yg - xg) / 2);
+        } else {
+            power_right_up = - Math.sqrt(2) * ((yg - xg) / 2);
+        }
+        double power_left_down = power_right_up;
+        double power_right_down = power_left_up;
+        leftFrontMotor.setPower(power_left_up);
+        leftBackMotor.setPower(power_left_down);
+        rightFrontMotor.setPower(power_right_up);
+        rightBackMotor.setPower(power_right_down);
+
+        //BLAKE'S okish TRASH
+
+>>>>>>> refs/remotes/origin/jacks-test-code
         if (gamepad1.dpad_up || gamepad1.dpad_right || gamepad1.dpad_down || gamepad1.dpad_left) {
 
             if (gamepad1.dpad_right) {
@@ -166,7 +190,10 @@ public class OmniwheelMemelord extends OpMode
             rightFrontMotor.setPower(0);
             rightBackMotor.setPower(0);
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/jacks-test-code
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
         // leftMotor.setPower(-gamepad1.left_stick_y);
