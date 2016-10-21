@@ -77,9 +77,11 @@ public class AutonomousTest extends LinearOpMode {
 
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -90,26 +92,18 @@ public class AutonomousTest extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
+            telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
             telemetry.update();
 
-            leftMotor.setMaxSpeed(10);
-            rightMotor.setMaxSpeed(10);
+            leftMotor.setMaxSpeed(420);
+            rightMotor.setMaxSpeed(420);
 
             leftMotor.setPower(1);
             rightMotor.setPower(1);
 
-            leftMotor.setTargetPosition(420);
-            rightMotor.setTargetPosition(420);
-
-            while(leftMotor.isBusy()) {
-                telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
-                telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
-                telemetry.update();
-                sleep(1);
-            }
-
-            //leftMotor.setTargetPosition(420);
-            //rightMotor.setTargetPosition(420);
+            leftMotor.setTargetPosition(1200);
+            rightMotor.setTargetPosition(1200);
 
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
