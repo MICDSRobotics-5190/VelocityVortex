@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="DriveTest", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class DriveTest extends OpMode
+public class driveTest extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -69,14 +69,12 @@ public class DriveTest extends OpMode
 
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         telemetry.addData("Status", "Initialized");
 
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addData("Status", "Initialized");
     }
 
@@ -100,8 +98,6 @@ public class DriveTest extends OpMode
         telemetry.addData("Status", "Running: " + runtime.toString());
         telemetry.addData("Right Motor", rightMotor.getPower());
         telemetry.addData("Left Motor", leftMotor.getPower());
-        telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
-        telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
         leftMotor.setPower(-gamepad1.left_stick_y);

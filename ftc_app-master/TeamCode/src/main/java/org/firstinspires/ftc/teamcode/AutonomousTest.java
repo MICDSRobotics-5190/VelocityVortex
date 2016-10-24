@@ -32,15 +32,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
- * This file is the linear Op-Mode made for the non-0driver controlled
+ * This file is the linear Op-Mode made for the non-driver controlled
  * Autonomous period of an FTC match for Technoramic, Team 5190, in 2016-2017.
  *
  * The bot this was made for had an awesome west coast drivetrain, used motor encoders for once,
@@ -60,10 +61,9 @@ public class AutonomousTest extends LinearOpMode {
     private DcMotor rightMotor = null;
 
     /*Declaring constant values */
-    //final int MOTOR_PPR = 420;
-    //final int MOTOR_RPM = 105;
-    final int MOTOR_ENCODER_PULSES_PER_SECOND = 735;
-    //final int FULL_REVOLUTION = x; // 1200ish?
+    final int MOTOR_PULSE_PER_REVOLUTION = 7;
+    final int MOTOR_GEAR_RATIO = 80;
+    final int FULL_REVOLUTION = 1200;
     //final int FLOOR_TILE = x;
     //final int QUARTER_TURN = x;
 
@@ -75,8 +75,8 @@ public class AutonomousTest extends LinearOpMode {
         rightMotor = hardwareMap.dcMotor.get("right motor");
 
         // Set the drive motor directions
-        leftMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);
+        leftMotor.setDirection(DcMotor.Direction.FORWARD);
+        rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         //Prepare the encoders to be used
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -101,15 +101,15 @@ public class AutonomousTest extends LinearOpMode {
             telemetry.update();
 
             //Setting up the speeds for the encoders
-            leftMotor.setMaxSpeed(MOTOR_ENCODER_PULSES_PER_SECOND);
-            rightMotor.setMaxSpeed(MOTOR_ENCODER_PULSES_PER_SECOND);
+            leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+            rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
 
             //Telling them to always run at max speed
             leftMotor.setPower(1);
             rightMotor.setPower(1);
 
-            leftMotor.setTargetPosition(1200);
-            rightMotor.setTargetPosition(1200);
+            leftMotor.setTargetPosition(FULL_REVOLUTION);
+            rightMotor.setTargetPosition(FULL_REVOLUTION);
 
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
