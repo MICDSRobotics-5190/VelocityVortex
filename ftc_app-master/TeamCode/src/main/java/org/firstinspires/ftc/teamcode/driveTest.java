@@ -58,6 +58,7 @@ public class driveTest extends OpMode
      private DcMotor leftMotor = null;
      private DcMotor rightMotor = null;
 
+    private DcMotor spinnerBelt = null;
 
     /* Code to run ONCE when the driver hits INIT */
     @Override
@@ -66,15 +67,19 @@ public class driveTest extends OpMode
         correspond to the names in the configuration file. */
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
+        spinnerBelt = hardwareMap.dcMotor.get("Spinner Belt");
 
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        spinnerBelt.setDirection(DcMotor.Direction.FORWARD);
+
         telemetry.addData("Status", "Initialized");
 
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        spinnerBelt.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addData("Status", "Initialized");
     }
 
@@ -98,10 +103,13 @@ public class driveTest extends OpMode
         telemetry.addData("Status", "Running: " + runtime.toString());
         telemetry.addData("Right Motor", rightMotor.getPower());
         telemetry.addData("Left Motor", leftMotor.getPower());
+        telemetry.addData("Spinner Belt", spinnerBelt.getPower());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
         leftMotor.setPower(-gamepad1.left_stick_y);
         rightMotor.setPower(-gamepad1.right_stick_y);
+        spinnerBelt.setPower(-gamepad1.right_trigger);
+        spinnerBelt.setPower(gamepad1.left_trigger);
         
     }
 
@@ -111,6 +119,7 @@ public class driveTest extends OpMode
     public void stop() {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
+        spinnerBelt.setPower(0);
     }
 
 }
