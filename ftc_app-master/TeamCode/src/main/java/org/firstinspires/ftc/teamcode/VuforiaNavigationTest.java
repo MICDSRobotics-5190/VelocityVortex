@@ -109,11 +109,10 @@ public class VuforiaNavigationTest extends LinearOpMode {
          * Note that in addition to indicating which camera is in use, we also need to tell the system
          * the location of the phone on the robot; see phoneLocationOnRobot below.
          *
-         * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-         * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-         * Vuforia will not load without a valid license being provided. Vuforia 'Development' license
-         * keys, which is what is needed here, can be obtained free of charge from the Vuforia developer
-         * web site at https://developer.vuforia.com/license-manager.
+         * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below
+         * IS a key that Blake got to use, so we're all set. In the future, it may not work
+         * after he leaves, in which case you will need to go to https://developer.vuforia.com/license-manager
+         * to get one again.
          *
          * Valid Vuforia license keys are always 380 characters long, and look as if they contain mostly
          * random data. As an example, here is a example of a fragment of a valid key:

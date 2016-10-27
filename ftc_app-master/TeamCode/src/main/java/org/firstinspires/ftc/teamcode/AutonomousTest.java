@@ -60,6 +60,9 @@ public class AutonomousTest extends LinearOpMode {
     private DcMotor leftMotor = null;
     private DcMotor rightMotor = null;
 
+    private DcMotor spinner = null;
+    private DcMotor belt = null;
+
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
     final int MOTOR_GEAR_RATIO = 80;
@@ -73,16 +76,22 @@ public class AutonomousTest extends LinearOpMode {
         correspond to the names in the configuration file. */
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
+        spinner = hardwareMap.dcMotor.get("spinner");
+        belt = hardwareMap.dcMotor.get("belt");
 
         // Set the drive motor directions
         leftMotor.setDirection(DcMotor.Direction.FORWARD);
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
+        spinner.setDirection(DcMotor.Direction.FORWARD);
+        belt.setDirection(DcMotor.Direction.FORWARD);
+
 
         //Prepare the encoders to be used
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
