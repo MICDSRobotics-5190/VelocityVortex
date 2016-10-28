@@ -80,8 +80,8 @@ public class AutonomousTest extends LinearOpMode {
         belt = hardwareMap.dcMotor.get("belt");
 
         // Set the drive motor directions
-        leftMotor.setDirection(DcMotor.Direction.FORWARD);
-        rightMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightMotor.setDirection(DcMotor.Direction.FORWARD);
         spinner.setDirection(DcMotor.Direction.FORWARD);
         belt.setDirection(DcMotor.Direction.FORWARD);
 
