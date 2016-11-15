@@ -100,7 +100,7 @@ public class VuforiaNavigationTest extends LinearOpMode {
          * the location of the phone on the robot; see phoneLocationOnRobot below.
          *
          * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below
-         * IS a key that Blake got to use, so we're all set. In the future, it may not work
+         * is a key that Blake got to use, so we're all set. In the future, it may not work
          * after he leaves, in which case you will need to go to https://developer.vuforia.com/license-manager
          * to get one again.
          *
@@ -143,7 +143,7 @@ public class VuforiaNavigationTest extends LinearOpMode {
         List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
         allTrackables.addAll(velocityVortexTargets);
 
-        /**
+        /*
          * We use units of mm here because that's the recommended units of measurement for the
          * size values specified in the XML for the ImageTarget trackables in data sets. E.g.:
          *      <ImageTarget name="stones" size="247 173"/>
@@ -270,7 +270,7 @@ public class VuforiaNavigationTest extends LinearOpMode {
          * plane) is then CCW, as one would normally expect from the usual classic 2D geometry.
          */
         OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(mmBotWidth/2,0,0)
+                .translation(mmBotWidth/2, 1 * mmPerInch,0)
                 .multiplied(Orientation.getRotationMatrix(
                         AxesReference.EXTRINSIC, AxesOrder.YZY,
                         AngleUnit.DEGREES, -90, 0, 0));
