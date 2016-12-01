@@ -338,6 +338,7 @@ public class VuforiaNavigationTest extends LinearOpMode {
                 telemetry.addData("Pos", "Unknown");
             }
             telemetry.update();
+
             idle();
         }
     }
