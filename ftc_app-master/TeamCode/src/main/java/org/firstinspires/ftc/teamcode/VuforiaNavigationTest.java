@@ -270,7 +270,7 @@ public class VuforiaNavigationTest extends LinearOpMode {
          * plane) is then CCW, as one would normally expect from the usual classic 2D geometry.
          */
         OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(mmBotWidth/2, 1 * mmPerInch,0)
+                .translation(0, 5 * mmPerInch, 0)
                 .multiplied(Orientation.getRotationMatrix(
                         AxesReference.EXTRINSIC, AxesOrder.YZY,
                         AngleUnit.DEGREES, -90, 0, 0));

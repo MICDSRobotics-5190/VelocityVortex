@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
@@ -22,7 +23,9 @@ import org.opencv.core.Size;
  * Should this happen, open up an issue on GitHub. :)
  */
 
-public class LinearVisionSample extends LinearVisionOpMode {
+@Autonomous(name="Beacon Vision Test", group="Linear OpMode" )
+//@Disabled
+public class LinearVisionTest extends LinearVisionOpMode {
 
     //Frame counter
     int frameCount = 0;
@@ -52,13 +55,14 @@ public class LinearVisionSample extends LinearVisionOpMode {
          */
         enableExtension(Extensions.BEACON);         //Beacon detection
         enableExtension(Extensions.ROTATION);       //Automatic screen rotation correction
-        enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
+        //enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
 
         /**
          * Set the beacon analysis method
          * Try them all and see what works!
          */
         beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+
 
         /**
          * Set color tolerances
@@ -93,7 +97,7 @@ public class LinearVisionSample extends LinearVisionOpMode {
          */
         rotation.setIsUsingSecondaryCamera(false);
         rotation.disableAutoRotate();
-        rotation.setActivityOrientationFixed(ScreenOrientation.PORTRAIT);
+        rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE_REVERSE);
 
         /**
          * Set camera control extension preferences
@@ -112,9 +116,9 @@ public class LinearVisionSample extends LinearVisionOpMode {
         //This loop will exit once the opmode is closed
         while (opModeIsActive()) {
             //Log a few things
-            telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
+            telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString()); // From left to right
             telemetry.addData("Beacon Center", beacon.getAnalysis().getLocationString());
-            telemetry.addData("Beacon Confidence", beacon.getAnalysis().getConfidenceString());
+            telemetry.addData("Beacon Confidence", beacon.getAnalysis().getConfidenceString()); //Above 85 is a good number
             telemetry.addData("Beacon Buttons", beacon.getAnalysis().getButtonString());
             telemetry.addData("Screen Rotation", rotation.getScreenOrientationActual());
             telemetry.addData("Frame Rate", fps.getFPSString() + " FPS");
