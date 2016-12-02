@@ -60,7 +60,7 @@ public class driveTest extends OpMode
     private DcMotor rightMotor = null;
 
     private DcMotor spinner = null;
-    private DcMotor belt = null;
+    //private DcMotor belt = null;
 
 
     /* Code to run ONCE when the driver hits INIT */
@@ -71,21 +71,21 @@ public class driveTest extends OpMode
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
         spinner = hardwareMap.dcMotor.get("spinner");
-        belt = hardwareMap.dcMotor.get("belt");
+        //belt = hardwareMap.dcMotor.get("belt");
 
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         spinner.setDirection(DcMotor.Direction.FORWARD);
-        belt.setDirection(DcMotor.Direction.FORWARD);
+        //belt.setDirection(DcMotor.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");
 
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        belt.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //belt.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addData("Status", "Initialized");
     }
 
@@ -110,22 +110,24 @@ public class driveTest extends OpMode
         telemetry.addData("Right Motor", rightMotor.getPower());
         telemetry.addData("Left Motor", leftMotor.getPower());
         telemetry.addData("Spinner", spinner.getPower());
-        telemetry.addData("Belt", belt.getPower());
+        //telemetry.addData("Belt", belt.getPower());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
         leftMotor.setPower(-gamepad1.left_stick_y);
         rightMotor.setPower(-gamepad1.right_stick_y);
 
-        if(gamepad1.right_bumper){
+
+        if(gamepad1.left_bumper){
             spinner.setPower(1);
-            belt.setPower(1);
-        } else if (gamepad1.left_bumper){
+            //belt.setPower(1);
+        } else if (gamepad1.right_bumper){
             spinner.setPower(-1);
-            belt.setPower(-1);
+            //belt.setPower(-1);
         } else {
             spinner.setPower(0);
-            belt.setPower(0);
+            //belt.setPower(0);
         }
+
 
     }
 
@@ -136,7 +138,7 @@ public class driveTest extends OpMode
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         spinner.setPower(0);
-        belt.setPower(0);
+        //belt.setPower(0);
     }
 
 }
