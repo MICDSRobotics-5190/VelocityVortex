@@ -222,6 +222,7 @@ public class AutonomousTest extends LinearVisionOpMode {
             telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
 
             if(step == 1) {
+
                 leftMotor.setPower(1);
                 rightMotor.setPower(1);
 
@@ -237,6 +238,7 @@ public class AutonomousTest extends LinearVisionOpMode {
                 }
 
             } else if (step == 2) {
+
                 leftMotor.setPower(-0.25);
                 rightMotor.setPower(0.25);
 
@@ -252,6 +254,7 @@ public class AutonomousTest extends LinearVisionOpMode {
                 }
 
             }  else if (step == 3){
+
                 leftMotor.setPower(1);
                 rightMotor.setPower(1);
 
@@ -266,6 +269,7 @@ public class AutonomousTest extends LinearVisionOpMode {
                     rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
             } else if (step == 4) {
+
                 leftMotor.setPower(0.25);
                 rightMotor.setPower(0.25);
 
@@ -280,6 +284,7 @@ public class AutonomousTest extends LinearVisionOpMode {
                     rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
             } else if (step == 5){
+
                 leftMotor.setPower(1);
                 rightMotor.setPower(1);
 
@@ -294,6 +299,7 @@ public class AutonomousTest extends LinearVisionOpMode {
                     rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
             } else if (step == 6){
+
                 //Check Beacons
                 telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
                 telemetry.addData("Beacon Center", beacon.getAnalysis().getLocationString());
@@ -339,7 +345,7 @@ public class AutonomousTest extends LinearVisionOpMode {
         }
     }
 
-    //Necessary for using Vuforia and outputting lovation matrixes.
+    //Necessary for using Vuforia and outputting location matrixes.
     String format(OpenGLMatrix transformationMatrix) {
         return transformationMatrix.formatAsTransform();
     }
