@@ -98,6 +98,7 @@ public class AutonomousTest extends LinearVisionOpMode {
     int frameCount = 0;
 
     //Immediate Setup for Vuforia
+
     public static final String TAG = "Vuforia Sample";
 
     OpenGLMatrix lastLocation = null;
@@ -131,6 +132,7 @@ public class AutonomousTest extends LinearVisionOpMode {
 
         leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
         rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+
 
         //Vuforia Vision Setup
         /**
@@ -328,6 +330,7 @@ public class AutonomousTest extends LinearVisionOpMode {
         ((VuforiaTrackableDefaultListener)legos.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
         ((VuforiaTrackableDefaultListener)gears.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
 
+
         //OpenCV Vision Setup
         waitForVisionStart();
 
@@ -407,6 +410,7 @@ public class AutonomousTest extends LinearVisionOpMode {
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
 
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -415,28 +419,6 @@ public class AutonomousTest extends LinearVisionOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            //Vuforia Position Checking
-            for (VuforiaTrackable trackable : allTrackables) {
-                /**
-                 * getUpdatedRobotLocation() will return null if no new information is available since
-                 * the last time that call was made, or if the trackable is not currently visible.
-                 * getRobotLocation() will return null if the trackable is not currently visible.
-                 */
-                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
-                }
-            }
-
-            if (lastLocation != null) {
-                //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
-                telemetry.addData("Pos", format(lastLocation));
-            } else {
-                telemetry.addData("Pos", "Unknown");
-            }
 
             //Setting up some output for the user to see. (Usually for troubleshooting)
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -453,7 +435,31 @@ public class AutonomousTest extends LinearVisionOpMode {
                     leftMotor.setTargetPosition(FULL_REVOLUTION * 2);
                     rightMotor.setTargetPosition(FULL_REVOLUTION * 2);
 
-                    if(leftMotor.getCurrentPosition() >= FULL_REVOLUTION * 2 - 50 || leftMotor.getCurrentPosition() <= FULL_REVOLUTION * 2 +50){
+
+                    //Vuforia Position Checking
+                    for (VuforiaTrackable trackable : allTrackables) {
+                        /**
+                         * getUpdatedRobotLocation() will return null if no new information is available since
+                         * the last time that call was made, or if the trackable is not currently visible.
+                         * getRobotLocation() will return null if the trackable is not currently visible.
+                         */
+                        telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
+
+                        OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                        if (robotLocationTransform != null) {
+                            lastLocation = robotLocationTransform;
+                        }
+                    }
+
+                    if (lastLocation != null) {
+                        //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
+                        telemetry.addData("Pos", format(lastLocation));
+                    } else {
+                        telemetry.addData("Pos", "Unknown");
+                    }
+
+
+                    if(leftMotor.getCurrentPosition() >= FULL_REVOLUTION * 30.63 - 50 || leftMotor.getCurrentPosition() <= FULL_REVOLUTION * 30.63 + 50){
                         step = 2;
                         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -494,6 +500,15 @@ public class AutonomousTest extends LinearVisionOpMode {
 
                     //Wait for a hardware cycle to allow other processes to run
                     waitOneFullHardwareCycle();
+
+                    if(leftMotor.getCurrentPosition() >= FULL_REVOLUTION * 0.5 - 20 || leftMotor.getCurrentPosition() <= FULL_REVOLUTION * 0.5 + 20){
+                        step = 2;
+                        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    }
+
                     break;
                 case 3:
                     //step 3
