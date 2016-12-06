@@ -62,6 +62,8 @@ public class driveTest extends OpMode
     private DcMotor spinner = null;
     //private DcMotor belt = null;
 
+    private boolean testEncoders = false;
+
 
     /* Code to run ONCE when the driver hits INIT */
     @Override
@@ -82,10 +84,16 @@ public class driveTest extends OpMode
 
         telemetry.addData("Status", "Initialized");
 
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if(testEncoders) {
+            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //belt.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         telemetry.addData("Status", "Initialized");
     }
 
@@ -111,6 +119,11 @@ public class driveTest extends OpMode
         telemetry.addData("Left Motor", leftMotor.getPower());
         telemetry.addData("Spinner", spinner.getPower());
         //telemetry.addData("Belt", belt.getPower());
+
+        if(testEncoders){
+            telemetry.addData("Right Motor", rightMotor.getCurrentPosition());
+            telemetry.addData("Left Motor", leftMotor.getCurrentPosition());
+        }
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
         leftMotor.setPower(-gamepad1.left_stick_y);
@@ -138,6 +151,10 @@ public class driveTest extends OpMode
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         spinner.setPower(0);
+        if(testEncoders) {
+            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
         //belt.setPower(0);
     }
 
