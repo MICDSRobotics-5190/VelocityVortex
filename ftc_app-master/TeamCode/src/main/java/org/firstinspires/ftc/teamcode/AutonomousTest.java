@@ -37,7 +37,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -83,6 +85,7 @@ public class AutonomousTest extends LinearVisionOpMode {
     private DcMotor leftMotor = null;
     private DcMotor rightMotor = null;
     private DcMotor spinner = null;
+    private CRServo beaconPusher = null;
 
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
@@ -107,6 +110,7 @@ public class AutonomousTest extends LinearVisionOpMode {
         rightMotor = hardwareMap.dcMotor.get("right motor");
         spinner = hardwareMap.dcMotor.get("spinner");
 
+        beaconPusher = hardwareMap.crservo.get("beacon pusher");
 
         // Set the drive motor directions
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -116,8 +120,8 @@ public class AutonomousTest extends LinearVisionOpMode {
         //Prepare the encoders to be used
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         boolean blueLeft = false;
@@ -233,8 +237,6 @@ public class AutonomousTest extends LinearVisionOpMode {
                     step = 2;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
 
             } else if (step == 2) {
@@ -249,8 +251,6 @@ public class AutonomousTest extends LinearVisionOpMode {
                     step = 3;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
 
             }  else if (step == 3){
@@ -265,8 +265,6 @@ public class AutonomousTest extends LinearVisionOpMode {
                     step = 4;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
             } else if (step == 4) {
 
@@ -280,8 +278,6 @@ public class AutonomousTest extends LinearVisionOpMode {
                     step = 5;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
             } else if (step == 5){
 
@@ -295,8 +291,6 @@ public class AutonomousTest extends LinearVisionOpMode {
                     step = 6;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
             } else if (step == 6){
 

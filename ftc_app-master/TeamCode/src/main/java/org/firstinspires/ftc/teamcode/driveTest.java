@@ -38,6 +38,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -62,6 +64,9 @@ public class driveTest extends OpMode
     private DcMotor spinner = null;
     //private DcMotor belt = null;
 
+    private CRServo beaconPusher = null;
+
+
     private boolean testEncoders = false;
 
 
@@ -75,12 +80,17 @@ public class driveTest extends OpMode
         spinner = hardwareMap.dcMotor.get("spinner");
         //belt = hardwareMap.dcMotor.get("belt");
 
+        beaconPusher = hardwareMap.crservo.get("beacon pusher");
+
+
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         spinner.setDirection(DcMotor.Direction.FORWARD);
         //belt.setDirection(DcMotor.Direction.FORWARD);
+
+        beaconPusher.setDirection(CRServo.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");
 
@@ -129,7 +139,6 @@ public class driveTest extends OpMode
         leftMotor.setPower(-gamepad1.left_stick_y);
         rightMotor.setPower(-gamepad1.right_stick_y);
 
-
         if(gamepad1.left_bumper){
             spinner.setPower(1);
             //belt.setPower(1);
@@ -141,6 +150,13 @@ public class driveTest extends OpMode
             //belt.setPower(0);
         }
 
+        if(gamepad1.right_trigger > 0.1){
+            beaconPusher.setPower(gamepad1.right_trigger);
+        } else if (gamepad1.left_trigger > 0.1) {
+            beaconPusher.setPower(-gamepad1.left_trigger);
+        } else {
+            beaconPusher.setPower(0);
+        }
 
     }
 
