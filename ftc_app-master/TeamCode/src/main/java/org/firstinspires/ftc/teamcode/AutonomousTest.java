@@ -37,9 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -85,7 +83,6 @@ public class AutonomousTest extends LinearVisionOpMode {
     private DcMotor leftMotor = null;
     private DcMotor rightMotor = null;
     private DcMotor spinner = null;
-    private CRServo beaconPusher = null;
 
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
@@ -109,8 +106,6 @@ public class AutonomousTest extends LinearVisionOpMode {
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
         spinner = hardwareMap.dcMotor.get("spinner");
-
-        beaconPusher = hardwareMap.crservo.get("beacon pusher");
 
         // Set the drive motor directions
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
