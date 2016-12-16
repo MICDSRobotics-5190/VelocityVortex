@@ -23,7 +23,7 @@ import org.opencv.core.Size;
  * Should this happen, open up an issue on GitHub. :)
  */
 
-@Autonomous(name="Beacon Vision Test", group="Linear OpMode" )
+@Autonomous(name="Beacon Show-Off (Test)", group="Cool" )
 //@Disabled
 public class LinearVisionTest extends LinearVisionOpMode {
 
