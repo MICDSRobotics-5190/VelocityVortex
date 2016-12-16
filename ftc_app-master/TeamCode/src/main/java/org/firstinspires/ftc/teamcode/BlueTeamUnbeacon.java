@@ -126,9 +126,9 @@ public class BlueTeamUnbeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition(FLOOR_BLOCK);
 
                 if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 20 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 20) {
-                    step = 2;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 2;
                 }
 
             } else if (step == 2) {
@@ -140,9 +140,9 @@ public class BlueTeamUnbeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition(FULL_REVOLUTION);
 
                 if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 20 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 20){
-                    step = 3;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 3;
                 }
 
             } else if (step == 3){

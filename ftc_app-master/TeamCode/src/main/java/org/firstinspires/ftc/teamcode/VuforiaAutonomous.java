@@ -54,7 +54,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
-import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+//import org.lasarobotics.vision.opmode.LinearVisionOpMode;
 import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
 import org.opencv.core.Mat;
@@ -75,7 +75,7 @@ import java.util.List;
 
 @Autonomous(name="Vuforia Autonomous", group="Complex Opmodes")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class VuforiaAutonomous extends LinearVisionOpMode {
+public class VuforiaAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -445,6 +445,7 @@ public class VuforiaAutonomous extends LinearVisionOpMode {
                 }
             } else if (step == 6){
 
+                /*
                 //Check Beacons
                 telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
                 telemetry.addData("Beacon Center", beacon.getAnalysis().getLocationString());
@@ -479,6 +480,7 @@ public class VuforiaAutonomous extends LinearVisionOpMode {
 
                 //Wait for a hardware cycle to allow other processes to run
                 waitOneFullHardwareCycle();
+                */
 
             } else if (step == 7){
 

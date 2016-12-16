@@ -87,14 +87,20 @@ public class RedTeamUnbeacon extends LinearVisionOpMode {
         //Prepare the encoders to be used
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         boolean blueLeft = false;
         boolean redLeft = false;
         boolean blueRight = false;
         boolean redRight = false;
+
+        leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+        rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
 
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
@@ -126,9 +132,9 @@ public class RedTeamUnbeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition(FLOOR_BLOCK * 3);
 
                 if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
-                    step = 2;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 2;
                 }
 
             } else if (step == 2) {
@@ -140,9 +146,9 @@ public class RedTeamUnbeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition(FULL_REVOLUTION * 3);
 
                 if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10){
-                    step = 3;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 3;
                 }
 
             } else if (step == 3){

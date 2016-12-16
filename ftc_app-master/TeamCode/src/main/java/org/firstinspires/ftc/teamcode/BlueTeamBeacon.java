@@ -212,9 +212,9 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition(FLOOR_BLOCK);
 
                 if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
-                    step = 2;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 2;
                 }
 
             } else if (step == 2) {
@@ -226,9 +226,9 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition(FULL_REVOLUTION);
 
                 if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10){
-                    step = 3;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 3;
                 }
 
             }  else if (step == 3){
@@ -240,9 +240,9 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition(2 * FLOOR_BLOCK);
 
                 if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10){
-                    step = 4;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 4;
                 }
             } else if (step == 4) {
 
@@ -253,9 +253,9 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition((FULL_REVOLUTION));
 
                 if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
-                    step = 5;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 5;
                 }
             } else if (step == 5){
 
@@ -266,9 +266,9 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition(3 * FLOOR_BLOCK);
 
                 if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
-                    step = 6;
                     leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    step = 6;
                 }
             } else if (step == 6){
 
