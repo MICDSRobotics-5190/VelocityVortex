@@ -35,6 +35,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.lasarobotics.vision.opmode.LinearVisionOpMode;
@@ -51,7 +52,7 @@ import org.lasarobotics.vision.opmode.LinearVisionOpMode;
 
 @Autonomous(name="Blue - Beacon", group="ABlue OpMode")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class BlueTeamUnbeacon extends LinearVisionOpMode {
+public class BlueTeamUnbeacon extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -87,6 +88,7 @@ public class BlueTeamUnbeacon extends LinearVisionOpMode {
         //Prepare the encoders to be used
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -105,59 +107,28 @@ public class BlueTeamUnbeacon extends LinearVisionOpMode {
 
         runtime.reset();
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Step", step);
 
-            //leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
-            //rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+        leftMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
+        rightMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
 
-            //Setting up some output for the user to see. (Usually for troubleshooting)
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Step", step);
+        while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+            leftMotor.setPower(1);
+            rightMotor.setPower(1);
+
             telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
             telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
-
-            if(step == 1) {
-
-                leftMotor.setPower(1);
-                rightMotor.setPower(1);
-
-                leftMotor.setTargetPosition(FLOOR_BLOCK);
-                rightMotor.setTargetPosition(FLOOR_BLOCK);
-
-                if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 20 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 20) {
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 2;
-                }
-
-            } else if (step == 2) {
-
-                leftMotor.setPower(-1);
-                rightMotor.setPower(-1);
-
-                leftMotor.setTargetPosition(FULL_REVOLUTION);
-                rightMotor.setTargetPosition(FULL_REVOLUTION);
-
-                if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 20 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 20){
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 3;
-                }
-
-            } else if (step == 3){
-
-                leftMotor.setPower(0);
-                rightMotor.setPower(0);
-
-            } else if (step == 4){
-
-            }
-
             telemetry.update();
-
-            //idle(); // OpenCV broke idle, we could troubleshoot later. Basically check LinearOpMode and LinearVisionOpmode.
         }
+
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        telemetry.update();
     }
 
     //Necessary for using Vuforia and outputting location matrixes.

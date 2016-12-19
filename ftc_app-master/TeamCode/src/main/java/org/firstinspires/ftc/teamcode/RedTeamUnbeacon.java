@@ -35,6 +35,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.lasarobotics.vision.opmode.LinearVisionOpMode;
@@ -51,7 +52,7 @@ import org.lasarobotics.vision.opmode.LinearVisionOpMode;
 
 @Autonomous(name="Red - Beacon", group="ARed OpMode")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class RedTeamUnbeacon extends LinearVisionOpMode {
+public class RedTeamUnbeacon extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -75,7 +76,7 @@ public class RedTeamUnbeacon extends LinearVisionOpMode {
     public void runOpMode() throws InterruptedException {
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
-        leftMotor  = hardwareMap.dcMotor.get("left motor");
+        leftMotor = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
         spinner = hardwareMap.dcMotor.get("spinner");
 
@@ -87,12 +88,13 @@ public class RedTeamUnbeacon extends LinearVisionOpMode {
         //Prepare the encoders to be used
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         boolean blueLeft = false;
         boolean redLeft = false;
@@ -111,59 +113,29 @@ public class RedTeamUnbeacon extends LinearVisionOpMode {
 
         runtime.reset();
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+        //Setting up some output for the user to see. (Usually for troubleshooting)
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Step", step);
 
-            //leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
-            //rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+        leftMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
+        rightMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
 
-            //Setting up some output for the user to see. (Usually for troubleshooting)
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Step", step);
+        while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+            leftMotor.setPower(1);
+            rightMotor.setPower(1);
+
             telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
             telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
-
-            if(step == 1) {
-
-                leftMotor.setPower(1);
-                rightMotor.setPower(1);
-
-                leftMotor.setTargetPosition(FLOOR_BLOCK * 3);
-                rightMotor.setTargetPosition(FLOOR_BLOCK * 3);
-
-                if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 2;
-                }
-
-            } else if (step == 2) {
-
-                leftMotor.setPower(-1);
-                rightMotor.setPower(-1);
-
-                leftMotor.setTargetPosition(FULL_REVOLUTION * 3);
-                rightMotor.setTargetPosition(FULL_REVOLUTION * 3);
-
-                if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10){
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 3;
-                }
-
-            } else if (step == 3){
-
-                leftMotor.setPower(0);
-                rightMotor.setPower(0);
-
-            } else if (step == 4){
-
-            }
-
             telemetry.update();
-
-            //idle(); // OpenCV broke idle, we could troubleshoot later. Basically check LinearOpMode and LinearVisionOpmode.
         }
+
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        telemetry.update();
     }
 
     //Necessary for using Vuforia and outputting location matrixes.
