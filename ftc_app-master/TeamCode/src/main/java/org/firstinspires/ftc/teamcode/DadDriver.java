@@ -49,9 +49,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * <insert cool stuff about finished bot>, yep
  */
 
-@TeleOp(name="DriveTest", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
+@TeleOp(name="Drive", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class driveTest extends OpMode
+public class DadDriver extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
