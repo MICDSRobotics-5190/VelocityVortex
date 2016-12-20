@@ -209,7 +209,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 leftMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
                 rightMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
 
-                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
 
@@ -231,7 +231,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 leftMotor.setTargetPosition((int)(-1 * FLOOR_BLOCK));
                 rightMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
 
-                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
@@ -252,7 +252,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 leftMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
                 rightMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
 
-                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
@@ -273,7 +273,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 leftMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
                 rightMotor.setTargetPosition((int)(-1 * FLOOR_BLOCK));
 
-                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
@@ -294,7 +294,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 leftMotor.setTargetPosition((int)(3 * FLOOR_BLOCK));
                 rightMotor.setTargetPosition((int)(3 * FLOOR_BLOCK));
 
-                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
@@ -314,7 +314,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 leftMotor.setTargetPosition((int)(-1 * FLOOR_BLOCK));
                 rightMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
 
-                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
