@@ -50,11 +50,11 @@ import org.lasarobotics.vision.opmode.LinearVisionOpMode;
  * The motor encoders helped a lot in precise movement and getting on the ramp.
  */
 
-@Autonomous(name="Red - Beacon", group="ARed OpMode")  // @Autonomous(...) is the other common choice
+@Autonomous(name="No Beacon", group="ANo Beacon OpMode")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class RedTeamUnbeacon extends LinearOpMode {
+public class Unbeacon extends LinearOpMode {
 
-    /* Declare OpMode members. */
+    /* Declare OpMode hardware. */
     private ElapsedTime runtime = new ElapsedTime();
 
     private DcMotor leftMotor = null;
@@ -69,14 +69,11 @@ public class RedTeamUnbeacon extends LinearOpMode {
     //final int FLOOR_TILE = x;
     //final int QUARTER_TURN = x;
 
-    //Parts of the autonomous program
-    int step = 1;
-
     @Override
     public void runOpMode() throws InterruptedException {
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
-        leftMotor = hardwareMap.dcMotor.get("left motor");
+        leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
         spinner = hardwareMap.dcMotor.get("spinner");
 
@@ -85,24 +82,15 @@ public class RedTeamUnbeacon extends LinearOpMode {
         rightMotor.setDirection(DcMotor.Direction.FORWARD);
         spinner.setDirection(DcMotor.Direction.FORWARD);
 
-        //Prepare the encoders to be used
+        /* Prepare the encoders to be used */
+        //Reset their values
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //Set their modes.
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        boolean blueLeft = false;
-        boolean redLeft = false;
-        boolean blueRight = false;
-        boolean redRight = false;
-
-        leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
-        rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
 
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
@@ -113,13 +101,13 @@ public class RedTeamUnbeacon extends LinearOpMode {
 
         runtime.reset();
 
-        //Setting up some output for the user to see. (Usually for troubleshooting)
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Step", step);
 
+        //Set the target distance to travel (to the ball)
         leftMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
         rightMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
 
+        //Run to the ball until it gets to the target distance.
         while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
             leftMotor.setPower(1);
             rightMotor.setPower(1);
@@ -129,18 +117,15 @@ public class RedTeamUnbeacon extends LinearOpMode {
             telemetry.update();
         }
 
+        //Stop
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 
+        //Reset Encoders
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry.update();
-    }
-
-    //Necessary for using Vuforia and outputting location matrixes.
-    String format(OpenGLMatrix transformationMatrix) {
-        return transformationMatrix.formatAsTransform();
     }
 
 }

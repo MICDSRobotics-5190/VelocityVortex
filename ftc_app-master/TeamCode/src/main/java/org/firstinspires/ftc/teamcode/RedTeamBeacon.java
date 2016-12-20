@@ -55,7 +55,7 @@ import org.opencv.core.Size;
  * The motor encoders helped a lot in precise movement and getting on the ramp.
  */
 
-@Autonomous(name="Red + Beacon", group="ARed OpMode")  // @Autonomous(...) is the other common choice
+@Autonomous(name="Red + Beacon", group="Beacon OpMode")  // @Autonomous(...) is the other common choice
 //@Disabled
 public class RedTeamBeacon extends LinearVisionOpMode {
 
@@ -212,7 +212,6 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
-
                 }
 
                 step = 2;
@@ -232,7 +231,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
 
                 while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
-                    leftMotor.setPower(1);
+                    leftMotor.setPower(-1);
                     rightMotor.setPower(1);
                 }
 
@@ -275,7 +274,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
 
                 while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
-                    rightMotor.setPower(1);
+                    rightMotor.setPower(-1);
                 }
 
                 step = 5;
@@ -315,7 +314,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 rightMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
 
                 while (!(rightMotor.getCurrentPosition() >= rightMotor.getTargetPosition() - 10 && rightMotor.getCurrentPosition() <= rightMotor.getTargetPosition() + 10)) {
-                    leftMotor.setPower(1);
+                    leftMotor.setPower(-1);
                     rightMotor.setPower(1);
                 }
 
@@ -363,8 +362,8 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 blueRight = beacon.getAnalysis().isRightBlue();
                 redRight = beacon.getAnalysis().isRightRed();
 
-                //Wait for a hardware cycle to allow other processes to run
-                waitOneFullHardwareCycle();
+                sleep(500);
+
                 step = 8;
 
             } else if (step == 8){

@@ -55,7 +55,7 @@ import org.opencv.core.Size;
  * The motor encoders helped a lot in precise movement and getting on the ramp.
  */
 
-@Autonomous(name="Blue + Beacon", group="ABlue OpMode")  // @Autonomous(...) is the other common choice
+@Autonomous(name="Blue + Beacon", group="Beacon OpMode")  // @Autonomous(...) is the other common choice
 //@Disabled
 public class BlueTeamBeacon extends LinearVisionOpMode {
 
@@ -399,8 +399,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 blueRight = beacon.getAnalysis().isRightBlue();
                 redRight = beacon.getAnalysis().isRightRed();
 
-                //Wait for a hardware cycle to allow other processes to run
-                waitOneFullHardwareCycle();
+                sleep(500);
 
                 step = 8;
 
