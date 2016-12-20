@@ -214,6 +214,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                     rightMotor.setPower(1);
 
                 }
+                step = 2;
 
             } else if (step == 2) {
 
@@ -223,8 +224,8 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
-
                 }
+                step = 3;
 
             }  else if (step == 3){
 
@@ -234,7 +235,9 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
+
                 }
+                step = 4;
             } else if (step == 4) {
 
                 leftMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
@@ -244,6 +247,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
+                step = 5;
             } else if (step == 5){
 
                 leftMotor.setTargetPosition((int)(3 * FLOOR_BLOCK));
@@ -253,13 +257,16 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
+                step = 6;
             } else if (step == 6){
                 leftMotor.setTargetPosition((int)(-1 * FLOOR_BLOCK));
                 rightMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
 
                 while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
-                    rightMotor.setPower(1); }
+                    rightMotor.setPower(1);
+                }
+                step = 7;
             } else if (step == 7){
                 //Check Beacons
                 telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
