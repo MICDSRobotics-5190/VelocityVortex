@@ -205,72 +205,137 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
 
             if(step == 1) {
 
-                leftMotor.setPower(1);
-                rightMotor.setPower(1);
+                leftMotor.setTargetPosition(FLOOR_BLOCK);
+                rightMotor.setTargetPosition(FLOOR_BLOCK);
+
+                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                    leftMotor.setPower(1);
+                    rightMotor.setPower(1);
+
+                    telemetry.addData("Status", "Run Time: " + runtime.toString());
+                    telemetry.addData("Step", step);
+                    telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
+                    telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
+                    telemetry.update();
+                }
+
+                step = 2;
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
+            } else if (step == 2) {
+
+                leftMotor.setTargetPosition(1 * FULL_REVOLUTION);
+                rightMotor.setTargetPosition(-1 * FULL_REVOLUTION);
+
+                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                    leftMotor.setPower(1);
+                    rightMotor.setPower(-1);
+
+                    telemetry.addData("Status", "Run Time: " + runtime.toString());
+                    telemetry.addData("Step", step);
+                    telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
+                    telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
+                    telemetry.update();
+                }
+
+                step = 3;
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
+            }  else if (step == 3){
 
                 leftMotor.setTargetPosition(FLOOR_BLOCK);
                 rightMotor.setTargetPosition(FLOOR_BLOCK);
 
-                if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 2;
+                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                    leftMotor.setPower(1);
+                    rightMotor.setPower(1);
+
+                    telemetry.addData("Status", "Run Time: " + runtime.toString());
+                    telemetry.addData("Step", step);
+                    telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
+                    telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
+                    telemetry.update();
                 }
 
-            } else if (step == 2) {
+                step = 4;
 
-                leftMotor.setPower(-0.25);
-                rightMotor.setPower(0.25);
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
 
-                leftMotor.setTargetPosition(FULL_REVOLUTION);
-                rightMotor.setTargetPosition(FULL_REVOLUTION);
-
-                if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10){
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 3;
-                }
-
-            }  else if (step == 3){
-
-                leftMotor.setPower(1);
-                rightMotor.setPower(1);
-
-                leftMotor.setTargetPosition(2 * FLOOR_BLOCK);
-                rightMotor.setTargetPosition(2 * FLOOR_BLOCK);
-
-                if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10){
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 4;
-                }
             } else if (step == 4) {
 
-                leftMotor.setPower(0.25);
-                rightMotor.setPower(0.25);
+                leftMotor.setTargetPosition(-1 * FULL_REVOLUTION);
+                rightMotor.setTargetPosition(1 * FULL_REVOLUTION);
 
-                leftMotor.setTargetPosition((FULL_REVOLUTION));
-                rightMotor.setTargetPosition((FULL_REVOLUTION));
+                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                    leftMotor.setPower(-1);
+                    rightMotor.setPower(1);
 
-                if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 5;
+                    telemetry.addData("Status", "Run Time: " + runtime.toString());
+                    telemetry.addData("Step", step);
+                    telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
+                    telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
+                    telemetry.update();
                 }
-            } else if (step == 5){
 
-                leftMotor.setPower(1);
-                rightMotor.setPower(1);
+                step = 5;
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
+            } else if (step == 5) {
 
                 leftMotor.setTargetPosition(3 * FLOOR_BLOCK);
                 rightMotor.setTargetPosition(3 * FLOOR_BLOCK);
 
-                if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    step = 6;
+                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                    leftMotor.setPower(1);
+                    rightMotor.setPower(1);
+
+                    telemetry.addData("Status", "Run Time: " + runtime.toString());
+                    telemetry.addData("Step", step);
+                    telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
+                    telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
+                    telemetry.update();
                 }
-            } else if (step == 6){
+
+                step = 6;
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
+            } else if (step == 6) {
+
+                leftMotor.setTargetPosition(1 * FULL_REVOLUTION);
+                rightMotor.setTargetPosition(-1 * FULL_REVOLUTION);
+
+                while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
+                    leftMotor.setPower(1);
+                    rightMotor.setPower(-1);
+
+                    telemetry.addData("Status", "Run Time: " + runtime.toString());
+                    telemetry.addData("Step", step);
+                    telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
+                    telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
+                    telemetry.update();
+                }
+
+                step = 7;
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
+            } else if (step == 7){
 
                 //Check Beacons
                 telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
@@ -307,7 +372,11 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 //Wait for a hardware cycle to allow other processes to run
                 waitOneFullHardwareCycle();
 
-            } else if (step == 7){
+                step = 8;
+
+            } else if (step == 8){
+
+                
 
             }
 
