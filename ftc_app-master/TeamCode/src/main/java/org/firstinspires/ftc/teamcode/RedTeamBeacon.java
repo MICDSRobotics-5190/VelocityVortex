@@ -214,7 +214,17 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                     rightMotor.setPower(1);
 
                 }
+
                 step = 2;
+
+                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
 
             } else if (step == 2) {
 
@@ -225,7 +235,17 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
+
                 step = 3;
+
+                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
 
             }  else if (step == 3){
 
@@ -235,9 +255,19 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
-
                 }
+
                 step = 4;
+
+                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
             } else if (step == 4) {
 
                 leftMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
@@ -247,7 +277,18 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
+
                 step = 5;
+
+                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
             } else if (step == 5){
 
                 leftMotor.setTargetPosition((int)(3 * FLOOR_BLOCK));
@@ -257,7 +298,18 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
+
                 step = 6;
+
+                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
             } else if (step == 6){
                 leftMotor.setTargetPosition((int)(-1 * FLOOR_BLOCK));
                 rightMotor.setTargetPosition((int)(1 * FLOOR_BLOCK));
@@ -266,7 +318,18 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                     leftMotor.setPower(1);
                     rightMotor.setPower(1);
                 }
+
                 step = 7;
+
+                leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                sleep(500);
+
             } else if (step == 7){
                 //Check Beacons
                 telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
@@ -304,8 +367,7 @@ public class RedTeamBeacon extends LinearVisionOpMode {
                 waitOneFullHardwareCycle();
                 step = 8;
 
-            } else if (step == 8 ){
-            } else if (step == 7){
+            } else if (step == 8){
 
             }
 
