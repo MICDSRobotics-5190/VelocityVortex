@@ -52,6 +52,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import com.vuforia.Image;
+import com.vuforia.Matrix34F;
+import com.vuforia.PIXEL_FORMAT;
+import com.vuforia.Tool;
+import com.vuforia.Vec3F;
+import com.vuforia.Vuforia;
+
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 //import org.lasarobotics.vision.opmode.LinearVisionOpMode;
@@ -60,6 +68,20 @@ import org.lasarobotics.vision.util.ScreenOrientation;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Environment;
+import android.util.Log;
+
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -194,6 +216,7 @@ public class VuforiaAutonomous extends LinearOpMode {
          * You don't *have to* use mm here, but the units here and the units used in the XML
          * target configuration files *must* correspond for the math to work out correctly.
          */
+
         float mmPerInch        = 25.4f;
         float mmBotWidth       = 18 * mmPerInch;            // ... or whatever is right for your robot
         float mmFTCFieldWidth  = (12*12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
@@ -252,6 +275,7 @@ public class VuforiaAutonomous extends LinearOpMode {
          * - We also push it a little backwards or forwards to match the actual beacon's position.
          * The 12 or 36 are the numbers we added, the FTCFieldWidth was for putting it along the walls.
          */
+
         OpenGLMatrix gearsLocationOnField = OpenGLMatrix
                 /* We translate the target on the Red audience wall and along it under the beacon.
                 * (negative x, negative y)*/
@@ -329,6 +353,12 @@ public class VuforiaAutonomous extends LinearOpMode {
         ((VuforiaTrackableDefaultListener)tools.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
         ((VuforiaTrackableDefaultListener)legos.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
         ((VuforiaTrackableDefaultListener)gears.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+
+        Image rgb = null;
+        int count = 0;
+        long numImages;
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
+        this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
@@ -481,6 +511,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                 //Wait for a hardware cycle to allow other processes to run
                 waitOneFullHardwareCycle();
                 */
+
 
             } else if (step == 7){
 
