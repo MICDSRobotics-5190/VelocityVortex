@@ -1,10 +1,8 @@
 import java.util.regex.Pattern
-
 //
 // build.gradle in FtcRobotController
 //
 apply plugin: 'com.android.library'
-
 android {
 
     defaultConfig {
@@ -19,11 +17,14 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
-
 repositories {
     flatDir {
         dirs '../libs'
     }
 }
-
 apply from: 'build.release.gradle'
+dependencies {
+    compile files('javacv/javacpp.jar')
+    compile files('javacv/javacv.jar')
+    compile files('javacv/opencv-windows-x86.jar')
+}
