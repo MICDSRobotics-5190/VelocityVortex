@@ -24,7 +24,4 @@ repositories {
 }
 apply from: 'build.release.gradle'
 dependencies {
-    compile files('javacv/javacpp.jar')
-    compile files('javacv/javacv.jar')
-    compile files('javacv/opencv-windows-x86.jar')
 }
