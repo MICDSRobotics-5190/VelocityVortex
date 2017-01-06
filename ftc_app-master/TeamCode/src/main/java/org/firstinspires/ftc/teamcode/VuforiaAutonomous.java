@@ -52,6 +52,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 
 import com.vuforia.Image;
 import com.vuforia.Matrix34F;
@@ -59,6 +60,8 @@ import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Tool;
 import com.vuforia.Vec3F;
 import com.vuforia.Vuforia;
+import com.vuforia.Frame;
+import com.vuforia.State;
 
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
@@ -67,23 +70,10 @@ import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Environment;
-import android.util.Log;
-
-//import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 /*
  * This file is the linear Op-Mode made for the non-driver controlled
@@ -123,6 +113,8 @@ public class VuforiaAutonomous extends LinearOpMode {
      * localization engine.
      */
     VuforiaLocalizer vuforia;
+
+    Beacon beacon;
 
     //Parts of the autonomous program
     int step = 1;
@@ -358,7 +350,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         int count = 0;
         long numImages;
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
-        //this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
+        this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
@@ -475,42 +467,23 @@ public class VuforiaAutonomous extends LinearOpMode {
                 }
             } else if (step == 6){
 
-                /*
-                //Check Beacons
-                telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
-                telemetry.addData("Beacon Center", beacon.getAnalysis().getLocationString());
-                telemetry.addData("Beacon Confidence", beacon.getAnalysis().getConfidenceString());
-                telemetry.addData("Beacon Buttons", beacon.getAnalysis().getButtonString());
-                telemetry.addData("Screen Rotation", rotation.getScreenOrientationActual());
-                telemetry.addData("Frame Rate", fps.getFPSString() + " FPS");
-                telemetry.addData("Frame Size", "Width: " + width + " Height: " + height);
-                telemetry.addData("Frame Counter", frameCount);
+                CloseableFrame rawFrame = vuforia.getFrameQueue().take();
 
-                //You can access the most recent frame data and modify it here using getFrameRgba() or getFrameGray()
-                //Vision will run asynchronously (parallel) to any user code so your programs won't hang
-                //You can use hasNewFrame() to test whether vision processed a new frame
-                //Once you copy the frame, discard it immediately with discardFrame()
-                if (hasNewFrame()) {
-                    //Get the frame
-                    Mat rgba = getFrameRgba();
-                    Mat gray = getFrameGray();
+                Frame trueFrame = rawFrame.clone();
 
-                    //Discard the current frame to allow for the next one to render
-                    discardFrame();
+                Image rawPicture = trueFrame.getImage(trueFrame.getIndex());
 
-                    //Do all of your custom frame processing here
-                    //For this demo, let's just add to a frame counter
-                    frameCount++;
-                }
+                byte[] pixelData = rawPicture.getPixels().array();
 
-                blueLeft = beacon.getAnalysis().isLeftBlue();
-                redLeft = beacon.getAnalysis().isLeftBlue();
-                blueRight = beacon.getAnalysis().isRightBlue();
-                redRight = beacon.getAnalysis().isRightRed();
+                Mat colorPicture = new Mat();
 
-                //Wait for a hardware cycle to allow other processes to run
-                waitOneFullHardwareCycle();
-                */
+                Mat grayPicture = new Mat();
+
+                colorPicture.put(rawPicture.getHeight(), rawPicture.getWidth(), pixelData);
+
+                Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+
+                Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
 
 
             } else if (step == 7){
