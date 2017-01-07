@@ -12,8 +12,9 @@ Now go to Github.com and sign in to the micdsrobotics git repository page. Click
 Open your Git Bash Command Window, and navigate to the desired parent directory (like c:/users/person/desktop/github and type:
 
 ```
+
 git clone https://github.com/blabel3/MicdsRobotics.git
-``
+```
 
 That first part 'git' tells the bash that we want to use the git and clone makes a copy of the desired repository
 
