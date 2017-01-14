@@ -60,7 +60,7 @@ public class DadDriver extends OpMode
     private DcMotor rightMotor = null;
 
     private DcMotor spinner = null;
-    //private DcMotor belt = null;
+    private DcMotor shooter = null;
 
     private boolean testEncoders = false;
 
@@ -72,8 +72,8 @@ public class DadDriver extends OpMode
         correspond to the names in the configuration file. */
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
+        shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
-        //belt = hardwareMap.dcMotor.get("belt");
 
 
         // eg: Set the drive motor directions:
@@ -81,7 +81,7 @@ public class DadDriver extends OpMode
         leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         spinner.setDirection(DcMotor.Direction.FORWARD);
-        //belt.setDirection(DcMotor.Direction.FORWARD);
+        shooter.setDirection(DcMotor.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");
 
@@ -92,8 +92,10 @@ public class DadDriver extends OpMode
             rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
-        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //belt.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
 
         telemetry.addData("Status", "Initialized");
     }
@@ -139,6 +141,17 @@ public class DadDriver extends OpMode
         } else {
             spinner.setPower(0);
             //belt.setPower(0);
+        }
+
+        // shooter code
+        if(gamepad1.a) {
+            shooter.setPower(1);
+        }
+        else if(gamepad1.b) {
+            shooter.setPower(-1);
+        }
+        else {
+            shooter.setPower(0);
         }
 
     }
