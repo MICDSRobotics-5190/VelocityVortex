@@ -60,7 +60,10 @@ public class DadDriver extends OpMode
     private DcMotor rightMotor = null;
 
     private DcMotor spinner = null;
+
+    // shooter variables
     private DcMotor shooter = null;
+    private boolean shooter_state = false;
 
     private boolean testEncoders = false;
 
@@ -144,16 +147,18 @@ public class DadDriver extends OpMode
         }
 
         // shooter code
-        if(gamepad1.a) {
+        // true is on false is off
+        if(gamepad1.a && shooter_state == false) {
             shooter.setPower(1);
+            shooter_state = true;
         }
-        else if(gamepad1.b) {
+        else if(gamepad1.a && shooter_state == true) {
             shooter.setPower(-1);
+            shooter_state = false;
         }
         else {
             shooter.setPower(0);
         }
-
     }
 
 
