@@ -63,14 +63,18 @@ public class DadDriver extends OpMode
 
     // shooter variables
     private DcMotor shooter = null;
-    private boolean shooter_state = false;
+    private boolean shooterState;
 
-    private boolean testEncoders = false;
+    private boolean testEncoders;
 
 
     /* Code to run ONCE when the driver hits INIT */
     @Override
     public void init() {
+        //Setting Boolean Variables
+        shooterState = false;
+        testEncoders = false;
+
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
         leftMotor  = hardwareMap.dcMotor.get("left motor");
@@ -95,10 +99,10 @@ public class DadDriver extends OpMode
             rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
-        // spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //belt.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
+        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        
 
         telemetry.addData("Status", "Initialized");
     }
@@ -124,7 +128,6 @@ public class DadDriver extends OpMode
         telemetry.addData("Right Motor", rightMotor.getPower());
         telemetry.addData("Left Motor", leftMotor.getPower());
         telemetry.addData("Spinner", spinner.getPower());
-        //telemetry.addData("Belt", belt.getPower());
 
         if(testEncoders){
             telemetry.addData("Right Motor", rightMotor.getCurrentPosition());
@@ -137,26 +140,21 @@ public class DadDriver extends OpMode
 
         if(gamepad1.left_bumper){
             spinner.setPower(1);
-            //belt.setPower(1);
         } else if (gamepad1.right_bumper){
             spinner.setPower(-1);
-            //belt.setPower(-1);
         } else {
             spinner.setPower(0);
-            //belt.setPower(0);
         }
 
         // shooter code
         // true is on false is off
-        if(gamepad1.a && shooter_state == false) {
+        if(gamepad1.a) {
+            shooterState = !shooterState;
+        }
+
+        if(shooterState){
             shooter.setPower(1);
-            shooter_state = true;
-        }
-        else if(gamepad1.a && shooter_state == true) {
-            shooter.setPower(-1);
-            shooter_state = false;
-        }
-        else {
+        } else {
             shooter.setPower(0);
         }
     }
@@ -168,11 +166,11 @@ public class DadDriver extends OpMode
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         spinner.setPower(0);
+        shooter.setPower(0);
         if(testEncoders) {
             leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
-        //belt.setPower(0);
     }
 
 }
