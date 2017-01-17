@@ -32,12 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -49,9 +46,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * <insert cool stuff about finished bot>, yep
  */
 
-@TeleOp(name="Drive", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
+@TeleOp(name="Encoder Value Checking", group="Testing")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class DadDriver extends OpMode
+public class EncoderChecker extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -64,6 +61,7 @@ public class DadDriver extends OpMode
     // shooter variables
     private DcMotor shooter = null;
     private boolean shooterState;
+
 
 
     /* Code to run ONCE when the driver hits INIT */
@@ -89,12 +87,11 @@ public class DadDriver extends OpMode
 
         telemetry.addData("Status", "Initialized");
 
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        
 
         telemetry.addData("Status", "Initialized");
     }
@@ -121,6 +118,8 @@ public class DadDriver extends OpMode
         telemetry.addData("Left Motor", leftMotor.getPower());
         telemetry.addData("Spinner", spinner.getPower());
 
+        telemetry.addData("Right Motor", rightMotor.getCurrentPosition());
+        telemetry.addData("Left Motor", leftMotor.getCurrentPosition());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
         leftMotor.setPower(-gamepad1.left_stick_y);
@@ -145,6 +144,14 @@ public class DadDriver extends OpMode
         } else {
             shooter.setPower(0);
         }
+
+        if(gamepad1.b){
+            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
     }
 
 
@@ -155,6 +162,8 @@ public class DadDriver extends OpMode
         rightMotor.setPower(0);
         spinner.setPower(0);
         shooter.setPower(0);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
 }
