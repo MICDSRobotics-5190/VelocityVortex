@@ -57,18 +57,12 @@ public class EncoderChecker extends OpMode
     private DcMotor rightMotor = null;
 
     private DcMotor spinner = null;
-
-    // shooter variables
     private DcMotor shooter = null;
-    private boolean shooterState;
-
 
 
     /* Code to run ONCE when the driver hits INIT */
     @Override
     public void init() {
-        //Setting Boolean Variables
-        shooterState = false;
 
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
@@ -136,16 +130,14 @@ public class EncoderChecker extends OpMode
         // shooter code
         // true is on false is off
         if(gamepad1.a) {
-            shooterState = !shooterState;
-        }
-
-        if(shooterState){
             shooter.setPower(1);
-        } else {
-            shooter.setPower(0);
         }
 
         if(gamepad1.b){
+            shooter.setPower(0);
+        }
+
+        if(gamepad1.x){
             leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

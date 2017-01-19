@@ -367,24 +367,26 @@ public class VuforiaBeaconTest extends LinearOpMode {
 
                 byte[] pixelArray = pixelData.array();
 
-                telemetry.addData("Crash?", "Before Matting");
+                telemetry.addData("Status", "Before Mat putting");
                 telemetry.update();
-
                 sleep(3000);
 
-                telemetry.addData("Status", "Made Mats");
-                telemetry.update();
-                sleep(10000);
-
                 colorPicture.put(rgb.getHeight(), rgb.getWidth(), pixelArray);
+
+                telemetry.addData("Status", "Before converting");
+                telemetry.update();
+                sleep(3000);
+
                 Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
 
+                telemetry.addData("Status", "Before frameanalysis");
+                telemetry.update();
+                sleep(3000);
 
                 Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
 
                 telemetry.addData("Left", analysis.getStateLeft());
                 telemetry.addData("Right", analysis.getStateRight());
-
                 telemetry.update();
             }
 

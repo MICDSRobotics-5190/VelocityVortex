@@ -91,8 +91,6 @@ public class VuforiaPositionChecker extends OpMode {
     private DcMotor spinner = null;
     private DcMotor shooter = null;
 
-    private boolean shooterState;
-
     public static final String TAG = "Vuforia Sample";
 
     OpenGLMatrix lastLocation = null;
@@ -330,8 +328,6 @@ public class VuforiaPositionChecker extends OpMode {
         shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
 
-        shooterState = false;
-
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
@@ -398,12 +394,10 @@ public class VuforiaPositionChecker extends OpMode {
         // shooter code
         // true is on false is off
         if(gamepad1.a) {
-            shooterState = !shooterState;
+            shooter.setPower(1);
         }
 
-        if(shooterState){
-            shooter.setPower(1);
-        } else {
+        if(gamepad1.b){
             shooter.setPower(0);
         }
 
