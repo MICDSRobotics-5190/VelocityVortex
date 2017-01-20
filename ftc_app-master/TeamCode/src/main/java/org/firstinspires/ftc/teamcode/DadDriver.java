@@ -64,8 +64,8 @@ public class DadDriver extends OpMode
     private DcMotor spinner = null;
 
     // the claw objects
-    private CRServo claw_open1 = null;
-    private CRServo claw_open2 = null;
+    private CRServo leftClaw = null;
+    private CRServo rightClaw = null;
 
     // shooter variables
     private DcMotor shooter = null;
@@ -81,8 +81,8 @@ public class DadDriver extends OpMode
         rightMotor = hardwareMap.dcMotor.get("right motor");
         shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
-        claw_open1 = hardwareMap.crservo.get("claw_open1");
-        claw_open2 = hardwareMap.crservo.get("claw_open2");
+        leftClaw = hardwareMap.crservo.get("left claw");
+        rightClaw = hardwareMap.crservo.get("right claw");
 
 
         // eg: Set the drive motor directions:
@@ -91,8 +91,8 @@ public class DadDriver extends OpMode
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         spinner.setDirection(DcMotor.Direction.FORWARD);
         shooter.setDirection(DcMotor.Direction.FORWARD);
-        claw_open1.setDirection(CRServo.Direction.FORWARD);
-        claw_open2.setDirection(CRServo.Direction.REVERSE);
+        leftClaw.setDirection(CRServo.Direction.FORWARD);
+        rightClaw.setDirection(CRServo.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
 
@@ -127,6 +127,8 @@ public class DadDriver extends OpMode
         telemetry.addData("Right Motor", rightMotor.getPower());
         telemetry.addData("Left Motor", leftMotor.getPower());
         telemetry.addData("Spinner", spinner.getPower());
+        telemetry.addData("Left Claw", leftClaw.getPower());
+        telemetry.addData("Right Claw", rightClaw.getPower());
 
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
@@ -153,8 +155,8 @@ public class DadDriver extends OpMode
 
         // claw code
         if (gamepad2.a){
-            claw_open1.setPower(0.5);
-            claw_open2.setPower(0.5);
+            leftClaw.setPower(0.5);
+            rightClaw.setPower(0.5);
         }
 
         if (gamepad2.b) {
@@ -162,8 +164,18 @@ public class DadDriver extends OpMode
         }
 
         if (gamepad2.x){
-            claw_open1.setPower(-0.5);
-            claw_open2.setPower(-0.5);
+            leftClaw.setPower(-0.5);
+            rightClaw.setPower(-0.5);
+        }
+
+        if(gamepad2.right_trigger != 0) {
+            leftClaw.setPower(gamepad2.right_trigger);
+            rightClaw.setPower(gamepad2.right_trigger);
+        }
+
+        if(gamepad2.left_trigger != 0) {
+            leftClaw.setPower(-gamepad2.left_trigger);
+            rightClaw.setPower(-gamepad2.left_trigger);
         }
     }
 
@@ -178,8 +190,8 @@ public class DadDriver extends OpMode
     }
 
     private void clawMotorsLow() {
-        claw_open1.setPower(0);
-        claw_open2.setPower(0);
+        leftClaw.setPower(0);
+        rightClaw.setPower(0);
     }
 
 }
