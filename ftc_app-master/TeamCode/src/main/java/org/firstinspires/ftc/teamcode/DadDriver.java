@@ -66,6 +66,9 @@ public class DadDriver extends OpMode
     // the claw objects
     private CRServo leftClaw = null;
     private CRServo rightClaw = null;
+    // uninplemented claw objects
+    private DcMotor verticalClawMotor = null;
+    private DcMotor horizontalClawMotor = null;
 
     // shooter variables
     private DcMotor shooter = null;
@@ -83,6 +86,8 @@ public class DadDriver extends OpMode
         spinner = hardwareMap.dcMotor.get("spinner");
         leftClaw = hardwareMap.crservo.get("left claw");
         rightClaw = hardwareMap.crservo.get("right claw");
+        //verticalClawMotor = hardwareMap.dcMotor.get("vertical claw");
+        //horizontalClawMotor = hardwareMap.dcMotor.get("horizontal claw");
 
 
         // eg: Set the drive motor directions:
@@ -93,6 +98,10 @@ public class DadDriver extends OpMode
         shooter.setDirection(DcMotor.Direction.FORWARD);
         leftClaw.setDirection(CRServo.Direction.FORWARD);
         rightClaw.setDirection(CRServo.Direction.REVERSE);
+        
+        /// unimplemented claw objects (commented for now)
+        //verticalClawMotor.setDirection(DcMotor.Direction.FORWARD);
+        //horizontalClawMotor.setDirection(DcMotor.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");
 
@@ -177,6 +186,26 @@ public class DadDriver extends OpMode
             leftClaw.setPower(-gamepad2.left_trigger);
             rightClaw.setPower(-gamepad2.left_trigger);
         }
+
+        /// unimplemented claw objects
+        /*
+        if (gamepad2.dpad_up){
+            verticalClawMotor.setPower(0.89);
+        }
+        if (gamepad2.dpad_down){
+            verticalClawMotor.setPower(-0.89);
+        }
+        if (gamepad2.dpad_right){
+            horizontalClawMotor.setPower(0.90);
+        }
+        if (gamepad2.dpad_left){
+            horizontalClawMotor.setPower(-0.90);
+        }
+        if (gamepad2.back){
+            verticalClawMotor.setPower(0);
+            horizontalClawMotor.setPower(0);
+        }
+        */
     }
 
 
