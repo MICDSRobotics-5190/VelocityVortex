@@ -35,9 +35,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -61,6 +63,10 @@ public class DadDriver extends OpMode
 
     private DcMotor spinner = null;
 
+    // the claw objects
+    private CRServo claw_open1 = null;
+    private CRServo claw_open2 = null;
+
     // shooter variables
     private DcMotor shooter = null;
 
@@ -75,6 +81,8 @@ public class DadDriver extends OpMode
         rightMotor = hardwareMap.dcMotor.get("right motor");
         shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
+        claw_open1 = hardwareMap.crservo.get("claw_open1");
+        claw_open2 = hardwareMap.crservo.get("claw_open2");
 
 
         // eg: Set the drive motor directions:
@@ -83,6 +91,8 @@ public class DadDriver extends OpMode
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         spinner.setDirection(DcMotor.Direction.FORWARD);
         shooter.setDirection(DcMotor.Direction.FORWARD);
+        claw_open1.setDirection(CRServo.Direction.FORWARD);
+        claw_open2.setDirection(CRServo.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
 
@@ -140,6 +150,21 @@ public class DadDriver extends OpMode
         if(gamepad1.b){
             shooter.setPower(0);
         }
+
+        // claw code
+        if (gamepad2.a){
+            claw_open1.setPower(0.5);
+            claw_open2.setPower(0.5);
+        }
+
+        if (gamepad2.b) {
+            clawMotorsLow();
+        }
+
+        if (gamepad2.x){
+            claw_open1.setPower(-0.5);
+            claw_open2.setPower(-0.5);
+        }
     }
 
 
@@ -150,6 +175,11 @@ public class DadDriver extends OpMode
         rightMotor.setPower(0);
         spinner.setPower(0);
         shooter.setPower(0);
+    }
+
+    private void clawMotorsLow() {
+        claw_open1.setPower(0);
+        claw_open2.setPower(0);
     }
 
 }
