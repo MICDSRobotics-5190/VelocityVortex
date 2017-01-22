@@ -59,7 +59,9 @@ public class Unbeacon extends LinearOpMode {
 
     private DcMotor leftMotor = null;
     private DcMotor rightMotor = null;
+
     private DcMotor spinner = null;
+    private DcMotor shooter = null;
 
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
@@ -71,16 +73,21 @@ public class Unbeacon extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
+
+        shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
 
         // Set the drive motor directions
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
         rightMotor.setDirection(DcMotor.Direction.FORWARD);
+
         spinner.setDirection(DcMotor.Direction.FORWARD);
+        shooter.setDirection(DcMotor.Direction.FORWARD);
 
         /* Prepare the encoders to be used */
         //Reset their values
@@ -90,7 +97,9 @@ public class Unbeacon extends LinearOpMode {
         //Set their modes.
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
