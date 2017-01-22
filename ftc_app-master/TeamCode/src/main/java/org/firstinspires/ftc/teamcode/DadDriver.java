@@ -62,16 +62,19 @@ public class DadDriver extends OpMode
     private DcMotor rightMotor = null;
 
     private DcMotor spinner = null;
+    private DcMotor shooter = null;
 
     // the claw objects
     private CRServo leftClaw = null;
     private CRServo rightClaw = null;
+
     // uninplemented claw objects
     private DcMotor verticalClawMotor = null;
     private DcMotor horizontalClawMotor = null;
 
     // shooter variables
-    private DcMotor shooter = null;
+    private double endTime = 0;
+    private final double revolutionTime = 1;
 
 
     /* Code to run ONCE when the driver hits INIT */
@@ -82,35 +85,45 @@ public class DadDriver extends OpMode
         correspond to the names in the configuration file. */
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
+
         shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
+
         leftClaw = hardwareMap.crservo.get("left claw");
         rightClaw = hardwareMap.crservo.get("right claw");
-        //verticalClawMotor = hardwareMap.dcMotor.get("vertical claw");
-        //horizontalClawMotor = hardwareMap.dcMotor.get("horizontal claw");
 
+        /* unimplemented claw objects
+        verticalClawMotor = hardwareMap.dcMotor.get("vertical claw");
+        horizontalClawMotor = hardwareMap.dcMotor.get("horizontal claw");
+        */
 
-        // eg: Set the drive motor directions:
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        spinner.setDirection(DcMotor.Direction.FORWARD);
-        shooter.setDirection(DcMotor.Direction.FORWARD);
-        leftClaw.setDirection(CRServo.Direction.FORWARD);
-        rightClaw.setDirection(CRServo.Direction.REVERSE);
-
-        /// unimplemented claw objects (commented for now)
-        //verticalClawMotor.setDirection(DcMotor.Direction.FORWARD);
-        //horizontalClawMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        telemetry.addData("Status", "Initialized");
 
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        /* unimplemented claw objects
+        verticalClawMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        horizontalClawMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        */
+
+
+        // Reverse the motor that runs backwards when connected directly to the battery
+        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+
+        spinner.setDirection(DcMotor.Direction.FORWARD);
+        shooter.setDirection(DcMotor.Direction.FORWARD);
+
+        leftClaw.setDirection(CRServo.Direction.FORWARD);
+        rightClaw.setDirection(CRServo.Direction.REVERSE);
+
+        /* unimplemented claw objects
+        verticalClawMotor.setDirection(DcMotor.Direction.FORWARD);
+        horizontalClawMotor.setDirection(DcMotor.Direction.FORWARD);
+        */
 
         telemetry.addData("Status", "Initialized");
     }
@@ -140,7 +153,7 @@ public class DadDriver extends OpMode
         telemetry.addData("Right Claw", rightClaw.getPower());
 
 
-        // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
+        // Drivetrain code (note: The joystick goes negative when pushed forwards)
         leftMotor.setPower(-gamepad1.left_stick_y);
         rightMotor.setPower(-gamepad1.right_stick_y);
 
@@ -153,13 +166,13 @@ public class DadDriver extends OpMode
         }
 
         // shooter code
-        // true is on false is off
         if(gamepad1.a) {
-            shooter.setTargetPosition(1);
-            shooter.setPower(1);
+            endTime = getRuntime() + revolutionTime;
         }
 
-        if(gamepad1.b){
+        if(getRuntime() < endTime){
+            shooter.setPower(1);
+        } else {
             shooter.setPower(0);
         }
 
@@ -178,18 +191,17 @@ public class DadDriver extends OpMode
             rightClaw.setPower(-0.5);
         }
 
-        if(gamepad2.right_trigger != 0) {
+        if(gamepad2.right_trigger >= 0.1) {
             leftClaw.setPower(gamepad2.right_trigger);
             rightClaw.setPower(gamepad2.right_trigger);
         }
 
-        if(gamepad2.left_trigger != 0) {
+        if(gamepad2.left_trigger >= 0.1) {
             leftClaw.setPower(-gamepad2.left_trigger);
             rightClaw.setPower(-gamepad2.left_trigger);
         }
 
-        /// unimplemented claw objects
-        /*
+        /* unimplemented claw objects
         if (gamepad2.dpad_up){
             verticalClawMotor.setPower(0.89);
         }
