@@ -68,12 +68,10 @@ public class DadDriver extends OpMode
     private CRServo leftClaw = null;
     private CRServo rightClaw = null;
 
-    private DcMotor verticalClawMotor = null;
-    private DcMotor horizontalClawMotor = null;
-
     // shooter variables
     private double endTime = 0;
-    private final double revolutionTime = 0.5;
+    private final double revolutionTime = 0.349;
+
 
 
     /* Code to run ONCE when the driver hits INIT */
@@ -88,25 +86,14 @@ public class DadDriver extends OpMode
         shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
 
-        /* unimplemented claw objects
         leftClaw = hardwareMap.crservo.get("left claw");
         rightClaw = hardwareMap.crservo.get("right claw");
-
-        verticalClawMotor = hardwareMap.dcMotor.get("vertical claw");
-        horizontalClawMotor = hardwareMap.dcMotor.get("horizontal claw");
-        */
-
 
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        /* unimplemented claw objects
-        verticalClawMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        horizontalClawMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        */
 
 
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -116,13 +103,8 @@ public class DadDriver extends OpMode
         spinner.setDirection(DcMotor.Direction.FORWARD);
         shooter.setDirection(DcMotor.Direction.FORWARD);
 
-        /* unimplemented claw objects
         leftClaw.setDirection(CRServo.Direction.FORWARD);
         rightClaw.setDirection(CRServo.Direction.REVERSE);
-
-        verticalClawMotor.setDirection(DcMotor.Direction.FORWARD);
-        horizontalClawMotor.setDirection(DcMotor.Direction.FORWARD);
-        */
 
         telemetry.addData("Status", "Initialized");
     }
@@ -148,8 +130,8 @@ public class DadDriver extends OpMode
         telemetry.addData("Right Motor", rightMotor.getPower());
         telemetry.addData("Left Motor", leftMotor.getPower());
         telemetry.addData("Spinner", spinner.getPower());
-        //telemetry.addData("Left Claw", leftClaw.getPower());
-        //telemetry.addData("Right Claw", rightClaw.getPower());
+        telemetry.addData("Left Claw", leftClaw.getPower());
+        telemetry.addData("Right Claw", rightClaw.getPower());
 
 
         // Drivetrain code (note: The joystick goes negative when pushed forwards)
@@ -199,25 +181,20 @@ public class DadDriver extends OpMode
             leftClaw.setPower(-gamepad2.left_trigger);
             rightClaw.setPower(-gamepad2.left_trigger);
         }
-
+        */
 
         if (gamepad2.dpad_up){
-            verticalClawMotor.setPower(0.89);
+            leftClaw.setPower(1);
+            rightClaw.setPower(1);
         }
-        if (gamepad2.dpad_down){
-            verticalClawMotor.setPower(-0.89);
+        if (gamepad2.dpad_down) {
+            leftClaw.setPower(1);
+            rightClaw.setPower(1);
         }
-        if (gamepad2.dpad_right){
-            horizontalClawMotor.setPower(0.90);
+        if (gamepad2.x) {
+            leftClaw.setPower(0);
+            rightClaw.setPower(0);
         }
-        if (gamepad2.dpad_left){
-            horizontalClawMotor.setPower(-0.90);
-        }
-        if (gamepad2.back){
-            verticalClawMotor.setPower(0);
-            horizontalClawMotor.setPower(0);
-        }
-        */
     }
 
 

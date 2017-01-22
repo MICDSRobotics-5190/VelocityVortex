@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -63,6 +64,9 @@ public class Unbeacon extends LinearOpMode {
     private DcMotor spinner = null;
     private DcMotor shooter = null;
 
+    private CRServo leftClaw = null;
+    private CRServo rightClaw = null;
+
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
     final int MOTOR_GEAR_RATIO = 80;
@@ -81,6 +85,9 @@ public class Unbeacon extends LinearOpMode {
 
         shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
+
+        leftClaw = hardwareMap.crservo.get("left claw");
+        rightClaw = hardwareMap.crservo.get("right claw");
 
         // Set the drive motor directions
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -113,8 +120,8 @@ public class Unbeacon extends LinearOpMode {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
 
         //Set the target distance to travel (to the ball)
-        leftMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
-        rightMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
+        leftMotor.setTargetPosition((int)(5 * FLOOR_BLOCK));
+        rightMotor.setTargetPosition((int)(5 * FLOOR_BLOCK));
 
         //Run to the ball until it gets to the target distance.
         while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
