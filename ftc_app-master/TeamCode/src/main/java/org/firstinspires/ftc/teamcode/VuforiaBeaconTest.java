@@ -100,12 +100,8 @@ public class VuforiaBeaconTest extends LinearOpMode {
     //Frames for OpenCV (Immediate Setup for OpenCV)
     int frameCount = 0;
 
-
     @Override
     public void runOpMode() throws InterruptedException {
-
-        Mat colorPicture = new Mat();
-        Mat grayPicture = new Mat();
 
         //Vuforia Setup (OpenCV Setup?)
         /**
@@ -314,7 +310,6 @@ public class VuforiaBeaconTest extends LinearOpMode {
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
 
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
@@ -371,13 +366,23 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.update();
                 sleep(3000);
 
+                Mat colorPicture = new Mat();
+                Mat grayPicture = new Mat();
+
                 colorPicture.put(rgb.getHeight(), rgb.getWidth(), pixelArray);
 
                 telemetry.addData("Status", "Before converting");
                 telemetry.update();
                 sleep(3000);
 
-                Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+                //Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+
+                telemetry.addData("Channels", colorPicture.channels());
+                telemetry.addData("Width", colorPicture.width());
+                telemetry.addData("Height", colorPicture.height());
+                telemetry.addData("Depth", colorPicture.depth());
+                telemetry.update();
+                sleep(10000);
 
                 telemetry.addData("Status", "Before frameanalysis");
                 telemetry.update();
