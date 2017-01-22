@@ -64,8 +64,8 @@ public class Unbeacon extends LinearOpMode {
     private DcMotor spinner = null;
     private DcMotor shooter = null;
 
-    private CRServo leftClaw = null;
-    private CRServo rightClaw = null;
+    //private CRServo leftClaw = null;
+    //private CRServo rightClaw = null;
 
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
@@ -86,8 +86,8 @@ public class Unbeacon extends LinearOpMode {
         shooter = hardwareMap.dcMotor.get("shooter");
         spinner = hardwareMap.dcMotor.get("spinner");
 
-        leftClaw = hardwareMap.crservo.get("left claw");
-        rightClaw = hardwareMap.crservo.get("right claw");
+        //leftClaw = hardwareMap.crservo.get("left claw");
+        //rightClaw = hardwareMap.crservo.get("right claw");
 
         // Set the drive motor directions
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
