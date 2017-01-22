@@ -98,7 +98,7 @@ public class DadDriver extends OpMode
         shooter.setDirection(DcMotor.Direction.FORWARD);
         leftClaw.setDirection(CRServo.Direction.FORWARD);
         rightClaw.setDirection(CRServo.Direction.REVERSE);
-        
+
         /// unimplemented claw objects (commented for now)
         //verticalClawMotor.setDirection(DcMotor.Direction.FORWARD);
         //horizontalClawMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -109,7 +109,7 @@ public class DadDriver extends OpMode
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         
 
         telemetry.addData("Status", "Initialized");
@@ -155,6 +155,7 @@ public class DadDriver extends OpMode
         // shooter code
         // true is on false is off
         if(gamepad1.a) {
+            shooter.setTargetPosition(1);
             shooter.setPower(1);
         }
 
@@ -162,7 +163,7 @@ public class DadDriver extends OpMode
             shooter.setPower(0);
         }
 
-        // claw code
+        // claw code (uses the second gamepad)
         if (gamepad2.a){
             leftClaw.setPower(0.5);
             rightClaw.setPower(0.5);
