@@ -32,15 +32,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.ftcrobotcontroller.R;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
-import com.vuforia.Frame;
-import com.vuforia.Image;
-import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
@@ -50,44 +48,55 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.lasarobotics.vision.ftc.resq.Beacon;
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import java.lang.Object;
-import java.nio.ByteBuffer;
-import java.nio.ByteBuffer.*;
-import java.nio.Buffer;
-
-//import org.lasarobotics.vision.opmode.LinearVisionOpMode;
-
-/*
- * This file is the linear Op-Mode made for the non-driver controlled
- * Autonomous period of an FTC match for Technoramic, Team 5190, in 2016-2017.
+/**
+ * This OpMode uses the Vuforia localizer to determine positioning and orientation of robot on the FTC field.
+ * The code is structured as a LinearOpMode, to integrate into Autonomous.
  *
- * The bot this was made for had an awesome west coast drivetrain, used motor encoders for once,
- * could use the camera to easily find the beacons and locate itself on the field, and
- * hit the button to score tons of points and release more balls into the field.
- * The motor encoders helped a lot in precise movement and getting on the ramp.
+ * Vuforia uses the phone's camera to inspect it's surroundings, and attempt to locate target images.
+ *
+ * When images are located, Vuforia is able to determine the position and orientation of the
+ * image relative to the camera.  This sample code than combines that information with a
+ * knowledge of where the target images are on the field, to determine the location of the camera.
+ *
+ * We use a "diamond" field configuration where the red and blue alliance stations are adjacent on
+ * the corner of the field furthest from the audience, to match Velocity Vortex guidelines.
+ * From the Audience perspective, the Red driver station is on the right.
+ * There are four vision targets, with positions detailed in the Field Setup guide.
+ *
+ * A final calculation then uses the location of the camera on the robot to determine the
+ * robot's location and orientation on the field.
+ *
+ * @see VuforiaLocalizer
+ * @see VuforiaTrackableDefaultListener
+ * see  ftc_app/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
  */
 
-@Autonomous(name="Vuforia + Beacon Test", group="Cool")  // @Autonomous(...) is the other common choice
+@TeleOp(name="Vuforia Position Checking", group ="Testing")
 //@Disabled
-public class VuforiaBeaconTest extends LinearOpMode {
+public class VuforiaPositionChecker extends OpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
+    private DcMotor leftMotor = null;
+    private DcMotor rightMotor = null;
+
+    private DcMotor spinner = null;
+    private DcMotor shooter = null;
+
     public static final String TAG = "Vuforia Sample";
 
     OpenGLMatrix lastLocation = null;
+
+    List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+    VuforiaTrackables velocityVortexTargets;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -95,15 +104,10 @@ public class VuforiaBeaconTest extends LinearOpMode {
      */
     VuforiaLocalizer vuforia;
 
-    Beacon beacon;
-
-    //Frames for OpenCV (Immediate Setup for OpenCV)
-    int frameCount = 0;
-
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void init() {
 
-        //Vuforia Setup (OpenCV Setup?)
+        //Vuforia Initilization
         /**
          * Start up Vuforia, telling it the id of the view that we wish to use as the parent for
          * the camera monitor feedback. We chose the back camera, however the front could
@@ -124,7 +128,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
          * your code as the value of the 'vuforiaLicenseKey'.
          */
 
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(com.qualcomm.ftcrobotcontroller.R.id.cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
         parameters.vuforiaLicenseKey = "AXmkGNH/////AAAAGYQoI5Oxd0xYgQIS+WWvhqRgDbmxAw8+4qC9TSBr3OQpP8oUs2lxaU4x2ptI6ldk8kJ9QfgFGu6/K6Xtm4jbx27/AE6gIgzDSEoqgJ9TFEqwJCdywmzroqzWu97Tfh8Zp14gI9Y0gH59SqMBwlTDbR5sM4XkMQobfSTmP8LjFnuplw/lqlcZGGlfZ8WJTdFdIJmUkb1S6L5cPQosxgIm5goCPXWNc8WPhUqV+DLOovlU50ecwSLZrqLyIBdEGmKwB2Au8nZTT7+fO/I9ouKpzy0hwtAbthgidqC2GL+sxt13JnzXXR9d7hT65UIvtZqbobq96pkOpBLV/ztrLh9ayCF2i2vv9wiOHkZPbSgtbyFP";
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
@@ -138,7 +142,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
          * documentation directory.
          */
 
-        VuforiaTrackables velocityVortexTargets = this.vuforia.loadTrackablesFromAsset("VelocityVortexTargets");
+        velocityVortexTargets = this.vuforia.loadTrackablesFromAsset("VelocityVortexTargets");
         VuforiaTrackable wheels = velocityVortexTargets.get(0);
         wheels.setName("Wheels");  // Wheels, Blue side near Ramp
 
@@ -153,7 +157,6 @@ public class VuforiaBeaconTest extends LinearOpMode {
 
 
         /** For convenience, gather together all the trackable objects in one easily-iterable collection */
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
         allTrackables.addAll(velocityVortexTargets);
 
         /*
@@ -163,10 +166,9 @@ public class VuforiaBeaconTest extends LinearOpMode {
          * You don't *have to* use mm here, but the units here and the units used in the XML
          * target configuration files *must* correspond for the math to work out correctly.
          */
-
-        float mmPerInch        = 25.4f;
-        float mmBotWidth       = 18 * mmPerInch;            // ... or whatever is right for your robot
-        float mmFTCFieldWidth  = (12*12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
+        float mmPerInch = 25.4f;
+        float mmBotWidth = 18 * mmPerInch;            // ... or whatever is right for your robot
+        float mmFTCFieldWidth = (12 * 12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
 
         /**
          * In order for localization to work, we need to tell the system where each target we
@@ -222,11 +224,10 @@ public class VuforiaBeaconTest extends LinearOpMode {
          * - We also push it a little backwards or forwards to match the actual beacon's position.
          * The 12 or 36 are the numbers we added, the FTCFieldWidth was for putting it along the walls.
          */
-
         OpenGLMatrix gearsLocationOnField = OpenGLMatrix
                 /* We translate the target on the Red audience wall and along it under the beacon.
                 * (negative x, negative y)*/
-                .translation(-mmFTCFieldWidth/2, -12*mmPerInch, (float)(1.5*mmPerInch))
+                .translation(-mmFTCFieldWidth / 2, -12 * mmPerInch, (float) (1.5 * mmPerInch))
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
@@ -237,7 +238,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
         OpenGLMatrix toolsLocationOnField = OpenGLMatrix
                 /* We translate the target on the Red audience wall and along it under the beacon.
                 * (negative x, positive y)*/
-                .translation(-mmFTCFieldWidth/2, 36*mmPerInch, (float)(1.5*mmPerInch))
+                .translation(-mmFTCFieldWidth / 2, 36 * mmPerInch, (float) (1.5 * mmPerInch))
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
@@ -253,7 +254,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
         OpenGLMatrix wheelsLocationOnField = OpenGLMatrix
                 /* We translate the target on the Blue audience wall and along it under the beacon.
                 * Positive Y, positive X*/
-                .translation(12*mmPerInch, mmFTCFieldWidth/2, (float)(1.5*mmPerInch))
+                .translation(12 * mmPerInch, mmFTCFieldWidth / 2, (float) (1.5 * mmPerInch))
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
@@ -264,7 +265,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
         OpenGLMatrix legosLocationOnField = OpenGLMatrix
                 /* We translate the target on the Blue audience wall and along it under the beacon.
                 * Positive Y, negative X*/
-                .translation(-36*mmPerInch, mmFTCFieldWidth/2, (float)(1.5*mmPerInch))
+                .translation(-36 * mmPerInch, mmFTCFieldWidth / 2, (float) (1.5 * mmPerInch))
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
@@ -296,112 +297,125 @@ public class VuforiaBeaconTest extends LinearOpMode {
          * listener is a {@link VuforiaTrackableDefaultListener} and can so safely cast because
          * we have not ourselves installed a listener of a different type.
          */
-        ((VuforiaTrackableDefaultListener)wheels.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener)tools.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener)legos.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener)gears.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) wheels.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) tools.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) legos.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) gears.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
 
-        Image rgb = null;
-        int count = 0;
-        long numImages;
-        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
-        this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
+        /**
+         * A brief tutorial: here's how all the math is going to work:
+         *
+         * C = phoneLocationOnRobot  maps   phone coords -> robot coords
+         * P = tracker.getPose()     maps   image target coords -> phone coords
+         * L = redTargetLocationOnField maps   image target coords -> field coords
+         *
+         * So
+         *
+         * C.inverted()              maps   robot coords -> phone coords
+         * P.inverted()              maps   phone coords -> imageTarget coords
+         *
+         * Putting that all together,
+         *
+         * L x P.inverted() x C.inverted() maps robot coords to field coords.
+         *
+         * @see VuforiaTrackableDefaultListener#getRobotLocation()
+         */
 
-        telemetry.addData("Status", "Initialized!");
+        /* Initialize the hardware variables. The strings must
+        correspond to the names in the configuration file. */
+        leftMotor = hardwareMap.dcMotor.get("left motor");
+        rightMotor = hardwareMap.dcMotor.get("right motor");
+        shooter = hardwareMap.dcMotor.get("shooter");
+        spinner = hardwareMap.dcMotor.get("spinner");
+
+        // eg: Set the drive motor directions:
+        // Reverse the motor that runs backwards when connected directly to the battery
+        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        spinner.setDirection(DcMotor.Direction.FORWARD);
+        shooter.setDirection(DcMotor.Direction.FORWARD);
+
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        telemetry.addData("Status", "Initialized");
+
+        /** Wait for the game to begin */
         telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-
-        runtime.reset();
-
-        velocityVortexTargets.activate();
-
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-
-            for (VuforiaTrackable trackable : allTrackables) {
-                /**
-                 * getUpdatedRobotLocation() will return null if no new information is available since
-                 * the last time that call was made, or if the trackable is not currently visible.
-                 * getRobotLocation() will return null if the trackable is not currently visible.
-                 */
-                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
-                }
-            }
-            /**
-             * Provide feedback as to where the robot was last located (if we know).
-             */
-            if (lastLocation != null) {
-                //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
-                telemetry.addData("Pos", format(lastLocation));
-            } else {
-                telemetry.addData("Pos", "Unknown");
-            }
-
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-
-            CloseableFrame rawFrame = vuforia.getFrameQueue().take();
-
-            numImages = rawFrame.getNumImages();
-            for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
-                if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
-                    rgb = rawFrame.getImage(i);
-                    break;
-                }
-            }
-
-            if(rgb != null){
-                ByteBuffer pixelData = ByteBuffer.allocate(5000000);
-
-                pixelData.put(rgb.getPixels().duplicate());
-
-                byte[] pixelArray = pixelData.array();
-
-                telemetry.addData("Status", "Before Mat putting");
-                telemetry.update();
-                sleep(3000);
-
-                Mat colorPicture = new Mat();
-                Mat grayPicture = new Mat();
-
-                colorPicture.put(rgb.getHeight(), rgb.getWidth(), pixelArray);
-
-                telemetry.addData("Status", "Before converting");
-                telemetry.update();
-                sleep(3000);
-
-                //Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
-
-                telemetry.addData("Channels", colorPicture.channels());
-                telemetry.addData("Width", colorPicture.width());
-                telemetry.addData("Height", colorPicture.height());
-                telemetry.addData("Depth", colorPicture.depth());
-                telemetry.update();
-                sleep(10000);
-
-                telemetry.addData("Status", "Before frameanalysis");
-                telemetry.update();
-                sleep(3000);
-
-                Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
-
-                telemetry.addData("Left", analysis.getStateLeft());
-                telemetry.addData("Right", analysis.getStateRight());
-                telemetry.update();
-            }
-
-            idle(); // OpenCV broke idle, we could troubleshoot later. Basically check LinearOpMode and LinearVisionOpmode.
-        }
     }
 
-    //Necessary for using Vuforia and outputting location matrixes.
+    @Override
+    public void start(){
+        velocityVortexTargets.activate();
+    }
+
+    @Override
+    public void loop(){
+
+        telemetry.addData("Status", "Running: " + runtime.toString());
+
+        for (VuforiaTrackable trackable : allTrackables) {
+            /**
+             * getUpdatedRobotLocation() will return null if no new information is available since
+             * the last time that call was made, or if the trackable is not currently visible.
+             * getRobotLocation() will return null if the trackable is not currently visible.
+             */
+            telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
+
+            OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+            if (robotLocationTransform != null) {
+                lastLocation = robotLocationTransform;
+            }
+        }
+        /**
+         * Provide feedback as to where the robot was last located (if we know).
+         */
+        if (lastLocation != null) {
+            //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
+            telemetry.addData("Pos", format(lastLocation));
+        } else {
+            telemetry.addData("Pos", "Unknown");
+        }
+
+        leftMotor.setPower(-gamepad1.left_stick_y);
+        rightMotor.setPower(-gamepad1.right_stick_y);
+
+        if(gamepad1.left_bumper){
+            spinner.setPower(1);
+        } else if (gamepad1.right_bumper){
+            spinner.setPower(-1);
+        } else {
+            spinner.setPower(0);
+        }
+
+        // shooter code
+        // true is on false is off
+        if(gamepad1.a) {
+            shooter.setPower(1);
+        }
+
+        if(gamepad1.b){
+            shooter.setPower(0);
+        }
+
+        telemetry.update();
+    }
+
+    @Override
+    public void stop() {
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+        spinner.setPower(0);
+    }
+
+    /**
+     * A simple utility that extracts positioning information from a transformation matrix
+     * and formats it in a form palatable to a human being.
+     */
     String format(OpenGLMatrix transformationMatrix) {
         return transformationMatrix.formatAsTransform();
     }
-
 }
