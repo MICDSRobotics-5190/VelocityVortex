@@ -366,7 +366,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.update();
                 sleep(3000);
 
-                Mat colorPicture = new Mat();
+                //Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), );
                 Mat grayPicture = new Mat();
 
                 colorPicture.put(rgb.getHeight(), rgb.getWidth(), pixelArray);
