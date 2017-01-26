@@ -57,6 +57,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.core.CvType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -366,8 +367,8 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.update();
                 sleep(3000);
 
-                //Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), );
-                Mat grayPicture = new Mat();
+                Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
+                Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
 
                 colorPicture.put(rgb.getHeight(), rgb.getWidth(), pixelArray);
 
