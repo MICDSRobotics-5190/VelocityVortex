@@ -57,6 +57,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Mat;
+import org.opencv.core.CvType;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -100,6 +101,9 @@ public class VuforiaBeaconTest extends LinearOpMode {
     VuforiaLocalizer vuforia;
 
     Beacon beacon;
+
+    Mat colorPicture = null;
+    Mat grayPicture = null;
 
     //Frames for OpenCV (Immediate Setup for OpenCV)
     int frameCount = 0;
@@ -316,10 +320,9 @@ public class VuforiaBeaconTest extends LinearOpMode {
         {
             telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
         } else {
-            Mat colorPicture = new Mat();
-            Mat grayPicture = new Mat();
+            Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
+            Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
         }
-
 
 
         telemetry.addData("Status", "Initialized!");
