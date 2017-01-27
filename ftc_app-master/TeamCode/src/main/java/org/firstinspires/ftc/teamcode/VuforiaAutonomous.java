@@ -92,16 +92,13 @@ public class VuforiaAutonomous extends LinearOpMode {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
-    private DcMotor leftMotor = null;
-    private DcMotor rightMotor = null;
-    private DcMotor spinner = null;
+    private Robot dan = new Robot();
 
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
     final int MOTOR_GEAR_RATIO = 80;
     final int FULL_REVOLUTION = 1200;
-    final int FLOOR_BLOCK = 2292;
-    //final int FLOOR_TILE = x;
+    final int FLOOR_BLOCK = 2300;
     //final int QUARTER_TURN = x;
 
     public static final String TAG = "Vuforia Sample";
@@ -117,31 +114,21 @@ public class VuforiaAutonomous extends LinearOpMode {
     Beacon beacon;
 
     //Parts of the autonomous program
-    int step = 1;
+    private int step = 1;
+    private boolean encodersInPosition;
 
     //Frames for OpenCV (Immediate Setup for OpenCV)
-    int frameCount = 0;
+    private int frameCount = 0;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
-        leftMotor  = hardwareMap.dcMotor.get("left motor");
-        rightMotor = hardwareMap.dcMotor.get("right motor");
-        spinner = hardwareMap.dcMotor.get("spinner");
-
-        // Set the drive motor directions
-        leftMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);
-        spinner.setDirection(DcMotor.Direction.FORWARD);
+        dan.setupHardware(hardwareMap);
 
         //Prepare the encoders to be used
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        dan.resetEncoders();
 
         boolean blueLeft = false;
         boolean redLeft = false;
@@ -389,81 +376,77 @@ public class VuforiaAutonomous extends LinearOpMode {
                 telemetry.addData("Pos", "Unknown");
             }
 
-            //leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
-            //rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+            //dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+            //dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
 
             //Setting up some output for the user to see. (Usually for troubleshooting)
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Step", step);
-            telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
-            telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
+            telemetry.addData("Right Motor Posn", dan.leftMotor.getCurrentPosition());
+            telemetry.addData("Left Motor Posn", dan.rightMotor.getCurrentPosition());
 
+            encodersInPosition = (dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10
+                    && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10);
+
+            //Vuforia Scan and run either blue or red autonomous + extra position checking
+
+            /*
             if(step == 1) {
 
-                leftMotor.setPower(1);
-                rightMotor.setPower(1);
+                dan.drivetrainPower(1);
 
-                leftMotor.setTargetPosition(FLOOR_BLOCK);
-                rightMotor.setTargetPosition(FLOOR_BLOCK);
+                dan.leftMotor.setTargetPosition(FLOOR_BLOCK);
+                dan.rightMotor.setTargetPosition(FLOOR_BLOCK);
 
-                if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
+                if (encodersInPosition) {
                     step = 2;
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    dan.resetEncoders();
                 }
 
             } else if (step == 2) {
 
-                leftMotor.setPower(-0.25);
-                rightMotor.setPower(0.25);
+                dan.drivetrainPower(1);
 
-                leftMotor.setTargetPosition(FULL_REVOLUTION);
-                rightMotor.setTargetPosition(FULL_REVOLUTION);
+                dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
+                dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
 
-                if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10){
+                if(encodersInPosition){
                     step = 3;
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    dan.resetEncoders();
                 }
 
             }  else if (step == 3){
 
-                leftMotor.setPower(1);
-                rightMotor.setPower(1);
+                dan.drivetrainPower(1);
 
-                leftMotor.setTargetPosition(2 * FLOOR_BLOCK);
-                rightMotor.setTargetPosition(2 * FLOOR_BLOCK);
+                dan.leftMotor.setTargetPosition(2 * FLOOR_BLOCK);
+                dan.rightMotor.setTargetPosition(2 * FLOOR_BLOCK);
 
-                if(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10){
+                if(dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10){
                     step = 4;
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    dan.resetEncoders();
                 }
             } else if (step == 4) {
 
-                leftMotor.setPower(0.25);
-                rightMotor.setPower(0.25);
+                dan.drivetrainPower(1);
 
-                leftMotor.setTargetPosition((FULL_REVOLUTION));
-                rightMotor.setTargetPosition((FULL_REVOLUTION));
+                dan.leftMotor.setTargetPosition((FULL_REVOLUTION));
+                dan.rightMotor.setTargetPosition((FULL_REVOLUTION));
 
-                if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
+                if (dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10) {
                     step = 5;
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    dan.resetEncoders();
                 }
             } else if (step == 5){
 
-                leftMotor.setPower(1);
-                rightMotor.setPower(1);
+                dan.drivetrainPower(1);
 
-                leftMotor.setTargetPosition(3 * FLOOR_BLOCK);
-                rightMotor.setTargetPosition(3 * FLOOR_BLOCK);
+                dan.leftMotor.setTargetPosition(3 * FLOOR_BLOCK);
+                dan.rightMotor.setTargetPosition(3 * FLOOR_BLOCK);
 
-                if (leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10) {
+                if (dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10) {
                     step = 6;
-                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    dan.resetEncoders();
                 }
             } else if (step == 6){
 
@@ -489,6 +472,7 @@ public class VuforiaAutonomous extends LinearOpMode {
             } else if (step == 7){
 
             }
+            */
 
             telemetry.update();
 

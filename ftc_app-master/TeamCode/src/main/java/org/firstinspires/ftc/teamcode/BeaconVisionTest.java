@@ -25,7 +25,7 @@ import org.opencv.core.Size;
 
 @Autonomous(name="Beacon Show-Off (Test)", group="Cool" )
 //@Disabled
-public class LinearVisionTest extends LinearVisionOpMode {
+public class BeaconVisionTest extends LinearVisionOpMode {
 
     //Frame counter
     int frameCount = 0;

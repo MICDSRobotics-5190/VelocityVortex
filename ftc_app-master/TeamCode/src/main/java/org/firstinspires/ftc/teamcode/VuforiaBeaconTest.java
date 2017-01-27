@@ -318,10 +318,11 @@ public class VuforiaBeaconTest extends LinearOpMode {
 
         if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.context, mOpenCVCallBack))
         {
-            telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
+            telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager.");
         } else {
             Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
             Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
+            telemetry.addData("OpenCV", "Working!");
         }
 
 
