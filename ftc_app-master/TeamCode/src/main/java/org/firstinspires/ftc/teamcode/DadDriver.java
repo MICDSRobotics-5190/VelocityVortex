@@ -92,8 +92,8 @@ public class DadDriver extends OpMode
         telemetry.addData("Status", "Running: " + runtime.toString());
         telemetry.addData("Right Motor", dan.rightMotor.getPower());
         telemetry.addData("Left Motor", dan.leftMotor.getPower());
-        //telemetry.addData("Spinner", spinner.getPower());
-        //telemetry.addData("Left Claw", leftClaw.getPower());
+        telemetry.addData("Spinner", dan.spinner.getPower());
+        telemetry.addData("Flywheel", dan.flywheel.getPower());
         //telemetry.addData("Right Claw", rightClaw.getPower());
 
 
@@ -108,6 +108,14 @@ public class DadDriver extends OpMode
             dan.spinner.setPower(-1);
         } else {
             dan.spinner.setPower(0);
+        }
+
+        if(gamepad1.a){
+            dan.flywheel.setPower(1);
+        }
+
+        if(gamepad1.b) {
+            dan.flywheel.setPower(0);
         }
 
     }

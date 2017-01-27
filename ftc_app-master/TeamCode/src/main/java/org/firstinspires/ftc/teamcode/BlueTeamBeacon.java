@@ -195,7 +195,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
             encodersInPosition = (dan.rightMotor.getCurrentPosition() >= dan.rightMotor.getTargetPosition() - 10
                     && dan.rightMotor.getCurrentPosition() <= dan.rightMotor.getTargetPosition() + 10);
 
-            if(step == 1) {
+            if (step == 1) {
 
                 dan.leftMotor.setTargetPosition(FLOOR_BLOCK);
                 dan.rightMotor.setTargetPosition(FLOOR_BLOCK);
@@ -232,7 +232,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                     dan.rightMotor.setPower(-1);
                 }
 
-            }  else if (step == 3){
+            } else if (step == 3) {
 
                 dan.leftMotor.setTargetPosition(FLOOR_BLOCK);
                 dan.rightMotor.setTargetPosition(FLOOR_BLOCK);
@@ -308,7 +308,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
 
                 step = 7;
 
-            } else if (step == 7){
+            } else if (step == 7) {
 
                 //Check Beacons
                 telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
@@ -346,9 +346,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
 
                 step = 8;
 
-            } else if (step == 8){
-
-                
+            } else if (step == 8) {
 
             }
 

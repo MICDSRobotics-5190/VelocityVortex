@@ -316,6 +316,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
         this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
 
+        /*
         if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.context, mOpenCVCallBack))
         {
             telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager.");
@@ -324,6 +325,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
             Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
             telemetry.addData("OpenCV", "Working!");
         }
+        */
 
 
         telemetry.addData("Status", "Initialized!");

@@ -476,7 +476,7 @@ public class VuforiaAutonomous extends LinearOpMode {
 
             telemetry.update();
 
-            idle(); // OpenCV broke idle, we could troubleshoot later. Basically check LinearOpMode and LinearVisionOpmode.
+            idle();
         }
     }
 
