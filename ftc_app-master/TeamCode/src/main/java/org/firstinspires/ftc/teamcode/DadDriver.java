@@ -59,7 +59,9 @@ public class DadDriver extends OpMode
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
+
     private Robot dan = new Robot();
+
 
     /* Code to run ONCE when the driver hits INIT */
     @Override
@@ -67,7 +69,9 @@ public class DadDriver extends OpMode
 
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
+
         dan.setupHardware(hardwareMap);
+
 
         telemetry.addData("Status", "Initialized");
     }
@@ -94,6 +98,7 @@ public class DadDriver extends OpMode
         telemetry.addData("Left Motor", dan.leftMotor.getPower());
         telemetry.addData("Spinner", dan.spinner.getPower());
         telemetry.addData("Flywheel", dan.flywheel.getPower());
+
         //telemetry.addData("Right Claw", rightClaw.getPower());
 
 

@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -68,8 +69,10 @@ public class Unbeacon extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
+
         dan.setupHardware(hardwareMap);
 
         /* Prepare the encoders to be used */
