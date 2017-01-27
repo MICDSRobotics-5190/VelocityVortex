@@ -63,11 +63,7 @@ public class BeaconChecker extends VisionOpMode {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
-    private DcMotor leftMotor = null;
-    private DcMotor rightMotor = null;
-
-    private DcMotor spinner = null;
-    private DcMotor shooter = null;
+    private Robot dan = new Robot();
 
     private boolean shooterState;
 
@@ -86,25 +82,9 @@ public class BeaconChecker extends VisionOpMode {
 
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
-        leftMotor = hardwareMap.dcMotor.get("left motor");
-        rightMotor = hardwareMap.dcMotor.get("right motor");
-        shooter = hardwareMap.dcMotor.get("shooter");
-        spinner = hardwareMap.dcMotor.get("spinner");
+        dan.setupHardware(hardwareMap);
 
         shooterState = false;
-
-        // eg: Set the drive motor directions:
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        spinner.setDirection(DcMotor.Direction.FORWARD);
-        shooter.setDirection(DcMotor.Direction.FORWARD);
-
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         boolean blueLeft = false;
         boolean redLeft = false;
@@ -199,7 +179,6 @@ public class BeaconChecker extends VisionOpMode {
         //Setting up some output for the user to see. (Usually for troubleshooting)
         telemetry.addData("Status", "Run Time: " + runtime.toString());
 
-
         //Check Beacons
         telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
         telemetry.addData("Beacon Center", beacon.getAnalysis().getLocationString());
@@ -231,6 +210,18 @@ public class BeaconChecker extends VisionOpMode {
         redLeft = beacon.getAnalysis().isLeftBlue();
         blueRight = beacon.getAnalysis().isRightBlue();
         redRight = beacon.getAnalysis().isRightRed();
+
+        dan.leftMotor.setPower(-gamepad1.left_stick_y);
+        dan.rightMotor.setPower(-gamepad1.right_stick_y);
+
+
+        if(gamepad1.left_bumper){
+            dan.spinner.setPower(1);
+        } else if (gamepad1.right_bumper){
+            dan.spinner.setPower(-1);
+        } else {
+            dan.spinner.setPower(0);
+        }
 
         telemetry.update();
     }

@@ -53,11 +53,7 @@ public class EncoderChecker extends OpMode
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
-    private DcMotor leftMotor = null;
-    private DcMotor rightMotor = null;
-
-    private DcMotor spinner = null;
-    private DcMotor shooter = null;
+    private Robot dan = new Robot();
 
 
     /* Code to run ONCE when the driver hits INIT */
@@ -66,26 +62,12 @@ public class EncoderChecker extends OpMode
 
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
-        leftMotor  = hardwareMap.dcMotor.get("left motor");
-        rightMotor = hardwareMap.dcMotor.get("right motor");
-        shooter = hardwareMap.dcMotor.get("shooter");
-        spinner = hardwareMap.dcMotor.get("spinner");
-
-
-        // eg: Set the drive motor directions:
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        spinner.setDirection(DcMotor.Direction.FORWARD);
-        shooter.setDirection(DcMotor.Direction.FORWARD);
+        dan.setupHardware(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
 
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //Set up the encoders to be used
+        dan.resetEncoders();
 
         telemetry.addData("Status", "Initialized");
     }
@@ -108,40 +90,27 @@ public class EncoderChecker extends OpMode
     @Override
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
-        telemetry.addData("Right Motor", rightMotor.getPower());
-        telemetry.addData("Left Motor", leftMotor.getPower());
-        telemetry.addData("Spinner", spinner.getPower());
+        telemetry.addData("Right Motor", dan.rightMotor.getPower());
+        telemetry.addData("Left Motor", dan.leftMotor.getPower());
+        telemetry.addData("Spinner", dan.spinner.getPower());
 
-        telemetry.addData("Right Motor", rightMotor.getCurrentPosition());
-        telemetry.addData("Left Motor", leftMotor.getCurrentPosition());
+        telemetry.addData("Right Motor", dan.rightMotor.getCurrentPosition());
+        telemetry.addData("Left Motor", dan.leftMotor.getCurrentPosition());
 
         // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-        leftMotor.setPower(-gamepad1.left_stick_y);
-        rightMotor.setPower(-gamepad1.right_stick_y);
+        dan.leftMotor.setPower(-gamepad1.left_stick_y);
+        dan.rightMotor.setPower(-gamepad1.right_stick_y);
 
         if(gamepad1.left_bumper){
-            spinner.setPower(1);
+            dan.spinner.setPower(1);
         } else if (gamepad1.right_bumper){
-            spinner.setPower(-1);
+            dan.spinner.setPower(-1);
         } else {
-            spinner.setPower(0);
-        }
-
-        // shooter code
-        // true is on false is off
-        if(gamepad1.a) {
-            shooter.setPower(1);
-        }
-
-        if(gamepad1.b){
-            shooter.setPower(0);
+            dan.spinner.setPower(0);
         }
 
         if(gamepad1.x){
-            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            dan.resetEncoders();
         }
 
     }
@@ -150,12 +119,7 @@ public class EncoderChecker extends OpMode
     /* Code to run ONCE after the driver hits STOP */
     @Override
     public void stop() {
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
-        spinner.setPower(0);
-        shooter.setPower(0);
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        dan.stopMoving();
     }
 
 }
