@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Hardware;
 
 
 /*
@@ -58,20 +59,8 @@ public class DadDriver extends OpMode
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
-    private DcMotor leftMotor = null;
-    private DcMotor rightMotor = null;
 
-    private DcMotor spinner = null;
-    private DcMotor shooter = null;
-
-    // uninplemented claw objects
-    //private CRServo leftClaw = null;
-    //private CRServo rightClaw = null;
-
-    // shooter variables
-    private double endTime = 0;
-    private final double revolutionTime = 0.349;
-
+    private Robot dan = new Robot();
 
 
     /* Code to run ONCE when the driver hits INIT */
@@ -80,31 +69,9 @@ public class DadDriver extends OpMode
 
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
-        leftMotor  = hardwareMap.dcMotor.get("left motor");
-        rightMotor = hardwareMap.dcMotor.get("right motor");
 
-        shooter = hardwareMap.dcMotor.get("shooter");
-        spinner = hardwareMap.dcMotor.get("spinner");
+        dan.setupHardware(hardwareMap);
 
-        //leftClaw = hardwareMap.crservo.get("left claw");
-        //rightClaw = hardwareMap.crservo.get("right claw");
-
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-
-        spinner.setDirection(DcMotor.Direction.FORWARD);
-        shooter.setDirection(DcMotor.Direction.FORWARD);
-
-        //leftClaw.setDirection(CRServo.Direction.FORWARD);
-        //rightClaw.setDirection(CRServo.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -127,90 +94,42 @@ public class DadDriver extends OpMode
     @Override
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
-        telemetry.addData("Right Motor", rightMotor.getPower());
-        telemetry.addData("Left Motor", leftMotor.getPower());
-        telemetry.addData("Spinner", spinner.getPower());
-        //telemetry.addData("Left Claw", leftClaw.getPower());
+        telemetry.addData("Right Motor", dan.rightMotor.getPower());
+        telemetry.addData("Left Motor", dan.leftMotor.getPower());
+        telemetry.addData("Spinner", dan.spinner.getPower());
+        telemetry.addData("Flywheel", dan.flywheel.getPower());
+
         //telemetry.addData("Right Claw", rightClaw.getPower());
 
 
         // Drivetrain code (note: The joystick goes negative when pushed forwards)
-        leftMotor.setPower(-gamepad1.left_stick_y);
-        rightMotor.setPower(-gamepad1.right_stick_y);
+        dan.leftMotor.setPower(-gamepad1.left_stick_y);
+        dan.rightMotor.setPower(-gamepad1.right_stick_y);
+
 
         if(gamepad1.left_bumper){
-            spinner.setPower(1);
+            dan.spinner.setPower(1);
         } else if (gamepad1.right_bumper){
-            spinner.setPower(-1);
+            dan.spinner.setPower(-1);
         } else {
-            spinner.setPower(0);
+            dan.spinner.setPower(0);
         }
 
-        // shooter code
-        if(gamepad1.a) {
-            endTime = getRuntime() + revolutionTime;
+        if(gamepad1.a){
+            dan.flywheel.setPower(1);
         }
 
-        if(getRuntime() < endTime){
-            shooter.setPower(1);
-        } else {
-            shooter.setPower(0);
+        if(gamepad1.b) {
+            dan.flywheel.setPower(0);
         }
 
-        /* unimplemented claw objects
-        if (gamepad2.a){
-            leftClaw.setPower(0.5);
-            rightClaw.setPower(0.5);
-        }
-
-        if (gamepad2.b) {
-            clawMotorsLow();
-        }
-
-        if (gamepad2.x){
-            leftClaw.setPower(-0.5);
-            rightClaw.setPower(-0.5);
-        }
-
-        if(gamepad2.right_trigger >= 0.1) {
-            leftClaw.setPower(gamepad2.right_trigger);
-            rightClaw.setPower(gamepad2.right_trigger);
-        }
-
-        if(gamepad2.left_trigger >= 0.1) {
-            leftClaw.setPower(-gamepad2.left_trigger);
-            rightClaw.setPower(-gamepad2.left_trigger);
-        }
-
-
-        if (gamepad2.dpad_up){
-            leftClaw.setPower(1);
-            rightClaw.setPower(1);
-        }
-        if (gamepad2.dpad_down) {
-            leftClaw.setPower(1);
-            rightClaw.setPower(1);
-        }
-        if (gamepad2.x) {
-            leftClaw.setPower(0);
-            rightClaw.setPower(0);
-        }
-        */
     }
 
 
     /* Code to run ONCE after the driver hits STOP */
     @Override
     public void stop() {
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
-        spinner.setPower(0);
-        shooter.setPower(0);
-    }
-
-    private void clawMotorsLow() {
-        //leftClaw.setPower(0);
-        //nirightClaw.setPower(0);
+        dan.stopMoving();
     }
 
 }

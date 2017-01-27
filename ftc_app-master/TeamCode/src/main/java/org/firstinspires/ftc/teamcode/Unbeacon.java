@@ -58,21 +58,13 @@ public class Unbeacon extends LinearOpMode {
     /* Declare OpMode hardware. */
     private ElapsedTime runtime = new ElapsedTime();
 
-    private DcMotor leftMotor = null;
-    private DcMotor rightMotor = null;
-
-    private DcMotor spinner = null;
-    private DcMotor shooter = null;
-
-    //private CRServo leftClaw = null;
-    //private CRServo rightClaw = null;
+    private Robot dan = new Robot();
 
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
     final int MOTOR_GEAR_RATIO = 80;
     final int FULL_REVOLUTION = 1200;
-    final int FLOOR_BLOCK = 2292;
-    //final int FLOOR_TILE = x;
+    final int FLOOR_BLOCK = 2300;
     //final int QUARTER_TURN = x;
 
     @Override
@@ -80,33 +72,11 @@ public class Unbeacon extends LinearOpMode {
 
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
-        leftMotor  = hardwareMap.dcMotor.get("left motor");
-        rightMotor = hardwareMap.dcMotor.get("right motor");
 
-        shooter = hardwareMap.dcMotor.get("shooter");
-        spinner = hardwareMap.dcMotor.get("spinner");
-
-        //leftClaw = hardwareMap.crservo.get("left claw");
-        //rightClaw = hardwareMap.crservo.get("right claw");
-
-        // Set the drive motor directions
-        leftMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        spinner.setDirection(DcMotor.Direction.FORWARD);
-        shooter.setDirection(DcMotor.Direction.FORWARD);
+        dan.setupHardware(hardwareMap);
 
         /* Prepare the encoders to be used */
-        //Reset their values
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //Set their modes.
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        dan.resetEncoders();
 
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
@@ -120,26 +90,20 @@ public class Unbeacon extends LinearOpMode {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
 
         //Set the target distance to travel (to the ball)
-        leftMotor.setTargetPosition((int)(5 * FLOOR_BLOCK));
-        rightMotor.setTargetPosition((int)(5 * FLOOR_BLOCK));
+        dan.leftMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
+        dan.rightMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
 
         //Run to the ball until it gets to the target distance.
-        while (!(leftMotor.getCurrentPosition() >= leftMotor.getTargetPosition() - 10 && leftMotor.getCurrentPosition() <= leftMotor.getTargetPosition() + 10)) {
-            leftMotor.setPower(1);
-            rightMotor.setPower(1);
+        while (!(dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10)) {
+            dan.drivetrainPower(1);
 
-            telemetry.addData("Right Motor Posn", leftMotor.getCurrentPosition());
-            telemetry.addData("Left Motor Posn", rightMotor.getCurrentPosition());
+            telemetry.addData("Right Motor Posn", dan.leftMotor.getCurrentPosition());
+            telemetry.addData("Left Motor Posn", dan.rightMotor.getCurrentPosition());
             telemetry.update();
         }
 
         //Stop
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
-
-        //Reset Encoders
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        dan.stopMoving();
 
         telemetry.update();
     }
