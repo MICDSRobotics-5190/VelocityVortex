@@ -59,13 +59,10 @@ import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Mat;
 import org.opencv.core.CvType;
 import org.opencv.imgproc.Imgproc;
-<<<<<<< HEAD
 import org.opencv.core.CvType;
-=======
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
->>>>>>> 025181b47ea4e318efcecedfbe604ed390b65186
 
 import java.util.ArrayList;
 import java.util.List;
