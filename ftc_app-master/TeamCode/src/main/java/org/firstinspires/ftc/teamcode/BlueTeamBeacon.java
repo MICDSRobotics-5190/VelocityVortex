@@ -74,7 +74,6 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
 
     //Parts of the autonomous program
     private int step = 1;
-    private boolean encodersInPosition;
 
     //Frames for OpenCV (Immediate Setup for OpenCV)
     int frameCount = 0;
@@ -192,15 +191,12 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
             telemetry.addData("Right Motor Posn", dan.leftMotor.getCurrentPosition());
             telemetry.addData("Left Motor Posn", dan.rightMotor.getCurrentPosition());
 
-            encodersInPosition = (dan.rightMotor.getCurrentPosition() >= dan.rightMotor.getTargetPosition() - 10
-                    && dan.rightMotor.getCurrentPosition() <= dan.rightMotor.getTargetPosition() + 10);
-
             if (step == 1) {
 
                 dan.leftMotor.setTargetPosition(FLOOR_BLOCK);
                 dan.rightMotor.setTargetPosition(FLOOR_BLOCK);
 
-                if (encodersInPosition) {
+                if (encodersInPosition()) {
 
                     step = 2;
 
@@ -218,7 +214,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 dan.leftMotor.setTargetPosition(1 * FULL_REVOLUTION);
                 dan.rightMotor.setTargetPosition(-1 * FULL_REVOLUTION);
 
-                if (encodersInPosition) {
+                if (encodersInPosition()) {
 
                     step = 3;
 
@@ -237,7 +233,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 dan.leftMotor.setTargetPosition(FLOOR_BLOCK);
                 dan.rightMotor.setTargetPosition(FLOOR_BLOCK);
 
-                if (encodersInPosition) {
+                if (encodersInPosition()) {
 
                     step = 4;
 
@@ -255,7 +251,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 dan.leftMotor.setTargetPosition(-1 * FULL_REVOLUTION);
                 dan.rightMotor.setTargetPosition(1 * FULL_REVOLUTION);
 
-                if (encodersInPosition) {
+                if (encodersInPosition()) {
 
                     step = 6;
 
@@ -274,7 +270,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 dan.leftMotor.setTargetPosition(3 * FLOOR_BLOCK);
                 dan.rightMotor.setTargetPosition(3 * FLOOR_BLOCK);
 
-                if (encodersInPosition) {
+                if (encodersInPosition()) {
 
                     step = 6;
 
@@ -292,7 +288,7 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                 dan.leftMotor.setTargetPosition(1 * FULL_REVOLUTION);
                 dan.rightMotor.setTargetPosition(-1 * FULL_REVOLUTION);
 
-                if (encodersInPosition) {
+                if (encodersInPosition()) {
 
                     step = 7;
 
@@ -305,8 +301,6 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
                     dan.leftMotor.setPower(1);
                     dan.rightMotor.setPower(-1);
                 }
-
-                step = 7;
 
             } else if (step == 7) {
 
@@ -359,6 +353,11 @@ public class BlueTeamBeacon extends LinearVisionOpMode {
     //Necessary for using Vuforia and outputting location matrices.
     String format(OpenGLMatrix transformationMatrix) {
         return transformationMatrix.formatAsTransform();
+    }
+
+    boolean encodersInPosition(){
+        return (dan.rightMotor.getCurrentPosition() >= dan.rightMotor.getTargetPosition() - 10
+                && dan.rightMotor.getCurrentPosition() <= dan.rightMotor.getTargetPosition() + 10);
     }
 
 }
