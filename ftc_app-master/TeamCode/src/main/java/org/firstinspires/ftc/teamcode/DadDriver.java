@@ -123,6 +123,14 @@ public class DadDriver extends OpMode
             dan.flywheel.setPower(0);
         }
 
+        if(gamepad1.left_trigger > 0.1){
+            dan.beaconSlider.setPower(gamepad1.left_trigger);
+        } else if (gamepad1.right_trigger > 0.1){
+            dan.beaconSlider.setPower(-gamepad1.right_trigger);
+        } else {
+            dan.beaconSlider.setPower(0);
+        }
+
     }
 
 
