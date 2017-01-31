@@ -317,16 +317,17 @@ public class VuforiaBeaconTest extends LinearOpMode {
         this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
 
-        /*
+
         if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.context, mOpenCVCallBack))
         {
+            mOpenCVCallBack.onManagerConnected(LoaderCallbackInterface.SUCCESS);
             telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager.");
         } else {
             Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
             Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
             telemetry.addData("OpenCV", "Working!");
         }
-        */
+
 
 
         telemetry.addData("Status", "Initialized!");
@@ -389,12 +390,9 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.update();
                 sleep(3000);
 
-<<<<<<< HEAD
                 Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
                 Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
 
-=======
->>>>>>> 025181b47ea4e318efcecedfbe604ed390b65186
                 colorPicture.put(rgb.getHeight(), rgb.getWidth(), pixelArray);
 
                 telemetry.addData("Status", "Before converting");
