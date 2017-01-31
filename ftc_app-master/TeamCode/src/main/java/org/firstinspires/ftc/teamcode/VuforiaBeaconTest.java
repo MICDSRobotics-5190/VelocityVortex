@@ -316,18 +316,13 @@ public class VuforiaBeaconTest extends LinearOpMode {
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
         this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
+        mOpenCVCallBack.onManagerConnected(LoaderCallbackInterface.SUCCESS);
 
 
-        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.context, mOpenCVCallBack))
+        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack))
         {
-            mOpenCVCallBack.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-            telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager.");
-        } else {
-            Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
-            Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
-            telemetry.addData("OpenCV", "Working!");
+            telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
         }
-
 
 
         telemetry.addData("Status", "Initialized!");
@@ -379,8 +374,8 @@ public class VuforiaBeaconTest extends LinearOpMode {
             }
 
             if(rgb != null){
-                /*
-                ByteBuffer pixelData = ByteBuffer.allocate(5000000);
+
+                ByteBuffer pixelData = ByteBuffer.allocate(4000000);
 
                 pixelData.put(rgb.getPixels().duplicate());
 
@@ -399,7 +394,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.update();
                 sleep(3000);
 
-                //Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+                Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
 
                 telemetry.addData("Channels", colorPicture.channels());
                 telemetry.addData("Width", colorPicture.width());
@@ -417,7 +412,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.addData("Left", analysis.getStateLeft());
                 telemetry.addData("Right", analysis.getStateRight());
                 telemetry.update();
-                */
+
             }
 
             idle(); // OpenCV broke idle, we could troubleshoot later. Basically check LinearOpMode and LinearVisionOpmode.
@@ -429,7 +424,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
         return transformationMatrix.formatAsTransform();
     }
 
-    private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(FtcRobotControllerActivity.context) {
+    private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(FtcRobotControllerActivity.getAppContext()) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
