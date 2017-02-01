@@ -385,6 +385,8 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.update();
                 sleep(3000);
 
+		//Currently the error is from an incorrect number on CvType. We could easily just try them all, but let's try whichever one corresponds to 3 next (for 3 channels). I don't know if these would be the same or not given that one is colored while the other is grayscale/
+
                 Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
                 Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
 
