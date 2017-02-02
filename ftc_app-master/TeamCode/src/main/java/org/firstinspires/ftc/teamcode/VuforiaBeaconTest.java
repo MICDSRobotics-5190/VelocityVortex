@@ -103,7 +103,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
      */
     VuforiaLocalizer vuforia;
 
-    Beacon beacon;
+    Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
 
     Mat colorPicture = null;
     Mat grayPicture = null;
@@ -326,6 +326,8 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
             }
 
+        } else {
+            telemetry.addData("OpenCV", "Loaded from initDebug!");
         }
 
         telemetry.addData("Status", "Initialized!");
@@ -378,22 +380,20 @@ public class VuforiaBeaconTest extends LinearOpMode {
 
             if(rgb != null){
 
-                ByteBuffer pixelData = ByteBuffer.allocate(4000000);
+                ByteBuffer pixelData = ByteBuffer.allocate(rgb.getPixels().capacity());
 
                 pixelData.put(rgb.getPixels().duplicate());
 
                 byte[] pixelArray = pixelData.array();
 
-                telemetry.addData("Status", "Before Mat putting");
-                telemetry.update();
-                sleep(3000);
+		        // Currently the error is from an incorrect number on CvType.
+                // We could easily just try them all, but let's try whichever one corresponds to 3 next (for 3 channels).
+                // I don't know if these would be the same or not given that one is colored while the other is grayscale/
 
-		//Currently the error is from an incorrect number on CvType. We could easily just try them all, but let's try whichever one corresponds to 3 next (for 3 channels). I don't know if these would be the same or not given that one is colored while the other is grayscale/
+                Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC3);
+                Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC1);
 
-                Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
-                Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
-
-                colorPicture.put(rgb.getHeight(), rgb.getWidth(), pixelArray);
+                colorPicture.put(0, 0, pixelArray);
 
                 telemetry.addData("Status", "Before converting");
                 telemetry.update();
@@ -406,11 +406,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.addData("Height", colorPicture.height());
                 telemetry.addData("Depth", colorPicture.depth());
                 telemetry.update();
-                sleep(10000);
-
-                telemetry.addData("Status", "Before frameanalysis");
-                telemetry.update();
-                sleep(3000);
+                sleep(5000);
 
                 Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
 
