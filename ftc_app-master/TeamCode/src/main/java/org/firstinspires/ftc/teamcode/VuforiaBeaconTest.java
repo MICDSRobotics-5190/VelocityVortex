@@ -103,7 +103,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
      */
     VuforiaLocalizer vuforia;
 
-    Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
+    Beacon beacon;
 
     Mat colorPicture = null;
     Mat grayPicture = null;
@@ -322,7 +322,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
 
         if(!OpenCVLoader.initDebug()) {
 
-            if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack)) {
+            if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack)) {
                 telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
             }
 
@@ -406,13 +406,17 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 telemetry.addData("Height", colorPicture.height());
                 telemetry.addData("Depth", colorPicture.depth());
                 telemetry.update();
-                sleep(5000);
+                sleep(2000);
+
+                Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
 
                 Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
 
                 telemetry.addData("Left", analysis.getStateLeft());
                 telemetry.addData("Right", analysis.getStateRight());
                 telemetry.update();
+
+                sleep(5000);
 
             }
 
