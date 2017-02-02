@@ -133,6 +133,12 @@ public class VuforiaAutonomous extends LinearOpMode {
     //Frames for OpenCV (Immediate Setup for OpenCV)
     private int frameCount = 0;
 
+    private Position currentPosition;
+
+    private Image rgb = null;
+    private int count = 0;
+    private long numImages;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -148,7 +154,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         boolean blueRight = false;
         boolean redRight = false;
 
-        //Vuforia Setup (OpenCV Setup?)
+        //Vuforia Camera & Frame-queue Setup
         /**
          * Start up Vuforia, telling it the id of the view that we wish to use as the parent for
          * the camera monitor feedback. We chose the back camera, however the front could
@@ -346,14 +352,13 @@ public class VuforiaAutonomous extends LinearOpMode {
         ((VuforiaTrackableDefaultListener)legos.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
         ((VuforiaTrackableDefaultListener)gears.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
 
-        Image rgb = null;
-        int count = 0;
-        long numImages;
+
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
         this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
         Looper.prepare();
 
+        //OpenCV Loader
         if(!OpenCVLoader.initDebug()) {
 
             if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack)) {
@@ -378,28 +383,8 @@ public class VuforiaAutonomous extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            for (VuforiaTrackable trackable : allTrackables) {
-                /**
-                 * getUpdatedRobotLocation() will return null if no new information is available since
-                 * the last time that call was made, or if the trackable is not currently visible.
-                 * getRobotLocation() will return null if the trackable is not currently visible.
-                 */
-                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
-
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
-                }
-            }
-            /**
-             * Provide feedback as to where the robot was last located (if we know).
-             */
-            if (lastLocation != null) {
-                //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
-                telemetry.addData("Pos", format(lastLocation));
-            } else {
-                telemetry.addData("Pos", "Unknown");
-            }
+            //Checking Position with Vuforia
+            currentPosition = getCurrentPosition();
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 
@@ -473,58 +458,6 @@ public class VuforiaAutonomous extends LinearOpMode {
                 }
             } else if (step == 6){
 
-                CloseableFrame rawFrame = vuforia.getFrameQueue().take();
-
-                numImages = rawFrame.getNumImages();
-                for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
-                    if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
-                        rgb = rawFrame.getImage(i);
-                        break;
-                    }
-                }
-
-                if(rgb != null){
-
-                    ByteBuffer pixelData = ByteBuffer.allocate(rgb.getPixels().capacity());
-
-                    pixelData.put(rgb.getPixels().duplicate());
-
-                    byte[] pixelArray = pixelData.array();
-
-                    // Currently the error is from an incorrect number on CvType.
-                    // We could easily just try them all, but let's try whichever one corresponds to 3 next (for 3 channels).
-                    // I don't know if these would be the same or not given that one is colored while the other is grayscale/
-
-                    Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC3);
-                    Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC1);
-
-                    colorPicture.put(0, 0, pixelArray);
-
-                    telemetry.addData("Status", "Before converting");
-                    telemetry.update();
-                    sleep(3000);
-
-                    Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
-
-                    telemetry.addData("Channels", colorPicture.channels());
-                    telemetry.addData("Width", colorPicture.width());
-                    telemetry.addData("Height", colorPicture.height());
-                    telemetry.addData("Depth", colorPicture.depth());
-                    telemetry.update();
-                    sleep(2000);
-
-                    Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
-
-                    Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
-
-                    telemetry.addData("Left", analysis.getStateLeft());
-                    telemetry.addData("Right", analysis.getStateRight());
-                    telemetry.update();
-
-                    sleep(5000);
-
-                }
-
 
             } else if (step == 7){
 
@@ -562,5 +495,82 @@ public class VuforiaAutonomous extends LinearOpMode {
             }
         }
     };
+
+    Position getCurrentPosition() {
+        for (VuforiaTrackable trackable : allTrackables) {
+            /**
+             * getUpdatedRobotLocation() will return null if no new information is available since
+             * the last time that call was made, or if the trackable is not currently visible.
+             * getRobotLocation() will return null if the trackable is not currently visible.
+             */
+            telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
+
+            OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+            if (robotLocationTransform != null) {
+                lastLocation = robotLocationTransform;
+            }
+        }
+        /**
+         * Provide feedback as to where the robot was last located (if we know).
+         */
+        if (lastLocation != null) {
+            //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
+            telemetry.addData("Pos", format(lastLocation));
+        } else {
+            telemetry.addData("Pos", "Unknown");
+        }
+
+        return Position(lastLocation.getData())
+    }
+
+    Beacon.BeaconAnalysis getBeaconStates() throws InterruptedException {
+
+        CloseableFrame rawFrame = vuforia.getFrameQueue().take();
+
+        numImages = rawFrame.getNumImages();
+        for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
+            if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
+                rgb = rawFrame.getImage(i);
+                break;
+            }
+        }
+
+        if(rgb != null){
+
+            ByteBuffer pixelData = ByteBuffer.allocate(rgb.getPixels().capacity());
+
+            pixelData.put(rgb.getPixels().duplicate());
+
+            byte[] pixelArray = pixelData.array();
+
+            // Currently the error is from an incorrect number on CvType.
+            // We could easily just try them all, but let's try whichever one corresponds to 3 next (for 3 channels).
+            // I don't know if these would be the same or not given that one is colored while the other is grayscale/
+
+            Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC3);
+            Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC1);
+
+            colorPicture.put(0, 0, pixelArray);
+
+            Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+
+            Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
+
+            return beacon.analyzeFrame(colorPicture, grayPicture);
+
+        } else {
+            rawFrame = vuforia.getFrameQueue().take();
+
+            numImages = rawFrame.getNumImages();
+            for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
+                if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
+                    rgb = rawFrame.getImage(i);
+                    break;
+                }
+            }
+        }
+
+        return null;
+    }
 
 }
