@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.os.Looper;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -316,14 +318,15 @@ public class VuforiaBeaconTest extends LinearOpMode {
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
         this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
-        mOpenCVCallBack.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        Looper.prepare();
 
+        if(!OpenCVLoader.initDebug()) {
 
-        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack))
-        {
-            telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
+            if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack)) {
+                telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
+            }
+
         }
-
 
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
