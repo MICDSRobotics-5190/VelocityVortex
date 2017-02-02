@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.os.Looper;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -41,6 +43,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -48,6 +51,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -63,17 +67,23 @@ import com.vuforia.Vuforia;
 import com.vuforia.Frame;
 import com.vuforia.State;
 
-import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
-//import org.lasarobotics.vision.opmode.LinearVisionOpMode;
-import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
-import org.lasarobotics.vision.util.ScreenOrientation;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
-import java.util.List;
+import org.opencv.core.Mat;
+import org.opencv.core.CvType;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.core.CvType;
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 import java.util.ArrayList;
+import java.util.List;
+
+import java.lang.Object;
+import java.nio.ByteBuffer;
+import java.nio.ByteBuffer.*;
+import java.nio.Buffer;
 
 /*
  * This file is the linear Op-Mode made for the non-driver controlled
@@ -112,6 +122,9 @@ public class VuforiaAutonomous extends LinearOpMode {
     VuforiaLocalizer vuforia;
 
     Beacon beacon;
+
+    Mat colorPicture = null;
+    Mat grayPicture = null;
 
     //Parts of the autonomous program
     private int step = 1;
@@ -339,6 +352,18 @@ public class VuforiaAutonomous extends LinearOpMode {
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
         this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
+        Looper.prepare();
+
+        if(!OpenCVLoader.initDebug()) {
+
+            if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack)) {
+                telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
+            }
+
+        } else {
+            telemetry.addData("OpenCV", "Loaded from initDebug!");
+        }
+
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
 
@@ -376,6 +401,8 @@ public class VuforiaAutonomous extends LinearOpMode {
                 telemetry.addData("Pos", "Unknown");
             }
 
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+
             //dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
             //dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
 
@@ -385,12 +412,8 @@ public class VuforiaAutonomous extends LinearOpMode {
             telemetry.addData("Right Motor Posn", dan.leftMotor.getCurrentPosition());
             telemetry.addData("Left Motor Posn", dan.rightMotor.getCurrentPosition());
 
-            encodersInPosition = (dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10
-                    && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10);
+            //VUFORIA SCAN; BASED ON THE IMAGES, RUN RED MOVEMENTS OR BLUE MOVEMENTS
 
-            //Vuforia Scan and run either blue or red autonomous + extra position checking
-
-            /*
             if(step == 1) {
 
                 dan.drivetrainPower(1);
@@ -452,27 +475,61 @@ public class VuforiaAutonomous extends LinearOpMode {
 
                 CloseableFrame rawFrame = vuforia.getFrameQueue().take();
 
-                Frame trueFrame = rawFrame.clone();
+                numImages = rawFrame.getNumImages();
+                for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
+                    if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
+                        rgb = rawFrame.getImage(i);
+                        break;
+                    }
+                }
 
-                Image rawPicture = trueFrame.getImage(trueFrame.getIndex());
+                if(rgb != null){
 
-                byte[] pixelData = rawPicture.getPixels().array();
+                    ByteBuffer pixelData = ByteBuffer.allocate(rgb.getPixels().capacity());
 
-                Mat colorPicture = new Mat();
+                    pixelData.put(rgb.getPixels().duplicate());
 
-                Mat grayPicture = new Mat();
+                    byte[] pixelArray = pixelData.array();
 
-                colorPicture.put(rawPicture.getHeight(), rawPicture.getWidth(), pixelData);
+                    // Currently the error is from an incorrect number on CvType.
+                    // We could easily just try them all, but let's try whichever one corresponds to 3 next (for 3 channels).
+                    // I don't know if these would be the same or not given that one is colored while the other is grayscale/
 
-                Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+                    Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC3);
+                    Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC1);
 
-                Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
+                    colorPicture.put(0, 0, pixelArray);
+
+                    telemetry.addData("Status", "Before converting");
+                    telemetry.update();
+                    sleep(3000);
+
+                    Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+
+                    telemetry.addData("Channels", colorPicture.channels());
+                    telemetry.addData("Width", colorPicture.width());
+                    telemetry.addData("Height", colorPicture.height());
+                    telemetry.addData("Depth", colorPicture.depth());
+                    telemetry.update();
+                    sleep(2000);
+
+                    Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
+
+                    Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
+
+                    telemetry.addData("Left", analysis.getStateLeft());
+                    telemetry.addData("Right", analysis.getStateRight());
+                    telemetry.update();
+
+                    sleep(5000);
+
+                }
 
 
             } else if (step == 7){
 
             }
-            */
+
 
             telemetry.update();
 
@@ -484,5 +541,26 @@ public class VuforiaAutonomous extends LinearOpMode {
     String format(OpenGLMatrix transformationMatrix) {
         return transformationMatrix.formatAsTransform();
     }
+
+    boolean encodersInPosition(){
+        return (dan.rightMotor.getCurrentPosition() >= dan.rightMotor.getTargetPosition() - 10
+                && dan.rightMotor.getCurrentPosition() <= dan.rightMotor.getTargetPosition() + 10);
+    }
+
+    private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(FtcRobotControllerActivity.getAppContext()) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    telemetry.addData("OpenCV", "OpenCV loaded successfully");
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
 
 }

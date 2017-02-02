@@ -429,6 +429,8 @@ public class VuforiaBeaconTest extends LinearOpMode {
         return transformationMatrix.formatAsTransform();
     }
 
+
+
     private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(FtcRobotControllerActivity.getAppContext()) {
         @Override
         public void onManagerConnected(int status) {
