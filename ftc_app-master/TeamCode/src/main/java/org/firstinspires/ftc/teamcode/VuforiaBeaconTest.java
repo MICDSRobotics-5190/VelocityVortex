@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.os.Looper;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -316,19 +318,17 @@ public class VuforiaBeaconTest extends LinearOpMode {
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
         this.vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
 
+        Looper.prepare();
 
+        if(!OpenCVLoader.initDebug()) {
 
-        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, FtcRobotControllerActivity.context, mOpenCVCallBack))
-        {
-            mOpenCVCallBack.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-            telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager.");
+            if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack)) {
+                telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
+            }
+
         } else {
-            Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
-            Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
-            telemetry.addData("OpenCV", "Working!");
+            telemetry.addData("OpenCV", "Loaded from initDebug!");
         }
-
-
 
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
@@ -379,45 +379,45 @@ public class VuforiaBeaconTest extends LinearOpMode {
             }
 
             if(rgb != null){
-                /*
-                ByteBuffer pixelData = ByteBuffer.allocate(5000000);
+
+                ByteBuffer pixelData = ByteBuffer.allocate(rgb.getPixels().capacity());
 
                 pixelData.put(rgb.getPixels().duplicate());
 
                 byte[] pixelArray = pixelData.array();
 
-                telemetry.addData("Status", "Before Mat putting");
-                telemetry.update();
-                sleep(3000);
+		        // Currently the error is from an incorrect number on CvType.
+                // We could easily just try them all, but let's try whichever one corresponds to 3 next (for 3 channels).
+                // I don't know if these would be the same or not given that one is colored while the other is grayscale/
 
-                Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
-                Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_32F);
+                Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC3);
+                Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC1);
 
-                colorPicture.put(rgb.getHeight(), rgb.getWidth(), pixelArray);
+                colorPicture.put(0, 0, pixelArray);
 
                 telemetry.addData("Status", "Before converting");
                 telemetry.update();
                 sleep(3000);
 
-                //Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+                Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
 
                 telemetry.addData("Channels", colorPicture.channels());
                 telemetry.addData("Width", colorPicture.width());
                 telemetry.addData("Height", colorPicture.height());
                 telemetry.addData("Depth", colorPicture.depth());
                 telemetry.update();
-                sleep(10000);
+                sleep(2000);
 
-                telemetry.addData("Status", "Before frameanalysis");
-                telemetry.update();
-                sleep(3000);
+                Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
 
                 Beacon.BeaconAnalysis analysis = beacon.analyzeFrame(colorPicture, grayPicture);
 
                 telemetry.addData("Left", analysis.getStateLeft());
                 telemetry.addData("Right", analysis.getStateRight());
                 telemetry.update();
-                */
+
+                sleep(5000);
+
             }
 
             idle(); // OpenCV broke idle, we could troubleshoot later. Basically check LinearOpMode and LinearVisionOpmode.
@@ -429,7 +429,7 @@ public class VuforiaBeaconTest extends LinearOpMode {
         return transformationMatrix.formatAsTransform();
     }
 
-    private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(FtcRobotControllerActivity.context) {
+    private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(FtcRobotControllerActivity.getAppContext()) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
