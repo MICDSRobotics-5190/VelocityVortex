@@ -133,8 +133,6 @@ public class VuforiaAutonomous extends LinearOpMode {
     //Frames for OpenCV (Immediate Setup for OpenCV)
     private int frameCount = 0;
 
-    private Position currentPosition;
-
     private Image rgb = null;
     private int count = 0;
     private long numImages;
@@ -369,6 +367,8 @@ public class VuforiaAutonomous extends LinearOpMode {
             telemetry.addData("OpenCV", "Loaded from initDebug!");
         }
 
+        Beacon.BeaconAnalysis beaconStates = null;
+
         telemetry.addData("Status", "Initialized!");
         telemetry.update();
 
@@ -383,12 +383,33 @@ public class VuforiaAutonomous extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            //Checking Position with Vuforia
-            currentPosition = getCurrentPosition();
+            for (VuforiaTrackable trackable : allTrackables) {
+                /**
+                 * getUpdatedRobotLocation() will return null if no new information is available since
+                 * the last time that call was made, or if the trackable is not currently visible.
+                 * getRobotLocation() will return null if the trackable is not currently visible.
+                 */
+                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
 
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform;
+                }
+            }
+            /**
+             * Provide feedback as to where the robot was last located (if we know).
+             */
+            if (lastLocation != null) {
+                //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
+                telemetry.addData("Pos", format(lastLocation));
+                telemetry.addData("Vector", lastLocation.toVector().getData().length);
 
-            //dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+            } else {
+                telemetry.addData("Pos", "Unknown");
+            }
+
+
+            //dan.leftsMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
             //dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
 
             //Setting up some output for the user to see. (Usually for troubleshooting)
@@ -399,6 +420,7 @@ public class VuforiaAutonomous extends LinearOpMode {
 
             //VUFORIA SCAN; BASED ON THE IMAGES, RUN RED MOVEMENTS OR BLUE MOVEMENTS
 
+            /*
             if(step == 1) {
 
                 dan.drivetrainPower(1);
@@ -458,10 +480,12 @@ public class VuforiaAutonomous extends LinearOpMode {
                 }
             } else if (step == 6){
 
+                beaconStates = getBeaconStates();
 
             } else if (step == 7){
 
             }
+            */
 
 
             telemetry.update();
@@ -495,33 +519,6 @@ public class VuforiaAutonomous extends LinearOpMode {
             }
         }
     };
-
-    Position getCurrentPosition() {
-        for (VuforiaTrackable trackable : allTrackables) {
-            /**
-             * getUpdatedRobotLocation() will return null if no new information is available since
-             * the last time that call was made, or if the trackable is not currently visible.
-             * getRobotLocation() will return null if the trackable is not currently visible.
-             */
-            telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
-
-            OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-            if (robotLocationTransform != null) {
-                lastLocation = robotLocationTransform;
-            }
-        }
-        /**
-         * Provide feedback as to where the robot was last located (if we know).
-         */
-        if (lastLocation != null) {
-            //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
-            telemetry.addData("Pos", format(lastLocation));
-        } else {
-            telemetry.addData("Pos", "Unknown");
-        }
-
-        return Position(lastLocation.getData())
-    }
 
     Beacon.BeaconAnalysis getBeaconStates() throws InterruptedException {
 
