@@ -405,17 +405,14 @@ public class VuforiaAutonomous extends LinearOpMode {
             if (lastLocation != null) {
                 //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
                 telemetry.addData("Pos", format(lastLocation));
+
                 VectorF transformation = lastLocation.getTranslation();
                 Orientation angle = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+
                 float bearing = angle.thirdAngle;
-
-                telemetry.addData("X", transformation.get(0));
-                telemetry.addData("Y", transformation.get(1));
-
-                telemetry.addData("Bearing", bearing);
-
                 currentPosition = new Position(DistanceUnit.MM, (double)transformation.get(0), (double)transformation.get(1), (double)transformation.get(2), (long)getRuntime());
 
+                telemetry.addData("Bearing", bearing);
                 telemetry.addData("Position", currentPosition.toString());
 
             } else {
@@ -432,7 +429,21 @@ public class VuforiaAutonomous extends LinearOpMode {
             telemetry.addData("Right Motor Posn", dan.leftMotor.getCurrentPosition());
             telemetry.addData("Left Motor Posn", dan.rightMotor.getCurrentPosition());
 
+            Beacon.BeaconAnalysis analysis = getBeaconStates();
+
+            telemetry.addData("Left side", analysis.getStateLeft().toString());
+            telemetry.addData("Right side", analysis.getStateRight().toString());
+
             //VUFORIA SCAN; BASED ON THE IMAGES, RUN RED MOVEMENTS OR BLUE MOVEMENTS
+            //Wheels on blue side near ramp,
+            //Legos on blue side away from ramp,
+            //Tools on red side away from rmap,
+            //Gears on red side near ramp.
+
+            //Red has -x near the beacons, -y on the clear side.
+            //Bearing should be between 1.47 and 1.62 to be "head-on".q
+
+            //floor blocks are 59.5 cm (590 mm)
 
             /*
             if(step == 1) {

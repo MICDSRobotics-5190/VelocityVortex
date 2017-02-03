@@ -43,10 +43,13 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -86,6 +89,7 @@ public class VuforiaPositionChecker extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Robot dan = new Robot();
+    private Position currentPosition;
 
     public static final String TAG = "Vuforia Sample";
 
@@ -93,6 +97,9 @@ public class VuforiaPositionChecker extends OpMode {
 
     List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
     VuforiaTrackables velocityVortexTargets;
+
+    private boolean driverOneSharing;
+    private boolean driverTwoSharing;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -321,6 +328,9 @@ public class VuforiaPositionChecker extends OpMode {
         correspond to the names in the configuration file. */
         dan.setupHardware(hardwareMap);
 
+        driverOneSharing = false;
+        driverTwoSharing = false;
+
         telemetry.addData("Status", "Initialized");
 
         /** Wait for the game to begin */
@@ -356,12 +366,83 @@ public class VuforiaPositionChecker extends OpMode {
         if (lastLocation != null) {
             //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
             telemetry.addData("Pos", format(lastLocation));
+
+            VectorF transformation = lastLocation.getTranslation();
+            Orientation angle = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+
+            float bearing = angle.thirdAngle;
+            currentPosition = new Position(DistanceUnit.MM, (double)transformation.get(0), (double)transformation.get(1), (double)transformation.get(2), (long)getRuntime());
+
+            telemetry.addData("Bearing", bearing);
+            telemetry.addData("Position", currentPosition.toString());
         } else {
             telemetry.addData("Pos", "Unknown");
         }
 
-        dan.leftMotor.setPower(-gamepad1.left_stick_y);
-        dan.rightMotor.setPower(-gamepad1.right_stick_y);
+        if(gamepad1.x){
+            driverOneSharing = false;
+        }
+        if(gamepad1.y){
+            driverOneSharing = true;
+        }
+
+        if(gamepad2.x){
+            driverTwoSharing = false;
+        }
+        if(gamepad2.y){
+            driverTwoSharing = true;
+        }
+
+        if(driverOneSharing && driverTwoSharing){
+            if(gamepad1.dpad_up || gamepad2.dpad_up){
+                dan.leftMotor.setDirection(DcMotor.Direction.REVERSE);
+                dan.rightMotor.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(gamepad1.dpad_down || gamepad2.dpad_down){
+                dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+                dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            }
+
+            dan.leftMotor.setPower(-(gamepad1.left_stick_y + gamepad2.left_stick_y) / 2);
+            dan.rightMotor.setPower(-(gamepad1.right_stick_y + gamepad2.right_stick_y) / 2);
+        } else if(driverOneSharing && !driverTwoSharing){
+            if(gamepad2.dpad_up){
+                dan.leftMotor.setDirection(DcMotor.Direction.REVERSE);
+                dan.rightMotor.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(gamepad2.dpad_down){
+                dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+                dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            }
+
+            dan.leftMotor.setPower(-gamepad2.left_stick_y);
+            dan.rightMotor.setPower(-gamepad2.right_stick_y);
+        } else if(!driverOneSharing && driverTwoSharing){
+            if(gamepad1.dpad_up){
+                dan.leftMotor.setDirection(DcMotor.Direction.REVERSE);
+                dan.rightMotor.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(gamepad1.dpad_down){
+                dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+                dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            }
+
+            dan.leftMotor.setPower(-gamepad1.left_stick_y);
+            dan.rightMotor.setPower(-gamepad1.right_stick_y);
+        } else {
+            if(gamepad1.dpad_up){
+                dan.leftMotor.setDirection(DcMotor.Direction.REVERSE);
+                dan.rightMotor.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(gamepad1.dpad_down){
+                dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+                dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            }
+
+            dan.leftMotor.setPower(-gamepad1.left_stick_y);
+            dan.rightMotor.setPower(-gamepad1.right_stick_y);
+        }
+
 
         if(gamepad1.left_bumper){
             dan.spinner.setPower(1);
@@ -369,6 +450,26 @@ public class VuforiaPositionChecker extends OpMode {
             dan.spinner.setPower(-1);
         } else {
             dan.spinner.setPower(0);
+        }
+
+        if(gamepad1.a){
+            dan.flywheel.setPower(1);
+        }
+
+        if(gamepad1.b) {
+            dan.flywheel.setPower(0);
+        }
+
+        if(gamepad2.right_trigger > 0.1){
+            dan.beaconSlider.setPower(gamepad1.right_trigger);
+        } else if (gamepad2.left_trigger > 0.1){
+            dan.beaconSlider.setPower(-gamepad1.left_trigger);
+        } else {
+            dan.beaconSlider.setPower(0);
+        }
+
+        if(gamepad1.start || gamepad2.start){
+            dan.stopMoving();
         }
 
         telemetry.update();
