@@ -47,9 +47,11 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -103,6 +105,7 @@ public class VuforiaAutonomous extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Robot dan = new Robot();
+    private Position currentPosition;
 
     /*Declaring constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
@@ -402,7 +405,18 @@ public class VuforiaAutonomous extends LinearOpMode {
             if (lastLocation != null) {
                 //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
                 telemetry.addData("Pos", format(lastLocation));
-                telemetry.addData("Vector", lastLocation.toVector().getData().length);
+                VectorF transformation = lastLocation.getTranslation();
+                Orientation angle = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+                float bearing = angle.thirdAngle;
+
+                telemetry.addData("X", transformation.get(0));
+                telemetry.addData("Y", transformation.get(1));
+
+                telemetry.addData("Bearing", bearing);
+
+                currentPosition = new Position(DistanceUnit.MM, (double)transformation.get(0), (double)transformation.get(1), (double)transformation.get(2), (long)getRuntime());
+
+                telemetry.addData("Position", currentPosition.toString());
 
             } else {
                 telemetry.addData("Pos", "Unknown");

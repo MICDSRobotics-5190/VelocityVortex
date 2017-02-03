@@ -48,10 +48,13 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -110,6 +113,8 @@ public class VuforiaBeaconTest extends LinearOpMode {
 
     //Frames for OpenCV (Immediate Setup for OpenCV)
     int frameCount = 0;
+
+    Position currentPosition;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -349,9 +354,9 @@ public class VuforiaBeaconTest extends LinearOpMode {
                  * the last time that call was made, or if the trackable is not currently visible.
                  * getRobotLocation() will return null if the trackable is not currently visible.
                  */
-                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
+                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
 
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
                 if (robotLocationTransform != null) {
                     lastLocation = robotLocationTransform;
                 }
@@ -362,10 +367,24 @@ public class VuforiaBeaconTest extends LinearOpMode {
             if (lastLocation != null) {
                 //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
                 telemetry.addData("Pos", format(lastLocation));
+                VectorF transformation = lastLocation.getTranslation();
+                Orientation angle = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+                float bearing = angle.thirdAngle;
+
+                telemetry.addData("X", transformation.get(0));
+                telemetry.addData("Y", transformation.get(1));
+
+                telemetry.addData("Bearing", bearing);
+
+                currentPosition = new Position(DistanceUnit.MM, (double)transformation.get(0), (double)transformation.get(1), (double)transformation.get(2), (long)getRuntime());
+
+                telemetry.addData("Position", currentPosition.toString());
+
             } else {
                 telemetry.addData("Pos", "Unknown");
             }
 
+            /*
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 
             CloseableFrame rawFrame = vuforia.getFrameQueue().take();
@@ -419,6 +438,9 @@ public class VuforiaBeaconTest extends LinearOpMode {
                 sleep(5000);
 
             }
+            */
+
+            telemetry.update();
 
             idle(); // OpenCV broke idle, we could troubleshoot later. Basically check LinearOpMode and LinearVisionOpmode.
         }
