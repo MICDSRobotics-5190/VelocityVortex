@@ -132,6 +132,7 @@ public class VuforiaAutonomous extends LinearOpMode {
     //Parts of the autonomous program
     private int step = 1;
     private boolean encodersInPosition;
+    private float bearing;
 
     //Frames for OpenCV (Immediate Setup for OpenCV)
     private int frameCount = 0;
@@ -409,7 +410,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                 VectorF transformation = lastLocation.getTranslation();
                 Orientation angle = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
 
-                float bearing = angle.thirdAngle;
+                bearing = angle.thirdAngle;
                 currentPosition = new Position(DistanceUnit.MM, (double)transformation.get(0), (double)transformation.get(1), (double)transformation.get(2), (long)getRuntime());
 
                 telemetry.addData("Bearing", bearing);
@@ -420,7 +421,7 @@ public class VuforiaAutonomous extends LinearOpMode {
             }
 
 
-            //dan.leftsMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+            //dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
             //dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
 
             //Setting up some output for the user to see. (Usually for troubleshooting)
@@ -507,10 +508,38 @@ public class VuforiaAutonomous extends LinearOpMode {
 
                 beaconStates = getBeaconStates();
 
-            } else if (step == 7){
+            } else if (step == 7) {
 
+            }*/
+
+            // start to find the beacons
+            boolean beaconsDetected = false;
+
+            if (!getBeaconStates().isBeaconFound()) {
+                // drive motors
+                dan.leftMotor.setTargetPosition((FULL_REVOLUTION));
             }
-            */
+            else if (getBeaconStates().isBeaconFound()) {
+                // ok so it just found the beacon, what does it do now?
+                // check angle and snap to the grid
+                beaconsDetected = true;
+
+                if (bearing <= 1.62 && bearing >= 1.57) {
+                    // bot is now lined up. What do you do?
+                    // first we need to see if it's available or nah
+                    if (getBeaconStates().isLeftBlue() && getBeaconStates().isRightBlue()){
+
+                    }
+                    else if (getBeaconStates().isRightRed() && getBeaconStates().isLeftRed()){
+
+                    }
+                }
+                else {
+                    // rotate bot until bearing is met
+                    dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
+                    dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
+                }
+            }
 
 
             telemetry.update();
@@ -594,5 +623,4 @@ public class VuforiaAutonomous extends LinearOpMode {
 
         return null;
     }
-
 }
