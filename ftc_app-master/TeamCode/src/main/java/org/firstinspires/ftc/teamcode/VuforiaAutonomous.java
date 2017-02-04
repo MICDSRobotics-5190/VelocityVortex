@@ -133,6 +133,7 @@ public class VuforiaAutonomous extends LinearOpMode {
     private int step = 1;
     private boolean encodersInPosition;
     private float bearing;
+    private String desiredTeam;
 
     //Frames for OpenCV (Immediate Setup for OpenCV)
     private int frameCount = 0;
@@ -517,27 +518,76 @@ public class VuforiaAutonomous extends LinearOpMode {
 
             if (!getBeaconStates().isBeaconFound()) {
                 // drive motors
-                dan.leftMotor.setTargetPosition((FULL_REVOLUTION));
+                dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
             }
             else if (getBeaconStates().isBeaconFound()) {
                 // ok so it just found the beacon, what does it do now?
                 // check angle and snap to the grid
-                beaconsDetected = true;
+                // stop the robot
+                dan.stopMoving();
+
 
                 if (bearing <= 1.62 && bearing >= 1.57) {
                     // bot is now lined up. What do you do?
                     // first we need to see if it's available or nah
-                    if (getBeaconStates().isLeftBlue() && getBeaconStates().isRightBlue()){
-
+                    if( ((VuforiaTrackableDefaultListener) allTrackables.get(0).getListener()).isVisible()  || ((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible()) {
+                        desiredTeam = "blue";
                     }
-                    else if (getBeaconStates().isRightRed() && getBeaconStates().isLeftRed()){
-
+                    else if( ((VuforiaTrackableDefaultListener) allTrackables.get(2).getListener()).isVisible()  || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible()) {
+                        desiredTeam = "red";
+                    }
+                    else {
+                        telemetry.addData("Team Identifier", "Failure! Can't find team!");
                     }
                 }
                 else {
                     // rotate bot until bearing is met
                     dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
                     dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
+                }
+            }
+            // servo right is pos left is neg
+            if (desiredTeam != "") {
+                if (desiredTeam == "red"){
+                    // attempt to grab the red side
+                    // first get the side in which the side is on
+
+                    if (getBeaconStates().isRightRed()) {
+                        dan.beaconSlider.setPower(1);
+                        sleep(1000);
+                        dan.beaconSlider.setPower(0);
+                    }
+
+                    if (getBeaconStates().isLeftRed()) {
+                        dan.beaconSlider.setPower(-1);
+                        sleep(1000);
+                        dan.beaconSlider.setPower(0);
+                    }
+
+                    // drive robot into beacon
+                    dan.drivetrainPower(1);
+                    sleep(3000);
+                    dan.stopMoving();
+                }
+                else if (desiredTeam == "blue") {
+                    // attempt to grab the blue side
+
+                    if (getBeaconStates().isRightBlue()) {
+                        dan.beaconSlider.setPower(1);
+                        sleep(1000);
+                        dan.beaconSlider.setPower(0);
+                    }
+
+                    if (getBeaconStates().isLeftBlue()) {
+                        dan.beaconSlider.setPower(-1);
+                        sleep(1000);
+                        dan.beaconSlider.setPower(0);
+                    }
+
+                    // drive robot into beacon
+                    dan.drivetrainPower(1);
+                    sleep(3000);
+                    dan.stopMoving();
                 }
             }
 
