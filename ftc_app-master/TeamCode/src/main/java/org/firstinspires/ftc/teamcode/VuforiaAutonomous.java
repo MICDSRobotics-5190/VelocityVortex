@@ -104,15 +104,16 @@ public class VuforiaAutonomous extends LinearOpMode {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
+    //Making the robot and some other related data
     private Robot dan = new Robot();
     private Position currentPosition;
+    private float bearing;
 
-    /*Declaring constant values */
+    /*Declaring encoder constant values */
     final int MOTOR_PULSE_PER_REVOLUTION = 7;
     final int MOTOR_GEAR_RATIO = 80;
     final int FULL_REVOLUTION = 1200;
     final int FLOOR_BLOCK = 2300;
-    //final int QUARTER_TURN = x;
 
     public static final String TAG = "Vuforia Sample";
 
@@ -130,10 +131,13 @@ public class VuforiaAutonomous extends LinearOpMode {
     Mat grayPicture = null;
 
     //Parts of the autonomous program
-    private int step = 1;
     private boolean encodersInPosition;
-    private float bearing;
-    private String desiredTeam;
+    private int step;
+
+    private byte desiredTeam;
+    private final byte RED_TEAM = 1;
+    private final byte BLUE_TEAM = 2;
+    Beacon.BeaconAnalysis analysis;
 
     //Frames for OpenCV (Immediate Setup for OpenCV)
     private int frameCount = 0;
@@ -152,10 +156,11 @@ public class VuforiaAutonomous extends LinearOpMode {
         //Prepare the encoders to be used
         dan.resetEncoders();
 
-        boolean blueLeft = false;
-        boolean redLeft = false;
-        boolean blueRight = false;
-        boolean redRight = false;
+        dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+        dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+
+        desiredTeam = 0;
+        step = 0;
 
         //Vuforia Camera & Frame-queue Setup
         /**
@@ -388,6 +393,12 @@ public class VuforiaAutonomous extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+            //Setting up some output for the user to see. (Usually for troubleshooting)
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Step", step);
+            telemetry.addData("Right Motor Posn", dan.leftMotor.getCurrentPosition());
+            telemetry.addData("Left Motor Posn", dan.rightMotor.getCurrentPosition());
+
             for (VuforiaTrackable trackable : allTrackables) {
                 /**
                  * getUpdatedRobotLocation() will return null if no new information is available since
@@ -422,175 +433,149 @@ public class VuforiaAutonomous extends LinearOpMode {
             }
 
 
-            //dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
-            //dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
-
-            //Setting up some output for the user to see. (Usually for troubleshooting)
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Step", step);
-            telemetry.addData("Right Motor Posn", dan.leftMotor.getCurrentPosition());
-            telemetry.addData("Left Motor Posn", dan.rightMotor.getCurrentPosition());
-
-            Beacon.BeaconAnalysis analysis = getBeaconStates();
-
-            telemetry.addData("Left side", analysis.getStateLeft().toString());
-            telemetry.addData("Right side", analysis.getStateRight().toString());
-
             //VUFORIA SCAN; BASED ON THE IMAGES, RUN RED MOVEMENTS OR BLUE MOVEMENTS
             //Wheels on blue side near ramp,
             //Legos on blue side away from ramp,
             //Tools on red side away from rmap,
             //Gears on red side near ramp.
+            //1804.3 is the max position value (that's against the wall on the field)
 
             //Red has -x near the beacons, -y on the clear side.
             //Bearing should be between 1.47 and 1.62 to be "head-on".q
 
-            //floor blocks are 59.5 cm (590 mm)
+            //floor blocks are 59.5 cm (590 mm), so 590 in position values.
 
-            /*
-            if(step == 1) {
-
-                dan.drivetrainPower(1);
-
-                dan.leftMotor.setTargetPosition(FLOOR_BLOCK);
-                dan.rightMotor.setTargetPosition(FLOOR_BLOCK);
-
-                if (encodersInPosition) {
+            switch (step) {
+                case 0:
+                    //Drive forward until we get image target data
+                    while (lastLocation == null) {
+                        dan.drivetrainPower(1);
+                    }
+                    step = 1;
+                    break;
+                case 1:
+                    //Check what team we're on
+                    if (((VuforiaTrackableDefaultListener) allTrackables.get(0).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible()) {
+                        desiredTeam = BLUE_TEAM;
+                    } else if (((VuforiaTrackableDefaultListener) allTrackables.get(2).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible()) {
+                        desiredTeam = RED_TEAM;
+                    } else {
+                        telemetry.addData("Error", "Failure! Can't find team!");
+                    }
                     step = 2;
-                    dan.resetEncoders();
-                }
-
-            } else if (step == 2) {
-
-                dan.drivetrainPower(1);
-
-                dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
-                dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
-
-                if(encodersInPosition){
+                    break;
+                case 2:
+                    //drive forward until position is...
                     step = 3;
-                    dan.resetEncoders();
-                }
-
-            }  else if (step == 3){
-
-                dan.drivetrainPower(1);
-
-                dan.leftMotor.setTargetPosition(2 * FLOOR_BLOCK);
-                dan.rightMotor.setTargetPosition(2 * FLOOR_BLOCK);
-
-                if(dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10){
+                    break;
+                case 3:
+                    //turn for what encoder position/bearing...
                     step = 4;
-                    dan.resetEncoders();
-                }
-            } else if (step == 4) {
-
-                dan.drivetrainPower(1);
-
-                dan.leftMotor.setTargetPosition((FULL_REVOLUTION));
-                dan.rightMotor.setTargetPosition((FULL_REVOLUTION));
-
-                if (dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10) {
+                    break;
+                case 4:
+                    //drive forward until right in front of beacon
+                    while(currentPosition.y < 1750){
+                        dan.drivetrainPower(1);
+                    }
                     step = 5;
-                    dan.resetEncoders();
-                }
-            } else if (step == 5){
-
-                dan.drivetrainPower(1);
-
-                dan.leftMotor.setTargetPosition(3 * FLOOR_BLOCK);
-                dan.rightMotor.setTargetPosition(3 * FLOOR_BLOCK);
-
-                if (dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10) {
+                    break;
+                case 5:
+                    //Make sure bearing is good
+                    while (!(bearing <= 1.62 && bearing >= 1.47)){
+                        // rotate bot until bearing is met
+                        dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
+                        dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
+                    }
+                    //bot is now lined up
+                    analysis = getBeaconStates();
+                    telemetry.addData("Left side", analysis.getStateLeft().toString());
+                    telemetry.addData("Right side", analysis.getStateRight().toString());
                     step = 6;
-                    dan.resetEncoders();
-                }
-            } else if (step == 6){
+                    break;
+                case 6:
+                    //Put servo in position, hit beacon
+                    // servo: right is positive left is negative
+                    while (analysis == null) { analysis = getBeaconStates(); }
 
-                beaconStates = getBeaconStates();
+                    if (desiredTeam != 0) {
+                        if (desiredTeam == RED_TEAM){
+                            // attempt to grab the red side
+                            // first get the side in which the side is on
 
-            } else if (step == 7) {
+                            if (analysis.isRightRed()) {
+                                dan.beaconSlider.setPower(1);
+                                sleep(1000);
+                                dan.beaconSlider.setPower(0);
+                            } else if (analysis.isLeftRed()) {
+                                dan.beaconSlider.setPower(-1);
+                                sleep(1000);
+                                dan.beaconSlider.setPower(0);
+                            } else {
+                                telemetry.addData("Error", "Couldn't find beacon colors");
+                            }
 
-            }*/
+                            // drive robot into beacon
+                            dan.drivetrainPower(1);
+                            sleep(2000);
+                            dan.stopMoving();
 
-            // start to find the beacons
-            boolean beaconsDetected = false;
+                            //Returns the servo to the middle
+                            if (analysis.isRightRed()) {
+                                dan.beaconSlider.setPower(-1);
+                                sleep(1000);
+                                dan.beaconSlider.setPower(0);
+                            } else if (analysis.isLeftRed()) {
+                                dan.beaconSlider.setPower(1);
+                                sleep(1000);
+                                dan.beaconSlider.setPower(0);
+                            }
+                        }
+                        else if (desiredTeam == BLUE_TEAM) {
+                            // attempt to grab the blue side
 
-            if (!getBeaconStates().isBeaconFound()) {
-                // drive motors
-                dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
-            }
-            else if (getBeaconStates().isBeaconFound()) {
-                // ok so it just found the beacon, what does it do now?
-                // check angle and snap to the grid
-                // stop the robot
-                dan.stopMoving();
+                            if (analysis.isRightBlue()) {
+                                dan.beaconSlider.setPower(1);
+                                sleep(1000);
+                                dan.beaconSlider.setPower(0);
+                            } else if (analysis.isLeftBlue()) {
+                                dan.beaconSlider.setPower(-1);
+                                sleep(1000);
+                                dan.beaconSlider.setPower(0);
+                            } else {
+                                telemetry.addData("Error", "Couldn't find beacon colors");
+                            }
 
+                            // drive robot into beacon
+                            dan.drivetrainPower(1);
+                            sleep(2000);
+                            dan.stopMoving();
 
-                if (bearing <= 1.62 && bearing >= 1.57) {
-                    // bot is now lined up. What do you do?
-                    // first we need to see if it's available or nah
-                    if( ((VuforiaTrackableDefaultListener) allTrackables.get(0).getListener()).isVisible()  || ((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible()) {
-                        desiredTeam = "blue";
+                            //Returns the servo to the middle
+                            if (getBeaconStates().isRightBlue()) {
+                                dan.beaconSlider.setPower(-1);
+                                sleep(1000);
+                                dan.beaconSlider.setPower(0);
+                            } else if (getBeaconStates().isLeftBlue()) {
+                                dan.beaconSlider.setPower(1);
+                                sleep(1000);
+                                dan.beaconSlider.setPower(0);
+                            } else {
+                                telemetry.addData("Error", "Couldn't find beacon colors");
+                            }
+                        }
+                    } else {
+                        telemetry.addData("Error", "No team");
                     }
-                    else if( ((VuforiaTrackableDefaultListener) allTrackables.get(2).getListener()).isVisible()  || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible()) {
-                        desiredTeam = "red";
-                    }
-                    else {
-                        telemetry.addData("Team Identifier", "Failure! Can't find team!");
-                    }
-                }
-                else {
-                    // rotate bot until bearing is met
-                    dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
-                    dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
-                }
-            }
-            // servo right is pos left is neg
-            if (desiredTeam != "") {
-                if (desiredTeam == "red"){
-                    // attempt to grab the red side
-                    // first get the side in which the side is on
 
-                    if (getBeaconStates().isRightRed()) {
-                        dan.beaconSlider.setPower(1);
-                        sleep(1000);
-                        dan.beaconSlider.setPower(0);
-                    }
-
-                    if (getBeaconStates().isLeftRed()) {
-                        dan.beaconSlider.setPower(-1);
-                        sleep(1000);
-                        dan.beaconSlider.setPower(0);
-                    }
-
-                    // drive robot into beacon
-                    dan.drivetrainPower(1);
-                    sleep(3000);
+                    step = 7;
+                    break;
+                case 7:
+                    telemetry.addData("Completed", "Hit beacon 1?");
+                    break;
+                default:
+                    telemetry.addData("Error", "Case statement is a nutcase");
                     dan.stopMoving();
-                }
-                else if (desiredTeam == "blue") {
-                    // attempt to grab the blue side
-
-                    if (getBeaconStates().isRightBlue()) {
-                        dan.beaconSlider.setPower(1);
-                        sleep(1000);
-                        dan.beaconSlider.setPower(0);
-                    }
-
-                    if (getBeaconStates().isLeftBlue()) {
-                        dan.beaconSlider.setPower(-1);
-                        sleep(1000);
-                        dan.beaconSlider.setPower(0);
-                    }
-
-                    // drive robot into beacon
-                    dan.drivetrainPower(1);
-                    sleep(3000);
-                    dan.stopMoving();
-                }
             }
-
 
             telemetry.update();
 
@@ -626,13 +611,15 @@ public class VuforiaAutonomous extends LinearOpMode {
 
     Beacon.BeaconAnalysis getBeaconStates() throws InterruptedException {
 
-        CloseableFrame rawFrame = vuforia.getFrameQueue().take();
+        while (rgb == null) {
+            CloseableFrame rawFrame = vuforia.getFrameQueue().take();
 
-        numImages = rawFrame.getNumImages();
-        for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
-            if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
-                rgb = rawFrame.getImage(i);
-                break;
+            numImages = rawFrame.getNumImages();
+            for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
+                if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
+                    rgb = rawFrame.getImage(i);
+                    break;
+                }
             }
         }
 
@@ -659,16 +646,6 @@ public class VuforiaAutonomous extends LinearOpMode {
 
             return beacon.analyzeFrame(colorPicture, grayPicture);
 
-        } else {
-            rawFrame = vuforia.getFrameQueue().take();
-
-            numImages = rawFrame.getNumImages();
-            for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
-                if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
-                    rgb = rawFrame.getImage(i);
-                    break;
-                }
-            }
         }
 
         return null;
