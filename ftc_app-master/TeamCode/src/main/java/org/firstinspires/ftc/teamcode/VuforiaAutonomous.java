@@ -447,11 +447,12 @@ public class VuforiaAutonomous extends LinearOpMode {
 
             switch (step) {
                 case 0:
-                    //Drive forward until we get image target data
-                    while (lastLocation == null) {
+                    //Drive forward until we get location data
+                    while (currentPosition == null) {
                         dan.drivetrainPower(1);
                     }
                     step = 1;
+                    chillOut();
                     break;
                 case 1:
                     //Check what team we're on
@@ -463,14 +464,17 @@ public class VuforiaAutonomous extends LinearOpMode {
                         telemetry.addData("Error", "Failure! Can't find team!");
                     }
                     step = 2;
+                    chillOut();
                     break;
                 case 2:
                     //drive forward until position is...
                     step = 3;
+                    chillOut();
                     break;
                 case 3:
                     //turn for what encoder position/bearing...
                     step = 4;
+                    chillOut();
                     break;
                 case 4:
                     //drive forward until right in front of beacon
@@ -478,6 +482,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                         dan.drivetrainPower(1);
                     }
                     step = 5;
+                    chillOut();
                     break;
                 case 5:
                     //Make sure bearing is good
@@ -491,11 +496,12 @@ public class VuforiaAutonomous extends LinearOpMode {
                     telemetry.addData("Left side", analysis.getStateLeft().toString());
                     telemetry.addData("Right side", analysis.getStateRight().toString());
                     step = 6;
+                    chillOut();
                     break;
                 case 6:
                     //Put servo in position, hit beacon
                     // servo: right is positive left is negative
-                    while (analysis == null) { analysis = getBeaconStates(); }
+                    while (analysis == null) { analysis = getBeaconStates(); } //Shouldn't run but just in case
 
                     if (desiredTeam != 0) {
                         if (desiredTeam == RED_TEAM){
@@ -568,6 +574,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                     }
 
                     step = 7;
+                    chillOut();
                     break;
                 case 7:
                     telemetry.addData("Completed", "Hit beacon 1?");
@@ -589,8 +596,10 @@ public class VuforiaAutonomous extends LinearOpMode {
     }
 
     boolean encodersInPosition(){
-        return (dan.rightMotor.getCurrentPosition() >= dan.rightMotor.getTargetPosition() - 10
-                && dan.rightMotor.getCurrentPosition() <= dan.rightMotor.getTargetPosition() + 10);
+        return ((dan.rightMotor.getCurrentPosition() >= dan.rightMotor.getTargetPosition() - 30
+                && dan.rightMotor.getCurrentPosition() <= dan.rightMotor.getTargetPosition() + 30)
+                || (dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 30
+                && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 30));
     }
 
     private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(FtcRobotControllerActivity.getAppContext()) {
@@ -650,4 +659,11 @@ public class VuforiaAutonomous extends LinearOpMode {
 
         return null;
     }
+
+    void chillOut(){
+        dan.stopMoving();
+        dan.resetEncoders();
+        sleep(500);
+    }
+
 }
