@@ -456,9 +456,9 @@ public class VuforiaAutonomous extends LinearOpMode {
                     break;
                 case 1:
                     //Check what team we're on
-                    if (((VuforiaTrackableDefaultListener) allTrackables.get(0).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible()) {
+                    if (((VuforiaTrackableDefaultListener) allTrackables.get(0).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(2).getListener()).isVisible()) {
                         desiredTeam = BLUE_TEAM;
-                    } else if (((VuforiaTrackableDefaultListener) allTrackables.get(2).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible()) {
+                    } else if (((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible()) {
                         desiredTeam = RED_TEAM;
                     } else {
                         telemetry.addData("Error", "Failure! Can't find team!");
@@ -478,8 +478,16 @@ public class VuforiaAutonomous extends LinearOpMode {
                     break;
                 case 4:
                     //drive forward until right in front of beacon
-                    while(currentPosition.y < 1750){
-                        dan.drivetrainPower(1);
+                    if(desiredTeam == BLUE_TEAM) {
+                        while (currentPosition.y < 1750) {
+                            dan.drivetrainPower(1);
+                        }
+                    } else if (desiredTeam == RED_TEAM) {
+                        while (currentPosition.x > -1750) {
+                            dan.drivetrainPower(1);
+                        }
+                    } else {
+                        telemetry.addData("Error", "")
                     }
                     step = 5;
                     chillOut();
@@ -660,7 +668,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         return null;
     }
 
-    void chillOut(){
+    void chillOut() throws InterruptedException {
         dan.stopMoving();
         dan.resetEncoders();
         sleep(500);
