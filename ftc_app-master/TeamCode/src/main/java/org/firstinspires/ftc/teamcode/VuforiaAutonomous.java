@@ -487,7 +487,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                             dan.drivetrainPower(1);
                         }
                     } else {
-                        telemetry.addData("Error", "")
+                        telemetry.addData("Error", "");
                     }
                     step = 5;
                     chillOut();
@@ -498,6 +498,8 @@ public class VuforiaAutonomous extends LinearOpMode {
                         // rotate bot until bearing is met
                         dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
                         dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
+                        dan.leftMotor.setPower(1);
+                        dan.rightMotor.setPower(-1);
                     }
                     //bot is now lined up
                     analysis = getBeaconStates();
