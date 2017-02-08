@@ -156,6 +156,9 @@ public class VuforiaAutonomous extends LinearOpMode {
         //Prepare the encoders to be used
         dan.resetEncoders();
 
+        dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+        dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+
         dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
         dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
 
@@ -344,7 +347,7 @@ public class VuforiaAutonomous extends LinearOpMode {
          * plane) is then CCW, as one would normally expect from the usual classic 2D geometry.
          */
         OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(0, 6 * mmPerInch, 0)
+                .translation(0, mmBotWidth / 2f, 0)
                 .multiplied(Orientation.getRotationMatrix(
                         AxesReference.EXTRINSIC, AxesOrder.YZY,
                         AngleUnit.DEGREES, -90, 0, 0));
@@ -479,11 +482,11 @@ public class VuforiaAutonomous extends LinearOpMode {
                 case 4:
                     //drive forward until right in front of beacon
                     if(desiredTeam == BLUE_TEAM) {
-                        while (currentPosition.y < 1750) {
+                        while (currentPosition.y < 1650) {
                             dan.drivetrainPower(1);
                         }
                     } else if (desiredTeam == RED_TEAM) {
-                        while (currentPosition.x > -1750) {
+                        while (currentPosition.x > -1650) {
                             dan.drivetrainPower(1);
                         }
                     } else {
