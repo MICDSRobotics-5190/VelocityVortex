@@ -54,7 +54,7 @@ import com.qualcomm.robotcore.util.Hardware;
 
 @TeleOp(name="Drive", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class DadDriver extends OpMode
+public class DriverControl extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
