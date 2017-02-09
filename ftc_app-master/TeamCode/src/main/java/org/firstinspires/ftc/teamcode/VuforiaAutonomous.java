@@ -131,12 +131,11 @@ public class VuforiaAutonomous extends LinearOpMode {
     Mat grayPicture = null;
 
     //Parts of the autonomous program
-    private boolean encodersInPosition;
     private int step;
 
-    private byte desiredTeam;
-    private final byte RED_TEAM = 1;
-    private final byte BLUE_TEAM = 2;
+    private int desiredTeam;
+    private final int RED_TEAM = 1;
+    private final int BLUE_TEAM = -1;
     Beacon.BeaconAnalysis analysis;
 
     //Frames for OpenCV (Immediate Setup for OpenCV)
@@ -470,23 +469,35 @@ public class VuforiaAutonomous extends LinearOpMode {
                     chillOut();
                     break;
                 case 2:
-                    //drive forward until position is...
+                    if(desiredTeam == RED_TEAM) {
+                        while (currentPosition.x < 1600){
+                            dan.drivetrainPower(1);
+                        }
+                    } else if(desiredTeam == BLUE_TEAM){
+                        while (currentPosition.y < 1600){
+                            dan.drivetrainPower(1);
+                        }
+                    }
                     step = 3;
                     chillOut();
                     break;
                 case 3:
-                    //turn for what encoder position/bearing...
+                    dan.rightMotor.setTargetPosition(FULL_REVOLUTION / 2);
+                    while(!encodersInPosition()){
+                        dan.rightMotor.setPower(desiredTeam);
+                        dan.leftMotor.setPower(0);
+                    }
                     step = 4;
                     chillOut();
                     break;
                 case 4:
                     //drive forward until right in front of beacon
                     if(desiredTeam == BLUE_TEAM) {
-                        while (currentPosition.y < 1650) {
+                        while (currentPosition.x < 1650) {
                             dan.drivetrainPower(1);
                         }
                     } else if (desiredTeam == RED_TEAM) {
-                        while (currentPosition.x > -1650) {
+                        while (currentPosition.y > -1650) {
                             dan.drivetrainPower(1);
                         }
                     } else {
