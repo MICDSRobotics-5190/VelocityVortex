@@ -133,6 +133,7 @@ public class VuforiaAutonomous extends LinearOpMode {
 
     //Parts of the autonomous program
     private int step;
+    private double targetBearing;
 
     private int desiredTeam;
     private final int RED_TEAM = 1;
@@ -161,6 +162,7 @@ public class VuforiaAutonomous extends LinearOpMode {
 
         desiredTeam = 0;
         step = 0;
+        targetBearing = 0;
 
         //Vuforia Camera & Frame-queue Setup
         /**
@@ -460,66 +462,77 @@ public class VuforiaAutonomous extends LinearOpMode {
                     //Check what team we're on
                     if (((VuforiaTrackableDefaultListener) allTrackables.get(0).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(2).getListener()).isVisible()) {
                         desiredTeam = BLUE_TEAM;
+                        targetBearing = 1.57;
                     } else if (((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible()) {
                         desiredTeam = RED_TEAM;
+                        targetBearing = -3.08;
                     } else {
                         // can't find the pictures so we just keep spinning until we find one
                         /*while (((VuforiaTrackableDefaultListener) allTrackables.get(0).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(2).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(4).getListener()).isVisible()) {
                             // spin until
                         }*/
+                        telemetry.addData("Error", "Failure! Can't find team! Initiating Failsafe!");
+
                         dan.leftMotor.setTargetPosition((FULL_REVOLUTION / 2));
                         dan.rightMotor.setTargetPosition(-(FULL_REVOLUTION / 2));
                         dan.leftMotor.setPower(0.5);
                         dan.rightMotor.setPower(0.5);
                         sleep(750);
                         chillOut();
-
-                        telemetry.addData("Error", "Failure! Can't find team! Initiating Failsafe!");
                     }
                     step = 2;
                     chillOut();
                     break;
                 case 2:
                     if (desiredTeam == RED_TEAM) {
-                        while (currentPosition.x < 1600) {
+                        if (currentPosition.x > -1300) {
                             dan.drivetrainPower(1);
+                        } else {
+                            step = 3;
+                            chillOut();
                         }
                     } else if (desiredTeam == BLUE_TEAM) {
-                        while (currentPosition.y < 1600) {
+                        if (currentPosition.y < 1600) {
                             dan.drivetrainPower(1);
+                        } else {
+                            step = 3;
+                            chillOut();
                         }
                     }
-                    step = 3;
-                    chillOut();
                     break;
                 case 3:
                     dan.rightMotor.setTargetPosition(FULL_REVOLUTION / 2);
-                    while (!encodersInPosition()) {
+                    if (!encodersInPosition()) {
                         dan.rightMotor.setPower(desiredTeam);
                         dan.leftMotor.setPower(0);
+                    } else {
+                        step = 4;
+                        chillOut();
                     }
-                    step = 4;
-                    chillOut();
                     break;
                 case 4:
                     //drive forward until right in front of beacon
                     if (desiredTeam == BLUE_TEAM) {
-                        while (currentPosition.x < 1650) {
+                        if (currentPosition.y > 1650) {
                             dan.drivetrainPower(1);
+                        } else {
+                            step = 5;
+                            chillOut();
                         }
                     } else if (desiredTeam == RED_TEAM) {
-                        while (currentPosition.y > -1650) {
+                        if (currentPosition.x < -1650) {
                             dan.drivetrainPower(1);
+                        } else {
+                            step = 5;
+                            chillOut();
                         }
                     } else {
                         telemetry.addData("Error", "");
                     }
-                    step = 5;
-                    chillOut();
                     break;
                 case 5:
                     //Make sure bearing is good
-                    while (!(bearing <= 1.62 && bearing >= 1.47)) {
+                    while (!(bearing > targetBearing - 0.07 && bearing < targetBearing + 0.07)) {
                         // rotate bot until bearing is met
                         dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
                         dan.rightMotor.setTargetPosition(FULL_REVOLUTION);

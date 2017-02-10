@@ -186,10 +186,10 @@ public class DriverControl extends OpMode
             dan.flywheel.setPower(0);
         }
 
-        if(gamepad2.right_trigger > 0.1){
-            dan.beaconSlider.setPower(gamepad1.right_trigger);
-        } else if (gamepad2.left_trigger > 0.1){
-            dan.beaconSlider.setPower(-gamepad1.left_trigger);
+        if(gamepad2.dpad_left){
+            dan.beaconSlider.setPower(1);
+        } else if (gamepad2.dpad_right){
+            dan.beaconSlider.setPower(-1);
         } else {
             dan.beaconSlider.setPower(0);
         }
