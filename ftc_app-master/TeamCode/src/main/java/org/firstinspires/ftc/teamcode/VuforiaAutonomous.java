@@ -45,6 +45,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -143,9 +144,6 @@ public class VuforiaAutonomous extends LinearOpMode {
 
     private Image rgb = null;
     private int count = 0;
-    private long numImages;
-
-
     @Override
     public void runOpMode() throws InterruptedException {
         /* Initialize the hardware variables. The strings must
@@ -225,9 +223,9 @@ public class VuforiaAutonomous extends LinearOpMode {
          * target configuration files *must* correspond for the math to work out correctly.
          */
 
-        float mmPerInch        = 25.4f;
-        float mmBotWidth       = 18 * mmPerInch;            // ... or whatever is right for your robot
-        float mmFTCFieldWidth  = (12*12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
+        float mmPerInch = 25.4f;
+        float mmBotWidth = 18 * mmPerInch;            // ... or whatever is right for your robot
+        float mmFTCFieldWidth = (12 * 12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
 
         /**
          * In order for localization to work, we need to tell the system where each target we
@@ -287,7 +285,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         OpenGLMatrix gearsLocationOnField = OpenGLMatrix
                 /* We translate the target on the Red audience wall and along it under the beacon.
                 * (negative x, negative y)*/
-                .translation(-mmFTCFieldWidth/2, -12*mmPerInch, (float)(1.5*mmPerInch))
+                .translation(-mmFTCFieldWidth / 2, -12 * mmPerInch, (float) (1.5 * mmPerInch))
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
@@ -298,7 +296,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         OpenGLMatrix toolsLocationOnField = OpenGLMatrix
                 /* We translate the target on the Red audience wall and along it under the beacon.
                 * (negative x, positive y)*/
-                .translation(-mmFTCFieldWidth/2, 36*mmPerInch, (float)(1.5*mmPerInch))
+                .translation(-mmFTCFieldWidth / 2, 36 * mmPerInch, (float) (1.5 * mmPerInch))
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
@@ -314,7 +312,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         OpenGLMatrix wheelsLocationOnField = OpenGLMatrix
                 /* We translate the target on the Blue audience wall and along it under the beacon.
                 * Positive Y, positive X*/
-                .translation(12*mmPerInch, mmFTCFieldWidth/2, (float)(1.5*mmPerInch))
+                .translation(12 * mmPerInch, mmFTCFieldWidth / 2, (float) (1.5 * mmPerInch))
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
@@ -325,7 +323,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         OpenGLMatrix legosLocationOnField = OpenGLMatrix
                 /* We translate the target on the Blue audience wall and along it under the beacon.
                 * Positive Y, negative X*/
-                .translation(-36*mmPerInch, mmFTCFieldWidth/2, (float)(1.5*mmPerInch))
+                .translation(-36 * mmPerInch, mmFTCFieldWidth / 2, (float) (1.5 * mmPerInch))
                 .multiplied(Orientation.getRotationMatrix(
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
@@ -357,10 +355,10 @@ public class VuforiaAutonomous extends LinearOpMode {
          * listener is a {@link VuforiaTrackableDefaultListener} and can so safely cast because
          * we have not ourselves installed a listener of a different type.
          */
-        ((VuforiaTrackableDefaultListener)wheels.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener)tools.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener)legos.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        ((VuforiaTrackableDefaultListener)gears.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) wheels.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) tools.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) legos.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) gears.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
 
 
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
@@ -369,7 +367,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         Looper.prepare();
 
         //OpenCV Loader
-        if(!OpenCVLoader.initDebug()) {
+        if (!OpenCVLoader.initDebug()) {
 
             if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, FtcRobotControllerActivity.getAppContext(), mOpenCVCallBack)) {
                 telemetry.addData("OpenCV", "Cannot connect to OpenCV Manager");
@@ -425,7 +423,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                 Orientation angle = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
 
                 bearing = angle.thirdAngle;
-                currentPosition = new Position(DistanceUnit.MM, (double)transformation.get(0), (double)transformation.get(1), (double)transformation.get(2), (long)getRuntime());
+                currentPosition = new Position(DistanceUnit.MM, (double) transformation.get(0), (double) transformation.get(1), (double) transformation.get(2), (long) getRuntime());
 
                 telemetry.addData("Bearing", bearing);
                 telemetry.addData("Position", currentPosition.toString());
@@ -450,11 +448,13 @@ public class VuforiaAutonomous extends LinearOpMode {
             switch (step) {
                 case 0:
                     //Drive forward until we get location data
-                    while (currentPosition == null) {
+                    if (currentPosition == null) {
                         dan.drivetrainPower(1);
                     }
-                    step = 1;
-                    chillOut();
+                    if (currentPosition != null){
+                        step = 1;
+                        chillOut();
+                    }
                     break;
                 case 1:
                     //Check what team we're on
@@ -463,18 +463,29 @@ public class VuforiaAutonomous extends LinearOpMode {
                     } else if (((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible()) {
                         desiredTeam = RED_TEAM;
                     } else {
-                        telemetry.addData("Error", "Failure! Can't find team!");
+                        // can't find the pictures so we just keep spinning until we find one
+                        /*while (((VuforiaTrackableDefaultListener) allTrackables.get(0).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(1).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(2).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(3).getListener()).isVisible() || ((VuforiaTrackableDefaultListener) allTrackables.get(4).getListener()).isVisible()) {
+                            // spin until
+                        }*/
+                        dan.leftMotor.setTargetPosition((FULL_REVOLUTION / 2));
+                        dan.rightMotor.setTargetPosition(-(FULL_REVOLUTION / 2));
+                        dan.leftMotor.setPower(0.5);
+                        dan.rightMotor.setPower(0.5);
+                        sleep(750);
+                        chillOut();
+
+                        telemetry.addData("Error", "Failure! Can't find team! Initiating Failsafe!");
                     }
                     step = 2;
                     chillOut();
                     break;
                 case 2:
-                    if(desiredTeam == RED_TEAM) {
-                        while (currentPosition.x < 1600){
+                    if (desiredTeam == RED_TEAM) {
+                        while (currentPosition.x < 1600) {
                             dan.drivetrainPower(1);
                         }
-                    } else if(desiredTeam == BLUE_TEAM){
-                        while (currentPosition.y < 1600){
+                    } else if (desiredTeam == BLUE_TEAM) {
+                        while (currentPosition.y < 1600) {
                             dan.drivetrainPower(1);
                         }
                     }
@@ -483,7 +494,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                     break;
                 case 3:
                     dan.rightMotor.setTargetPosition(FULL_REVOLUTION / 2);
-                    while(!encodersInPosition()){
+                    while (!encodersInPosition()) {
                         dan.rightMotor.setPower(desiredTeam);
                         dan.leftMotor.setPower(0);
                     }
@@ -492,7 +503,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                     break;
                 case 4:
                     //drive forward until right in front of beacon
-                    if(desiredTeam == BLUE_TEAM) {
+                    if (desiredTeam == BLUE_TEAM) {
                         while (currentPosition.x < 1650) {
                             dan.drivetrainPower(1);
                         }
@@ -508,7 +519,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                     break;
                 case 5:
                     //Make sure bearing is good
-                    while (!(bearing <= 1.62 && bearing >= 1.47)){
+                    while (!(bearing <= 1.62 && bearing >= 1.47)) {
                         // rotate bot until bearing is met
                         dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
                         dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
@@ -525,10 +536,12 @@ public class VuforiaAutonomous extends LinearOpMode {
                 case 6:
                     //Put servo in position, hit beacon
                     // servo: right is positive left is negative
-                    while (analysis == null) { analysis = getBeaconStates(); } //Shouldn't run but just in case
+                    while (analysis == null) {
+                        analysis = getBeaconStates();
+                    } //Shouldn't run but just in case
 
                     if (desiredTeam != 0) {
-                        if (desiredTeam == RED_TEAM){
+                        if (desiredTeam == RED_TEAM) {
                             // attempt to grab the red side
                             // first get the side in which the side is on
 
@@ -559,8 +572,7 @@ public class VuforiaAutonomous extends LinearOpMode {
                                 sleep(1000);
                                 dan.beaconSlider.setPower(0);
                             }
-                        }
-                        else if (desiredTeam == BLUE_TEAM) {
+                        } else if (desiredTeam == BLUE_TEAM) {
                             // attempt to grab the blue side
 
                             if (analysis.isRightBlue()) {
@@ -614,6 +626,8 @@ public class VuforiaAutonomous extends LinearOpMode {
         }
     }
 
+
+    private long numImages;
     //Necessary for using Vuforia and outputting location matrixes.
     String format(OpenGLMatrix transformationMatrix) {
         return transformationMatrix.formatAsTransform();
@@ -690,4 +704,7 @@ public class VuforiaAutonomous extends LinearOpMode {
         sleep(500);
     }
 
+    private void findBeaconFailsafe(String telemetryMessage){
+
+    }
 }

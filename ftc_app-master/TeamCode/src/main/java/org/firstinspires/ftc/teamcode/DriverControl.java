@@ -103,6 +103,7 @@ public class DriverControl extends OpMode
         telemetry.addData("Left Motor", dan.leftMotor.getPower());
         telemetry.addData("Spinner", dan.spinner.getPower());
         telemetry.addData("Flywheel", dan.flywheel.getPower());
+        telemetry.addData("Beacon Hitter", dan.beaconSlider.getPower());
 
         if(gamepad1.x){
             driverOneSharing = false;
