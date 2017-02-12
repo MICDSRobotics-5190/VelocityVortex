@@ -143,6 +143,10 @@ public class VuforiaAutonomous extends LinearOpMode {
     //Frames for OpenCV (Immediate Setup for OpenCV)
     private int frameCount = 0;
 
+    /* Target Positions */
+    Position beforeTurnTarget = new Position(DistanceUnit.MM, -1300, 1300, 0, 0);
+    Position beforeBeaconTarget = new Position(DistanceUnit.MM, -1600, 1600, 0, 0);
+
     private Image rgb = null;
     private int count = 0;
     @Override
@@ -154,11 +158,8 @@ public class VuforiaAutonomous extends LinearOpMode {
         //Prepare the encoders to be used
         dan.resetEncoders();
 
-        dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
-        dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
-        dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+        dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO * 2);
+        dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO * 2);
 
         desiredTeam = 0;
         step = 0;
@@ -450,10 +451,10 @@ public class VuforiaAutonomous extends LinearOpMode {
             switch (step) {
                 case 0:
                     //Drive forward until we get location data
-                    if (currentPosition == null) {
+                    if (currentPosition == null ) {
                         dan.drivetrainPower(1);
                     }
-                    if (currentPosition != null){
+                    if(currentPosition != null){
                         step = 1;
                         chillOut();
                     }
@@ -485,14 +486,14 @@ public class VuforiaAutonomous extends LinearOpMode {
                     break;
                 case 2:
                     if (desiredTeam == RED_TEAM) {
-                        if (currentPosition.x > -1300) {
+                        if (currentPosition.x > beforeTurnTarget.x) {
                             dan.drivetrainPower(1);
                         } else {
                             step = 3;
                             chillOut();
                         }
                     } else if (desiredTeam == BLUE_TEAM) {
-                        if (currentPosition.y < 1600) {
+                        if (currentPosition.y < beforeTurnTarget.y) {
                             dan.drivetrainPower(1);
                         } else {
                             step = 3;
@@ -501,26 +502,41 @@ public class VuforiaAutonomous extends LinearOpMode {
                     }
                     break;
                 case 3:
-                    dan.rightMotor.setTargetPosition(FULL_REVOLUTION / 2);
-                    if (!encodersInPosition()) {
-                        dan.rightMotor.setPower(desiredTeam);
-                        dan.leftMotor.setPower(0);
+                    if(desiredTeam == RED_TEAM){
+                        dan.rightMotor.setTargetPosition(FULL_REVOLUTION / 2);
+                        dan.leftMotor.setTargetPosition(50); //Above the target range so it doesn't care
+                        if (!encodersInPosition()) {
+                            dan.rightMotor.setPower(1);
+                            dan.leftMotor.setPower(0);
+                        } else {
+                            step = 4;
+                            chillOut();
+                        }
+                    } else if(desiredTeam == BLUE_TEAM){
+                        dan.leftMotor.setTargetPosition(FULL_REVOLUTION / 2);
+                        dan.rightMotor.setTargetPosition(50); //Above the target range so it doesn't care
+                        if (!encodersInPosition()) {
+                            dan.rightMotor.setPower(0);
+                            dan.leftMotor.setPower(1);
+                        } else {
+                            step = 4;
+                            chillOut();
+                        }
                     } else {
-                        step = 4;
-                        chillOut();
+                        telemetry.addData("Error", "error boiiii");
                     }
                     break;
                 case 4:
                     //drive forward until right in front of beacon
                     if (desiredTeam == BLUE_TEAM) {
-                        if (currentPosition.y > 1650) {
+                        if (currentPosition.y > beforeBeaconTarget.y) {
                             dan.drivetrainPower(1);
                         } else {
                             step = 5;
                             chillOut();
                         }
                     } else if (desiredTeam == RED_TEAM) {
-                        if (currentPosition.x < -1650) {
+                        if (currentPosition.x < beforeBeaconTarget.x) {
                             dan.drivetrainPower(1);
                         } else {
                             step = 5;
@@ -532,101 +548,107 @@ public class VuforiaAutonomous extends LinearOpMode {
                     break;
                 case 5:
                     //Make sure bearing is good
-                    while (!(bearing > targetBearing - 0.07 && bearing < targetBearing + 0.07)) {
+                    if (!(bearing > targetBearing - 0.07 && bearing < targetBearing + 0.07)) {
                         // rotate bot until bearing is met
                         dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
                         dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
-                        dan.leftMotor.setPower(1);
-                        dan.rightMotor.setPower(-1);
+                        dan.leftMotor.setPower(0.3);
+                        dan.rightMotor.setPower(-0.3);
+                    } else {
+                        analysis = getBeaconStates();
+                        telemetry.addData("Left side", analysis.getStateLeft().toString());
+                        telemetry.addData("Right side", analysis.getStateRight().toString());
+                        step = 6;
+                        chillOut();
                     }
                     //bot is now lined up
-                    analysis = getBeaconStates();
-                    telemetry.addData("Left side", analysis.getStateLeft().toString());
-                    telemetry.addData("Right side", analysis.getStateRight().toString());
-                    step = 6;
-                    chillOut();
                     break;
                 case 6:
                     //Put servo in position, hit beacon
                     // servo: right is positive left is negative
-                    while (analysis == null) {
+                    if (analysis == null) {
                         analysis = getBeaconStates();
-                    } //Shouldn't run but just in case
-
-                    if (desiredTeam != 0) {
-                        if (desiredTeam == RED_TEAM) {
-                            // attempt to grab the red side
-                            // first get the side in which the side is on
-
-                            if (analysis.isRightRed()) {
-                                dan.beaconSlider.setPower(1);
-                                sleep(1000);
-                                dan.beaconSlider.setPower(0);
-                            } else if (analysis.isLeftRed()) {
-                                dan.beaconSlider.setPower(-1);
-                                sleep(1000);
-                                dan.beaconSlider.setPower(0);
-                            } else {
-                                telemetry.addData("Error", "Couldn't find beacon colors");
-                            }
-
-                            // drive robot into beacon
-                            dan.drivetrainPower(1);
-                            sleep(2000);
-                            dan.stopMoving();
-
-                            //Returns the servo to the middle
-                            if (analysis.isRightRed()) {
-                                dan.beaconSlider.setPower(-1);
-                                sleep(1000);
-                                dan.beaconSlider.setPower(0);
-                            } else if (analysis.isLeftRed()) {
-                                dan.beaconSlider.setPower(1);
-                                sleep(1000);
-                                dan.beaconSlider.setPower(0);
-                            }
-                        } else if (desiredTeam == BLUE_TEAM) {
-                            // attempt to grab the blue side
-
-                            if (analysis.isRightBlue()) {
-                                dan.beaconSlider.setPower(1);
-                                sleep(1000);
-                                dan.beaconSlider.setPower(0);
-                            } else if (analysis.isLeftBlue()) {
-                                dan.beaconSlider.setPower(-1);
-                                sleep(1000);
-                                dan.beaconSlider.setPower(0);
-                            } else {
-                                telemetry.addData("Error", "Couldn't find beacon colors");
-                            }
-
-                            // drive robot into beacon
-                            dan.drivetrainPower(1);
-                            sleep(2000);
-                            dan.stopMoving();
-
-                            //Returns the servo to the middle
-                            if (getBeaconStates().isRightBlue()) {
-                                dan.beaconSlider.setPower(-1);
-                                sleep(1000);
-                                dan.beaconSlider.setPower(0);
-                            } else if (getBeaconStates().isLeftBlue()) {
-                                dan.beaconSlider.setPower(1);
-                                sleep(1000);
-                                dan.beaconSlider.setPower(0);
-                            } else {
-                                telemetry.addData("Error", "Couldn't find beacon colors");
-                            }
-                        }
                     } else {
-                        telemetry.addData("Error", "No team");
-                    }
+                        if (desiredTeam != 0) {
+                            if (desiredTeam == RED_TEAM) {
+                                // attempt to grab the red side
+                                // first get the side in which the side is on
 
-                    step = 7;
-                    chillOut();
+                                if (analysis.isRightRed()) {
+                                    dan.beaconSlider.setPower(1);
+                                    sleep(1000);
+                                    dan.beaconSlider.setPower(0);
+                                } else if (analysis.isLeftRed()) {
+                                    dan.beaconSlider.setPower(-1);
+                                    sleep(1000);
+                                    dan.beaconSlider.setPower(0);
+                                } else {
+                                    telemetry.addData("Error", "Couldn't find beacon colors");
+                                }
+
+                                // drive robot into beacon
+                                dan.leftMotor.setPower(0.5);
+                                dan.rightMotor.setPower(0.5);
+                                sleep(3000);
+                                dan.stopMoving();
+
+                                //Returns the servo to the middle
+                                if (analysis.isRightRed()) {
+                                    dan.beaconSlider.setPower(-1);
+                                    sleep(1000);
+                                    dan.beaconSlider.setPower(0);
+                                } else if (analysis.isLeftRed()) {
+                                    dan.beaconSlider.setPower(1);
+                                    sleep(1000);
+                                    dan.beaconSlider.setPower(0);
+                                }
+
+                                step = 7;
+                                chillOut();
+                            } else if (desiredTeam == BLUE_TEAM) {
+                                // attempt to grab the blue side
+
+                                if (analysis.isRightBlue()) {
+                                    dan.beaconSlider.setPower(1);
+                                    sleep(1000);
+                                    dan.beaconSlider.setPower(0);
+                                } else if (analysis.isLeftBlue()) {
+                                    dan.beaconSlider.setPower(-1);
+                                    sleep(1000);
+                                    dan.beaconSlider.setPower(0);
+                                } else {
+                                    telemetry.addData("Error", "Couldn't find beacon colors");
+                                }
+
+                                // drive robot into beacon
+                                dan.leftMotor.setPower(0.5);
+                                dan.rightMotor.setPower(0.5);
+                                sleep(3000);
+                                dan.stopMoving();
+
+                                //Returns the servo to the middle
+                                if (getBeaconStates().isRightBlue()) {
+                                    dan.beaconSlider.setPower(-1);
+                                    sleep(1000);
+                                    dan.beaconSlider.setPower(0);
+                                } else if (getBeaconStates().isLeftBlue()) {
+                                    dan.beaconSlider.setPower(1);
+                                    sleep(1000);
+                                    dan.beaconSlider.setPower(0);
+                                } else {
+                                    telemetry.addData("Error", "Couldn't find beacon colors");
+                                }
+
+                                step = 7;
+                                chillOut();
+                            }
+                        } else {
+                            telemetry.addData("Error", "No team");
+                        }
+                    }
                     break;
                 case 7:
-                    telemetry.addData("Completed", "Hit beacon 1?");
+                    telemetry.addData("Completed", "Hit beacon 1? (hopefully???)");
                     break;
                 default:
                     telemetry.addData("Error", "Case statement is a nutcase");

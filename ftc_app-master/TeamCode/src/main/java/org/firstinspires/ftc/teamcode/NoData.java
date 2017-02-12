@@ -93,6 +93,10 @@ public class NoData extends LinearOpMode {
         dan.leftMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
         dan.rightMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
 
+        telemetry.addData("Encoders", dan.leftMotor.getTargetPosition());
+        telemetry.update();
+        sleep(20000);
+
         //Run to the ball until it gets to the target distance.
         while (!(dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10)) {
             dan.drivetrainPower(1);

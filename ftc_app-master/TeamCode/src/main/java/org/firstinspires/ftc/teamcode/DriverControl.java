@@ -180,9 +180,9 @@ public class DriverControl extends OpMode
 
         if(gamepad1.a){
             dan.flywheel.setPower(1);
-        }
-
-        if(gamepad1.b) {
+        } else if(gamepad1.b) {
+            dan.flywheel.setPower(-1);
+        } else {
             dan.flywheel.setPower(0);
         }
 
