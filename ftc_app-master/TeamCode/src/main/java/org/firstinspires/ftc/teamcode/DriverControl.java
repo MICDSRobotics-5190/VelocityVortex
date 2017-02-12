@@ -54,13 +54,16 @@ import com.qualcomm.robotcore.util.Hardware;
 
 @TeleOp(name="Drive", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class DadDriver extends OpMode
+public class DriverControl extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
-
     private Robot dan = new Robot();
+
+    private boolean driverOneSharing;
+    private boolean driverTwoSharing;
+
 
 
     /* Code to run ONCE when the driver hits INIT */
@@ -72,6 +75,8 @@ public class DadDriver extends OpMode
 
         dan.setupHardware(hardwareMap);
 
+        driverOneSharing = false;
+        driverTwoSharing = false;
 
         telemetry.addData("Status", "Initialized");
     }
@@ -98,13 +103,71 @@ public class DadDriver extends OpMode
         telemetry.addData("Left Motor", dan.leftMotor.getPower());
         telemetry.addData("Spinner", dan.spinner.getPower());
         telemetry.addData("Flywheel", dan.flywheel.getPower());
+        telemetry.addData("Beacon Hitter", dan.beaconSlider.getPower());
 
-        //telemetry.addData("Right Claw", rightClaw.getPower());
+        if(gamepad1.x){
+            driverOneSharing = false;
+        }
+        if(gamepad1.y){
+            driverOneSharing = true;
+        }
 
+        if(gamepad2.x){
+            driverTwoSharing = false;
+        }
+        if(gamepad2.y){
+            driverTwoSharing = true;
+        }
 
-        // Drivetrain code (note: The joystick goes negative when pushed forwards)
-        dan.leftMotor.setPower(-gamepad1.left_stick_y);
-        dan.rightMotor.setPower(-gamepad1.right_stick_y);
+        if(driverOneSharing && driverTwoSharing){
+            if(gamepad1.dpad_up || gamepad2.dpad_up){
+                dan.leftMotor.setDirection(DcMotor.Direction.REVERSE);
+                dan.rightMotor.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(gamepad1.dpad_down || gamepad2.dpad_down){
+                dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+                dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            }
+
+            dan.leftMotor.setPower(-(gamepad1.left_stick_y + gamepad2.left_stick_y) / 2);
+            dan.rightMotor.setPower(-(gamepad1.right_stick_y + gamepad2.right_stick_y) / 2);
+        } else if(driverOneSharing && !driverTwoSharing){
+            if(gamepad2.dpad_up){
+                dan.leftMotor.setDirection(DcMotor.Direction.REVERSE);
+                dan.rightMotor.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(gamepad2.dpad_down){
+                dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+                dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            }
+
+            dan.leftMotor.setPower(-gamepad2.left_stick_y);
+            dan.rightMotor.setPower(-gamepad2.right_stick_y);
+        } else if(!driverOneSharing && driverTwoSharing){
+            if(gamepad1.dpad_up){
+                dan.leftMotor.setDirection(DcMotor.Direction.REVERSE);
+                dan.rightMotor.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(gamepad1.dpad_down){
+                dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+                dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            }
+
+            dan.leftMotor.setPower(-gamepad1.left_stick_y);
+            dan.rightMotor.setPower(-gamepad1.right_stick_y);
+        } else {
+            if(gamepad1.dpad_up){
+                dan.leftMotor.setDirection(DcMotor.Direction.REVERSE);
+                dan.rightMotor.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(gamepad1.dpad_down){
+                dan.leftMotor.setDirection(DcMotor.Direction.FORWARD);
+                dan.rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            }
+
+            dan.leftMotor.setPower(-gamepad1.left_stick_y);
+            dan.rightMotor.setPower(-gamepad1.right_stick_y);
+        }
 
 
         if(gamepad1.left_bumper){
@@ -117,20 +180,22 @@ public class DadDriver extends OpMode
 
         if(gamepad1.a){
             dan.flywheel.setPower(1);
-        }
-
-        if(gamepad1.b) {
+        } else if(gamepad1.b) {
+            dan.flywheel.setPower(-1);
+        } else {
             dan.flywheel.setPower(0);
         }
 
-        telemetry.addData("Slider", dan.beaconSlider.getPower());
-
-        if(gamepad1.right_trigger > 0.1){
-            dan.beaconSlider.setPower(gamepad1.right_trigger);
-        } else if (gamepad1.left_trigger > 0.1){
-            dan.beaconSlider.setPower(-gamepad1.left_trigger);
+        if(gamepad2.dpad_left){
+            dan.beaconSlider.setPower(1);
+        } else if (gamepad2.dpad_right){
+            dan.beaconSlider.setPower(-1);
         } else {
             dan.beaconSlider.setPower(0);
+        }
+
+        if(gamepad1.start || gamepad2.start){
+            dan.stopMoving();
         }
 
     }

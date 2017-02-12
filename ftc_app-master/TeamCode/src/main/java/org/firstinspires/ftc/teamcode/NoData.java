@@ -53,7 +53,7 @@ import org.lasarobotics.vision.opmode.LinearVisionOpMode;
 
 @Autonomous(name="No Beacon", group="ANo Beacon OpMode")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class Unbeacon extends LinearOpMode {
+public class NoData extends LinearOpMode {
 
     /* Declare OpMode hardware. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -92,6 +92,10 @@ public class Unbeacon extends LinearOpMode {
         //Set the target distance to travel (to the ball)
         dan.leftMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
         dan.rightMotor.setTargetPosition((int)(2.5 * FLOOR_BLOCK));
+
+        telemetry.addData("Encoders", dan.leftMotor.getTargetPosition());
+        telemetry.update();
+        sleep(20000);
 
         //Run to the ball until it gets to the target distance.
         while (!(dan.leftMotor.getCurrentPosition() >= dan.leftMotor.getTargetPosition() - 10 && dan.leftMotor.getCurrentPosition() <= dan.leftMotor.getTargetPosition() + 10)) {
