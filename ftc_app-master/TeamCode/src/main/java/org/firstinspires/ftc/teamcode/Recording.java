@@ -71,7 +71,7 @@ public class Recording extends OpMode
     private Robot dan = new Robot();
 
 
-    String fileName = "RecordedInputs.txt";
+    String fileName = "RecordedInputs";
     String filePath = "Paths";
     File file = null;
     FileOutputStream out = null;
