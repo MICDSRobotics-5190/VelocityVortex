@@ -33,23 +33,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import android.os.Environment;
-import android.provider.MediaStore;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-
-import java.lang.*;
 import java.nio.ByteBuffer;
 
 
@@ -61,9 +54,9 @@ import java.nio.ByteBuffer;
  * <insert cool stuff about finished bot>, yep
  */
 
-@TeleOp(name="Record Inputs", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
+@Autonomous(name="Playback Red Team", group="Playback")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class Recording extends OpMode
+public class PlaybackRed extends LinearOpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -74,135 +67,91 @@ public class Recording extends OpMode
     String fileName = "RecordedInputs";
     String filePath = "Paths";
     File file = null;
-    FileOutputStream out = null;
+    FileInputStream in = null;
 
-    byte[] output = new byte[480000];
+    byte[] input = new byte[480000];
     int index = 0;
 
     /* Code to run ONCE when the driver hits INIT */
     @Override
-    public void init() {
+    public void runOpMode() throws InterruptedException {
 
         /* Initialize the hardware variables. The strings must
         correspond to the names in the configuration file. */
-
         dan.setupHardware(hardwareMap);
 
         try {
-            if(isExternalStorageWritable()) {
-                out = new FileOutputStream(file);
+            if(isExternalStorageReadable()) {
+                in = new FileInputStream(file);
 
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
                 File file = new File(path, fileName);
+
+                try {
+                    in.read(input);
+                } catch (IOException dataError){
+                    telemetry.addData("Error", "Can't read into an array");
+                }
             } else {
-                telemetry.addData("Error", "Can't write to any files");
+                telemetry.addData("Error", "Can't read any files");
             }
         } catch (FileNotFoundException issue){
-            telemetry.addData("Error", "Can't make file");
+            telemetry.addData("Error", "Can't read file");
         }
 
         telemetry.addData("Status", "Initialized");
-    }
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+
+            telemetry.addData("Status", "Running: " + runtime.toString());
+            telemetry.addData("Right Motor", dan.rightMotor.getPower());
+            telemetry.addData("Left Motor", dan.leftMotor.getPower());
+            telemetry.addData("Spinner", dan.spinner.getPower());
+            telemetry.addData("Flywheel", dan.flywheel.getPower());
+            telemetry.addData("Beacon Hitter", dan.beaconSlider.getPower());
 
 
-    /* Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY */
-    @Override
-    public void init_loop() {
-    }
+            byte[] leftStick = floatToByteArray(-gamepad1.left_stick_y);
+            byte[] rightStick = floatToByteArray(-gamepad1.right_stick_y);
 
+            byte[] runtime = doubleToByteArray(getRuntime());
 
-    /* Code to run ONCE when the driver hits PLAY */
-    @Override
-    public void start() {
-        runtime.reset();
-    }
+            for (; index < output.length; index += 16) {
+                output[index] = leftStick[0];
+                output[index + 1] = leftStick[1];
+                output[index + 2] = leftStick[2];
+                output[index + 3] = leftStick[3];
+                output[index + 4] = rightStick[0];
+                output[index + 5] = rightStick[1];
+                output[index + 6] = rightStick[2];
+                output[index + 7] = rightStick[3];
+                output[index + 8] = runtime[0];
+                output[index + 9] = runtime[0];
+                output[index + 10] = runtime[0];
+                output[index + 11] = runtime[0];
+                output[index + 12] = runtime[0];
+                output[index + 13] = runtime[0];
+                output[index + 14] = runtime[0];
+                output[index + 15] = runtime[0];
+            }
 
+            telemetry.update();
 
-    /* Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP */
-    @Override
-    public void loop() {
-        telemetry.addData("Status", "Running: " + runtime.toString());
-        telemetry.addData("Right Motor", dan.rightMotor.getPower());
-        telemetry.addData("Left Motor", dan.leftMotor.getPower());
-        telemetry.addData("Spinner", dan.spinner.getPower());
-        telemetry.addData("Flywheel", dan.flywheel.getPower());
-        telemetry.addData("Beacon Hitter", dan.beaconSlider.getPower());
-
-
-        if(gamepad1.left_bumper){
-            dan.spinner.setPower(1);
-        } else if (gamepad1.right_bumper){
-            dan.spinner.setPower(-1);
-        } else {
-            dan.spinner.setPower(0);
         }
 
-        if(gamepad1.a){
-            dan.flywheel.setPower(1);
-        } else if(gamepad1.b) {
-            dan.flywheel.setPower(-1);
-        } else {
-            dan.flywheel.setPower(0);
-        }
-
-        if(gamepad1.dpad_left){
-            dan.beaconSlider.setPower(1);
-        } else if (gamepad1.dpad_right){
-            dan.beaconSlider.setPower(-1);
-        } else {
-            dan.beaconSlider.setPower(0);
-        }
-
-        if(gamepad1.start){
-            dan.stopMoving();
-        }
-
-        byte[] leftStick = floatToByteArray(-gamepad1.left_stick_y);
-        byte[] rightStick = floatToByteArray(-gamepad1.right_stick_y);
-
-        byte[] runtime = doubleToByteArray(getRuntime());
-
-        for (; index < output.length; index += 16){
-            output[index] = leftStick[0];
-            output[index + 1] = leftStick[1];
-            output[index + 2] = leftStick[2];
-            output[index + 3] = leftStick[3];
-            output[index + 4] = rightStick[0];
-            output[index + 5] = rightStick[1];
-            output[index + 6] = rightStick[2];
-            output[index + 7] = rightStick[3];
-            output[index + 8] = runtime[0];
-            output[index + 9] = runtime[0];
-            output[index + 10] = runtime[0];
-            output[index + 11] = runtime[0];
-            output[index + 12] = runtime[0];
-            output[index + 13] = runtime[0];
-            output[index + 14] = runtime[0];
-            output[index + 15] = runtime[0];
-        }
-
-    }
-
-
-    /* Code to run ONCE after the driver hits STOP */
-    @Override
-    public void stop() {
         dan.stopMoving();
 
-        try {
-            out.write(output);
-            out.close();
-        } catch (IOException issue){
-            telemetry.addData("Error", "Couldn't write to RecordedInputs");
-        }
-        telemetry.addData("Status", "Successfully recorded inputs!");
+        telemetry.addData("Status", "Successfully played back inputs!");
         telemetry.update();
 
     }
 
-    public boolean isExternalStorageWritable() {
+    public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
             return true;
         }
         return false;
