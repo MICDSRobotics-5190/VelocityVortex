@@ -61,7 +61,7 @@ import java.nio.ByteBuffer;
  * <insert cool stuff about finished bot>, yep
  */
 
-@TeleOp(name="Record Inputs", group="Driver-Controlled OpModes")  // @Autonomous(...) is the other common choice
+@TeleOp(name="Record Inputs", group="Recording")  // @Autonomous(...) is the other common choice
 //@Disabled
 public class Recording extends OpMode
 {
@@ -89,8 +89,8 @@ public class Recording extends OpMode
 
         try {
             if(isExternalStorageWritable()) {
-                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-                File file = new File(path, fileName);
+
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), fileName);
 
                 out = new FileOutputStream(file);
             } else {

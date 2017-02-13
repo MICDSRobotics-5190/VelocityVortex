@@ -90,8 +90,8 @@ public class PlaybackBlue extends LinearOpMode
 
         try {
             if(isExternalStorageReadable()) {
-                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-                File file = new File(path, fileName);
+
+               File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), fileName);
 
                 in = new FileInputStream(file);
 
@@ -141,7 +141,9 @@ public class PlaybackBlue extends LinearOpMode
             telemetry.addData("Flywheel", dan.flywheel.getPower());
             telemetry.addData("Beacon Hitter", dan.beaconSlider.getPower());
 
-            while(getRuntime() > runtimeData[index]){
+            double currentRuntime = getRuntime();
+
+            while(currentRuntime > runtimeData[index]){
                 index++;
             }
 
