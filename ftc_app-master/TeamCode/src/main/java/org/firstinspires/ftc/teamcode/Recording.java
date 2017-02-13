@@ -40,6 +40,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -71,10 +73,10 @@ public class Recording extends OpMode
     private Robot dan = new Robot();
 
 
-    String fileName = "RecordedInputs";
-    String filePath = "Paths";
-    File file = null;
-    FileOutputStream out = null;
+    private String fileName = "BlueRecordedInputs";
+    private String filePath = "Paths";
+    private File file = null;
+    private FileOutputStream out = null;
 
     byte[] output = new byte[480000];
 
@@ -90,9 +92,16 @@ public class Recording extends OpMode
         try {
             if(isExternalStorageWritable()) {
 
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), fileName);
+                File file = new File(FtcRobotControllerActivity.getAppContext().getFilesDir(), fileName);
+
+                try {
+                    file.createNewFile();
+                } catch (IOException problem){
+                    telemetry.addData("Error", "Can't create file");
+                }
 
                 out = new FileOutputStream(file);
+                telemetry.addData("File", "Made!");
             } else {
                 telemetry.addData("Error", "Can't write to any files");
             }

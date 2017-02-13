@@ -38,6 +38,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -92,7 +94,7 @@ public class PlaybackRed extends LinearOpMode
         try {
             if(isExternalStorageReadable()) {
 
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), fileName);
+                File file = new File(FtcRobotControllerActivity.getAppContext().getFilesDir(), fileName);
 
                 in = new FileInputStream(file);
 
