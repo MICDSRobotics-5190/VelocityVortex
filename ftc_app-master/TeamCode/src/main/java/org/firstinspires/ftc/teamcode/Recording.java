@@ -77,7 +77,6 @@ public class Recording extends OpMode
     FileOutputStream out = null;
 
     byte[] output = new byte[480000];
-    int index = 0;
 
     /* Code to run ONCE when the driver hits INIT */
     @Override
@@ -90,10 +89,10 @@ public class Recording extends OpMode
 
         try {
             if(isExternalStorageWritable()) {
-                out = new FileOutputStream(file);
-
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
                 File file = new File(path, fileName);
+
+                out = new FileOutputStream(file);
             } else {
                 telemetry.addData("Error", "Can't write to any files");
             }
@@ -162,23 +161,19 @@ public class Recording extends OpMode
 
         byte[] runtime = doubleToByteArray(getRuntime());
 
-        for (; index < output.length; index += 16){
-            output[index] = leftStick[0];
-            output[index + 1] = leftStick[1];
-            output[index + 2] = leftStick[2];
-            output[index + 3] = leftStick[3];
-            output[index + 4] = rightStick[0];
-            output[index + 5] = rightStick[1];
-            output[index + 6] = rightStick[2];
-            output[index + 7] = rightStick[3];
-            output[index + 8] = runtime[0];
-            output[index + 9] = runtime[0];
-            output[index + 10] = runtime[0];
-            output[index + 11] = runtime[0];
-            output[index + 12] = runtime[0];
-            output[index + 13] = runtime[0];
-            output[index + 14] = runtime[0];
-            output[index + 15] = runtime[0];
+        for (int index = 0; index < output.length; index += 16){
+
+            for(int i = index; i < index + 4 ; i++) {
+                output[i] = leftStick[i - index];
+            }
+
+            for(int i = index + 4; i < index + 8 ; i++) {
+                output[i] = rightStick[i - (index + 4)];
+            }
+
+            for(int i = index + 8; i < index + 16 ; i++) {
+                output[i] = runtime[i - (index + 8)];
+            }
         }
 
     }

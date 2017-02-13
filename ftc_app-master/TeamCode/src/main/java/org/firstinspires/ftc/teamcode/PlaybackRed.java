@@ -64,12 +64,21 @@ public class PlaybackRed extends LinearOpMode
     private Robot dan = new Robot();
 
 
-    String fileName = "RecordedInputs";
+    String fileName = "RedRecordedInputs";
     String filePath = "Paths";
     File file = null;
     FileInputStream in = null;
 
     byte[] input = new byte[480000];
+
+    byte[][] recordedLeftStickArray = new byte[30000][4];
+    byte[][] recordedRightStickArray = new byte[30000][4];
+    byte[][] recordedRuntimeArray = new byte[30000][8];
+
+    float[] leftStickData = new float[30000];
+    float[] rightStickData = new float[30000];
+    double[] runtimeData = new double[30000];
+
     int index = 0;
 
     /* Code to run ONCE when the driver hits INIT */
@@ -82,10 +91,10 @@ public class PlaybackRed extends LinearOpMode
 
         try {
             if(isExternalStorageReadable()) {
-                in = new FileInputStream(file);
-
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
                 File file = new File(path, fileName);
+
+                in = new FileInputStream(file);
 
                 try {
                     in.read(input);
@@ -98,6 +107,27 @@ public class PlaybackRed extends LinearOpMode
         } catch (FileNotFoundException issue){
             telemetry.addData("Error", "Can't read file");
         }
+
+        for(int i = 0; i < recordedLeftStickArray.length; i++){
+            for(int j = 0; j < recordedLeftStickArray[i].length; j++){
+                recordedLeftStickArray[i][j] = input[(16 * i) + j];
+            }
+            for(int j = 0; j < recordedRightStickArray[i].length; j++){
+                recordedRightStickArray[i][j] = input[(16 * i) + recordedLeftStickArray[i].length + j];
+            }
+            for(int j = 0; j < recordedRuntimeArray[i].length; j++){
+                recordedRuntimeArray[i][j] = input[(16 * i) + recordedLeftStickArray[i].length + recordedRightStickArray[i].length + j];
+            }
+        }
+
+        for(int i = 0; i < recordedLeftStickArray.length; i++){
+            leftStickData[i] = byteArrayToFloat(recordedLeftStickArray[i]);
+            rightStickData[i] = byteArrayToFloat(recordedRightStickArray[i]);
+            runtimeData[i] = byteArrayToDouble(recordedRuntimeArray[i]);
+        }
+
+        try { in.close(); }
+        catch (IOException issue){ telemetry.addData("Error", "Couldn't close input"); }
 
         telemetry.addData("Status", "Initialized");
 
@@ -112,30 +142,12 @@ public class PlaybackRed extends LinearOpMode
             telemetry.addData("Flywheel", dan.flywheel.getPower());
             telemetry.addData("Beacon Hitter", dan.beaconSlider.getPower());
 
-
-            byte[] leftStick = floatToByteArray(-gamepad1.left_stick_y);
-            byte[] rightStick = floatToByteArray(-gamepad1.right_stick_y);
-
-            byte[] runtime = doubleToByteArray(getRuntime());
-
-            for (; index < output.length; index += 16) {
-                output[index] = leftStick[0];
-                output[index + 1] = leftStick[1];
-                output[index + 2] = leftStick[2];
-                output[index + 3] = leftStick[3];
-                output[index + 4] = rightStick[0];
-                output[index + 5] = rightStick[1];
-                output[index + 6] = rightStick[2];
-                output[index + 7] = rightStick[3];
-                output[index + 8] = runtime[0];
-                output[index + 9] = runtime[0];
-                output[index + 10] = runtime[0];
-                output[index + 11] = runtime[0];
-                output[index + 12] = runtime[0];
-                output[index + 13] = runtime[0];
-                output[index + 14] = runtime[0];
-                output[index + 15] = runtime[0];
+            while(getRuntime() > runtimeData[index]){
+                index++;
             }
+
+            dan.leftMotor.setPower(leftStickData[index]);
+            dan.rightMotor.setPower(rightStickData[index]);
 
             telemetry.update();
 
@@ -157,22 +169,19 @@ public class PlaybackRed extends LinearOpMode
         return false;
     }
 
-    public static byte[] floatToByteArray(float value){
+    public static float byteArrayToFloat(byte[] bytes){
 
-        int bits = Float.floatToIntBits(value);
-        byte[] bytes = new byte[4];
-        bytes[0] = (byte)(bits & 0xff);
-        bytes[1] = (byte)((bits >> 8) & 0xff);
-        bytes[2] = (byte)((bits >> 16) & 0xff);
-        bytes[3] = (byte)((bits >> 24) & 0xff);
-        return bytes;
+        float f = ByteBuffer.wrap(bytes).getFloat();
+
+        return f;
 
     }
 
-    public static byte[] doubleToByteArray(double value) {
-        byte[] bytes = new byte[8];
-        ByteBuffer.wrap(bytes).putDouble(value);
-        return bytes;
+    public static double byteArrayToDouble(byte[] bytes) {
+
+        double d = ByteBuffer.wrap(bytes).getDouble();
+
+        return d;
     }
 
 
