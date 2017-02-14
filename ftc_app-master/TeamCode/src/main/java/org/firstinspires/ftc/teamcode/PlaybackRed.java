@@ -146,7 +146,7 @@ public class PlaybackRed extends LinearOpMode
 
             double currentRuntime = getRuntime();
 
-            while(currentRuntime > runtimeData[index]){
+            while(currentRuntime > runtimeData[index] && index < runtimeData.length){
                 index++;
             }
 
