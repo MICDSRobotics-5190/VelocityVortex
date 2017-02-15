@@ -145,12 +145,16 @@ public class PlaybackBlue extends LinearOpMode
 
             double currentRuntime = getRuntime();
 
-            while(currentRuntime > runtimeData[index] && index < runtimeData.length){
+            while(currentRuntime > runtimeData[index] && index < runtimeData.length - 1){
                 index++;
             }
 
             dan.leftMotor.setPower(leftStickData[index]);
             dan.rightMotor.setPower(rightStickData[index]);
+
+            if(index == runtimeData.length - 1){
+                telemetry.addData("Status", "Successfully played back inputs!");
+            }
 
             telemetry.update();
 
