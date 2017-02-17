@@ -70,6 +70,7 @@ import com.vuforia.Vuforia;
 import com.vuforia.Frame;
 import com.vuforia.State;
 
+import org.firstinspires.ftc.teamcode.customexceptions.GeneralErrorInterrupt;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 
 import org.opencv.core.Mat;
@@ -448,6 +449,19 @@ public class VuforiaAutonomous extends LinearOpMode {
 
             //floor blocks are 59.5 cm (590 mm), so 590 in position values.
 
+            // NEW TACTIC
+            // Start on side and move forward and go to encoder right: 2279 an left: 2253
+            // reset
+            // rotate left until right 1154 and left -1138
+            // reset
+            // forward until right 2276 left 2173
+            // reset
+            // rotate right: -1479 and left 1282
+            // reset
+            // move forward util right 2527 left 2509
+            // rotate left right 1316 and left -1352
+            // use vuforia to guide it in and hit beacon
+
             switch (step) {
                 case 0:
                     //Drive forward until we get location data
@@ -677,7 +691,43 @@ public class VuforiaAutonomous extends LinearOpMode {
                     break;
                 case 9:
                     telemetry.addData("Completed", "Hit beacon 1? (hopefully???)");
-                    break;
+                    step = 10;
+                case 10:
+                    // backup first, rotate according to team, move until the corresponding trackable is found, then move until
+                    // in position, rotate then push button
+                    Robot.rightMotor.setPower(-1);
+                    Robot.leftMotor.setPower(-1);
+                    sleep(750);
+                    chillOut();
+                    if (desiredTeam == RED_TEAM) {
+                        dan.rightMotor.setTargetPosition(-FULL_REVOLUTION);
+                        dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
+                        if (!encodersInPosition()) {
+                            dan.leftMotor.setPower(1);
+                            dan.rightMotor.setPower(-1);
+                        }
+                        else {
+                            chillOut();
+                            step = 11;
+                        }
+                    }
+                    else if (desiredTeam == BLUE_TEAM) {
+                        dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
+                        dan.leftMotor.setTargetPosition(-FULL_REVOLUTION);
+                        if (!encodersInPosition()) {
+                            dan.leftMotor.setPower(-1);
+                            dan.rightMotor.setPower(1);
+                        }
+                        else {
+                            chillOut();
+                            step = 11;
+                        }
+                    }
+                    else {
+                        throw new InterruptedException();
+                    }
+                case 11 :
+                    //if (desiredTeam == )
                 default:
                     telemetry.addData("Error", "Case statement is a nutcase");
                     dan.stopMoving();

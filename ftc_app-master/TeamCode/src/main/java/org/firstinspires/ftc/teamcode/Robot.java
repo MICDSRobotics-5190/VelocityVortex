@@ -22,7 +22,7 @@ public class Robot {
     public static CRServo beaconSlider;
 
 
-    public Robot(){
+    public Robot() {
         leftMotor = null;
         rightMotor = null;
 
