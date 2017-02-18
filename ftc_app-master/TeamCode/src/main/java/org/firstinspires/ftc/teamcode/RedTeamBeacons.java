@@ -116,6 +116,9 @@ public class RedTeamBeacons extends LinearOpMode {
 
     //Parts of the autonomous program
     private int step;
+    private int beaconsHit;
+    private final int ONE_BEACON = 1;
+    private final int TWO_BEACONS = 2;
     private double targetBearing;
 
     private int desiredTeam;
@@ -146,6 +149,7 @@ public class RedTeamBeacons extends LinearOpMode {
 
         desiredTeam = RED_TEAM;
         step = 0;
+        beaconsHit = 0;
         targetBearing = 0;
 
         //Vuforia Camera & Frame-queue Setup
@@ -558,6 +562,7 @@ public class RedTeamBeacons extends LinearOpMode {
                             dan.beaconSlider.setPower(0);
                         }
 
+                        beaconsHit++;
                         step = 7;
                         chillOut();
 
@@ -575,48 +580,57 @@ public class RedTeamBeacons extends LinearOpMode {
 
                     break;
                 case 8:
-                    telemetry.addData("Completed", "Hit beacon 1? (hopefully???)");
-                    //step = 10;
+
+                    if(beaconsHit == ONE_BEACON) {
+                        telemetry.addData("Completed", "Hit beacon 1? (hopefully???)");
+                        chillOut();
+                        chillOut();
+                        step = 9;
+                    } else if (beaconsHit == TWO_BEACONS){
+                        telemetry.addData("Completed", "Hit both beacons? (hopefully???)");
+                        chillOut();
+                    }
+
                     break;
-                /*
+                case 9:
+
+                    dan.rightMotor.setTargetPosition(-QUARTER_TURN);
+                    dan.leftMotor.setTargetPosition(QUARTER_TURN);
+                    if(!encodersInPosition()){
+                        dan.rightMotor.setPower(-1);
+                        dan.leftMotor.setPower(1);
+                    } else {
+                        step = 10;
+                        chillOut();
+                    }
+
+                    break;
                 case 10:
-                    // backup first, rotate according to team, move until the corresponding trackable is found, then move until
-                    // in position, rotate then push button
-                    Robot.rightMotor.setPower(-1);
-                    Robot.leftMotor.setPower(-1);
-                    sleep(750);
-                    chillOut();
-                    if (desiredTeam == RED_TEAM) {
-                        dan.rightMotor.setTargetPosition(-FULL_REVOLUTION);
-                        dan.leftMotor.setTargetPosition(FULL_REVOLUTION);
-                        if (!encodersInPosition()) {
-                            dan.leftMotor.setPower(1);
-                            dan.rightMotor.setPower(-1);
-                        }
-                        else {
-                            chillOut();
-                            step = 11;
-                        }
+
+                    dan.rightMotor.setTargetPosition(FLOOR_BLOCK * 2);
+                    dan.leftMotor.setTargetPosition(FLOOR_BLOCK * 2);
+                    if(!encodersInPosition()){
+                        dan.drivetrainPower(1);
+                    } else {
+                        step = 11;
+                        chillOut();
                     }
-                    else if (desiredTeam == BLUE_TEAM) {
-                        dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
-                        dan.leftMotor.setTargetPosition(-FULL_REVOLUTION);
-                        if (!encodersInPosition()) {
-                            dan.leftMotor.setPower(-1);
-                            dan.rightMotor.setPower(1);
-                        }
-                        else {
-                            chillOut();
-                            step = 11;
-                        }
-                    }
-                    else {
-                        throw new InterruptedException();
-                    }
-                case 11 :
-                    //if (desiredTeam == )
+
                     break;
-                */
+                case 11:
+
+                    dan.rightMotor.setTargetPosition(QUARTER_TURN);
+                    dan.leftMotor.setTargetPosition(-QUARTER_TURN);
+
+                    if(!encodersInPosition()){
+                        dan.rightMotor.setPower(1);
+                        dan.leftMotor.setPower(-1);
+                    } else {
+                        step = 3;
+                        chillOut();
+                    }
+
+                    break;
                 default:
                     telemetry.addData("Error", "Case statement is a nutcase");
                     dan.stopMoving();
