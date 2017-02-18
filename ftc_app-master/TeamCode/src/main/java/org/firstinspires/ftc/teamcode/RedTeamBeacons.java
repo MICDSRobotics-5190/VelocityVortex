@@ -80,7 +80,7 @@ import java.util.List;
  * The motor encoders helped a lot in precise movement and getting on the ramp.
  */
 
-@Autonomous(name="Vuforia Autonomous", group="Complex Opmodes")  // @Autonomous(...) is the other common choice
+@Autonomous(name="Red Beacons", group="Encoder Opmodes")  // @Autonomous(...) is the other common choice
 //@Disabled
 public class RedTeamBeacons extends LinearOpMode {
 
