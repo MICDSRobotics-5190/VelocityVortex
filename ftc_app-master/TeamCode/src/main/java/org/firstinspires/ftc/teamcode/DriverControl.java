@@ -64,6 +64,8 @@ public class DriverControl extends OpMode
     private boolean driverOneSharing;
     private boolean driverTwoSharing;
 
+    private double lastPress;
+
 
 
     /* Code to run ONCE when the driver hits INIT */
@@ -77,6 +79,7 @@ public class DriverControl extends OpMode
 
         driverOneSharing = false;
         driverTwoSharing = false;
+        lastPress = 0;
 
         telemetry.addData("Status", "Initialized");
     }
@@ -179,10 +182,8 @@ public class DriverControl extends OpMode
         }
 
         if(gamepad1.a){
-            dan.flywheel.setPower(1);
-        } else if(gamepad1.b) {
             dan.flywheel.setPower(-1);
-        } else {
+        }  else {
             dan.flywheel.setPower(0);
         }
 
@@ -192,6 +193,24 @@ public class DriverControl extends OpMode
             dan.beaconSlider.setPower(-1);
         } else {
             dan.beaconSlider.setPower(0);
+        }
+
+        if(gamepad1.dpad_left){
+            dan.beaconSlider.setPower(1);
+        } else if (gamepad1.dpad_right){
+            dan.beaconSlider.setPower(-1);
+        } else {
+            dan.beaconSlider.setPower(0);
+        }
+;
+        if(gamepad2.b){
+            if (lastPress + 0.25 > getRuntime()){
+                dan.flywheel.setPower(-1);
+            } else {
+                lastPress = getRuntime();
+            }
+        } else {
+            lastPress = getRuntime();
         }
 
         if(gamepad1.start || gamepad2.start){
