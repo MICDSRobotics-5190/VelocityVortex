@@ -144,8 +144,8 @@ public class BlueTeamBeacons extends LinearOpMode {
         //Prepare the encoders to be used
         dan.resetEncoders();
 
-        dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
-        dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO);
+        dan.leftMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO * 2);
+        dan.rightMotor.setMaxSpeed(MOTOR_PULSE_PER_REVOLUTION * MOTOR_GEAR_RATIO * 2);
 
         desiredTeam = BLUE_TEAM;
         step = 0;
@@ -497,17 +497,56 @@ public class BlueTeamBeacons extends LinearOpMode {
 
                     break;
                 case 4:
-                    //Make sure bearing is good
-                    if (!(bearing > targetBearing - 0.07 && bearing < targetBearing + 0.07)) {
+                    /*Make sure bearing is good
+                    if (!(bearing > targetBearing - 0.17 && bearing < targetBearing + 0.17)) {
                         // rotate bot until bearing is met
                         dan.leftMotor.setTargetPosition(-FULL_REVOLUTION);
                         dan.rightMotor.setTargetPosition(FULL_REVOLUTION);
-                        dan.leftMotor.setPower(-0.2);
-                        dan.rightMotor.setPower(0.2);
+                        dan.leftMotor.setPower(-0.5);
+                        dan.rightMotor.setPower(0.5);
                     } else {
                         analysis = getBeaconStates();
                         telemetry.addData("Left side", analysis.getStateLeft().toString());
                         telemetry.addData("Right side", analysis.getStateRight().toString());
+                        step = 5;
+                        chillOut();
+                    } */
+                    if(analysis == null) {
+                        if (rgb == null) {
+                            CloseableFrame rawFrame = vuforia.getFrameQueue().take();
+
+                            numImages = rawFrame.getNumImages();
+                            for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
+                                if (rawFrame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
+                                    rgb = rawFrame.getImage(i);
+                                    break;
+                                }
+                            }
+                        } else {
+
+                            ByteBuffer pixelData = ByteBuffer.allocate(rgb.getPixels().capacity());
+
+                            pixelData.put(rgb.getPixels().duplicate());
+
+                            byte[] pixelArray = pixelData.array();
+
+                            // Currently the error is from an incorrect number on CvType.
+                            // We could easily just try them all, but let's try whichever one corresponds to 3 next (for 3 channels).
+                            // I don't know if these would be the same or not given that one is colored while the other is grayscale/
+
+                            Mat colorPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC3);
+                            Mat grayPicture = new Mat(rgb.getHeight(), rgb.getWidth(), CvType.CV_8UC1);
+
+                            colorPicture.put(0, 0, pixelArray);
+
+                            Imgproc.cvtColor(colorPicture, grayPicture, Imgproc.COLOR_RGB2GRAY);
+
+                            Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
+
+                            analysis = beacon.analyzeFrame(colorPicture, grayPicture);
+
+                        }
+                    } else {
                         step = 5;
                         chillOut();
                     }
