@@ -168,6 +168,9 @@ public class Recording extends OpMode
         byte[] leftStick = floatToByteArray(-gamepad1.left_stick_y);
         byte[] rightStick = floatToByteArray(-gamepad1.right_stick_y);
 
+        dan.leftMotor.setPower(-gamepad1.left_stick_y);
+        dan.rightMotor.setPower(-gamepad1.right_stick_y);
+
         byte[] runtime = doubleToByteArray(getRuntime());
 
         for (int index = 0; index < output.length; index += 16){
