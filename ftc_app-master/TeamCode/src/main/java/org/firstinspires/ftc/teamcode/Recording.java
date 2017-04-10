@@ -72,7 +72,6 @@ public class Recording extends OpMode
 
     private Robot dan = new Robot();
 
-
     private String fileName = "BlueRecordedInputs";
     private String filePath = "Paths";
     private File file = null;
