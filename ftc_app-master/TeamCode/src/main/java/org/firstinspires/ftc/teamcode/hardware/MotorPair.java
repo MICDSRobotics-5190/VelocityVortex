@@ -40,6 +40,32 @@ public class MotorPair {
         motor2.setPower(power);
     }
 
-    public void getFrontPower
+    public void getFrontPower(double power) { motor1.getPower(); }
+    public void getBackPower(double power) { motor2.getPower(); }
 
+    public void setDirections(DcMotorSimple.Direction direction){
+        motor1.setDirection(direction);
+        motor2.setDirection(direction);
+    }
+
+    public void setModes(DcMotor.RunMode runMode){
+        motor1.setMode(runMode);
+        motor2.setMode(runMode);
+    }
+
+    public DcMotor getMotor1() {
+        return motor1;
+    }
+
+    public DcMotor getMotor2() {
+        return motor2;
+    }
+
+    public void setMotor1(DcMotor motor1) {
+        this.motor1 = motor1;
+    }
+
+    public void setMotor2(DcMotor motor2) {
+        this.motor2 = motor2;
+    }
 }

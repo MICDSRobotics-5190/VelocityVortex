@@ -54,9 +54,9 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Recorder", group="Shadow")  // @Autonomous(...) is the other common choice
+@TeleOp(name="Driving", group="TeleOp")  // @Autonomous(...) is the other common choice
 @Disabled
-public class Recording extends OpMode
+public class DriverControlled extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();

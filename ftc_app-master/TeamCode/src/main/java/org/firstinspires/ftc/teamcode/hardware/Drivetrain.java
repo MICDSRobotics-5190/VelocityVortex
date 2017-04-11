@@ -22,7 +22,39 @@ public class Drivetrain {
     public Drivetrain(HardwareMap hardwareMap){
         leftMotors = new MotorPair(hardwareMap, "left front", "left back");
         rightMotors = new MotorPair(hardwareMap, "right front", "right back");
+
     }
 
+    public void setPower(double power){
+        leftMotors.setPower(power);
+        rightMotors.setPower(power);
+    }
 
+    public MotorPair getLeftMotors() {
+        return leftMotors;
+    }
+
+    public MotorPair getRightMotors() {
+        return rightMotors;
+    }
+
+    public void setModes(DcMotor.RunMode runMode){
+        leftMotors.setModes(runMode);
+        rightMotors.setModes(runMode);
+    }
+
+    public void resetEncoders(){
+        leftMotors.setModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotors.setModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotors.setModes(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotors.setModes(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void setLeftMotors(MotorPair leftMotors) {
+        this.leftMotors = leftMotors;
+    }
+
+    public void setRightMotors(MotorPair rightMotors) {
+        this.rightMotors = rightMotors;
+    }
 }
