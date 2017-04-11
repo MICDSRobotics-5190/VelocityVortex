@@ -23,5 +23,23 @@ public class MotorPair {
         motor2 = hardwareMap.dcMotor.get(hardwareName2);
     }
 
+    public void setPower(double power){
+        motor1.setPower(power);
+        motor2.setPower(power);
+    }
+
+    public void stop(){
+        motor1.setPower(0);
+        motor2.setPower(0);
+    }
+
+    public void setFrontPower(double power){
+        motor1.setPower(power);
+    }
+    public void setBackPower(double power){
+        motor2.setPower(power);
+    }
+
+    public void getFrontPower
 
 }
