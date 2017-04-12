@@ -112,6 +112,27 @@ public class DriverControlled extends OpMode
             bot.getLauncher().fullRotation();
         }
 
+        if (gamepad1.b) {
+            bot.getLifter().stop();
+            bot.getIntake().stop();
+        }
+
+        if (gamepad1.dpad_left) {
+            bot.getIntake().takeInBall();
+        }
+
+        if (gamepad1.dpad_right) {
+            bot.getIntake().purgeBall();
+        }
+
+        if (gamepad1.dpad_up) {
+            bot.getLifter().ascend();
+        }
+
+        if (gamepad1.dpad_down) {
+            bot.getLifter().descend();
+        }
+
         /* Recording code here */
     }
 
