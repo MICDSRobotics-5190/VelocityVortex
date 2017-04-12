@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Lifter {
 
-    private static DcMotor lifterMotor;
+    private DcMotor lifterMotor;
 
     /**
      * Constructor of the Lifter for the Robot Class
@@ -38,14 +38,14 @@ public class Lifter {
     /**
      * This will descend the robot
      */
-    public static void descend() {
+    public void descend() {
         lifterMotor.setPower(-1);
     }
 
     /**
      * This will stop the lifter motor
      */
-    public static void stop() {
+    public void stop() {
         lifterMotor.setPower(0);
     }
 }

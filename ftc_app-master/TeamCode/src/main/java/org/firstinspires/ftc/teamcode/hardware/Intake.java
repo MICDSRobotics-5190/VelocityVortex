@@ -8,7 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 
 public class Intake {
-    private static DcMotor intakeMotor;
+
+    private DcMotor intakeMotor;
 
     /**
      * Constructor of the Intake for the Robot class
@@ -23,28 +24,28 @@ public class Intake {
      * Gives Intake Object
      * @return returns intake object
      */
-    public static DcMotor getIntakeMotor() {
+    public DcMotor getIntakeMotor() {
         return intakeMotor;
     }
 
     /**
      * Method for taking in the ball
      */
-    public static void takeInBall() {
+    public void takeInBall() {
         intakeMotor.setPower(1);
     }
 
     /**
      * Reverses the intake
      */
-    public static void purgeBall() {
+    public void purgeBall() {
         intakeMotor.setPower(-1);
     }
 
     /**
      * Stops the intake motor
      */
-    public static void stop() {
+    public void stop() {
         intakeMotor.setPower(0);
     }
 }
