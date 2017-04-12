@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Created by BAbel on 4/11/2017.
  */
 
-public class Launcher {
+public class Launcher implements EncoderValues {
 
     private DcMotor launcherMotor;
 
@@ -15,13 +15,11 @@ public class Launcher {
 
     public Launcher(){
         launcherMotor = null;
-        gearRatio = 0.666667;
     }
 
     public Launcher(HardwareMap hardwareMap){
         launcherMotor = hardwareMap.dcMotor.get("launcher");
         launcherMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        gearRatio = 0.666667;
     }
 
     public DcMotor getLauncherMotor() {
@@ -36,7 +34,7 @@ public class Launcher {
         launcherMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         launcherMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        launcherMotor.setTargetPosition((int)gearRatio * Drivetrain.GEAR_BOX_RATIO * Drivetrain.PULSES_PER_ROTATION);
+        launcherMotor.setTargetPosition(FULL_ROTATION);
         launcherMotor.setPower(1);
     }
 }
