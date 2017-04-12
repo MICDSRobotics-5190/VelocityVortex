@@ -39,6 +39,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.hardware.TankDrive;
+import org.firstinspires.ftc.teamcode.hardware.MotorPair;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -55,12 +57,15 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
  */
 
 @TeleOp(name="Driving", group="TeleOp")  // @Autonomous(...) is the other common choice
-@Disabled
 public class DriverControlled extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
     private Robot bot = null;
+
+    private TankDrive tankDrive;
+    private MotorPair leftMotors;
+    private MotorPair rightMotors;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -69,6 +74,10 @@ public class DriverControlled extends OpMode
     public void init() {
 
         bot = new Robot(hardwareMap);
+        tankDrive = bot.getTankDrive();
+
+        leftMotors = bot.getTankDrive().getLeftMotors();
+        rightMotors = bot.getTankDrive().getRightMotors();
 
         telemetry.addData("Status", "Initialized");
 
@@ -96,6 +105,13 @@ public class DriverControlled extends OpMode
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
 
+        leftMotors.setPower(gamepad1.left_stick_y);
+        rightMotors.setPower(gamepad1.right_stick_y);
+
+        if(gamepad1.a){
+            bot.getLauncher().fullRotation();
+        }
+
         /* Recording code here */
     }
 
@@ -106,7 +122,7 @@ public class DriverControlled extends OpMode
     public void stop() {
 
         bot.stopMoving();
-        bot.getDrivetrain().resetEncoders();
+        bot.getTankDrive().resetEncoders();
 
     }
 

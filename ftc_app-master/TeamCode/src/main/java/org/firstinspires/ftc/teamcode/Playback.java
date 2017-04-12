@@ -55,7 +55,6 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
  */
 
 @Autonomous(name="Recent Playback", group="Shadow")  // @Autonomous(...) is the other common choice
-@Disabled
 public class Playback extends LinearOpMode {
 
     /* Declare OpMode members. */

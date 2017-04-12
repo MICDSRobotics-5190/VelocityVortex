@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class MotorPair {
+public class MotorPair implements Drivetrain{
 
     private DcMotor motor1;
     private DcMotor motor2;
@@ -23,12 +23,14 @@ public class MotorPair {
         motor2 = hardwareMap.dcMotor.get(hardwareName2);
     }
 
+    @Override
     public void setPower(double power){
         motor1.setPower(power);
         motor2.setPower(power);
     }
 
-    public void stop(){
+    @Override
+    public void stopMoving(){
         motor1.setPower(0);
         motor2.setPower(0);
     }
@@ -48,9 +50,18 @@ public class MotorPair {
         motor2.setDirection(direction);
     }
 
+    @Override
     public void setModes(DcMotor.RunMode runMode){
         motor1.setMode(runMode);
         motor2.setMode(runMode);
+    }
+
+    @Override
+    public void resetEncoders(){
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public DcMotor getMotor1() {

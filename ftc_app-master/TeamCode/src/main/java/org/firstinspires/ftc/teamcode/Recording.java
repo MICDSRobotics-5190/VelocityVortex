@@ -55,7 +55,6 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
  */
 
 @TeleOp(name="Recorder", group="Shadow")  // @Autonomous(...) is the other common choice
-@Disabled
 public class Recording extends OpMode
 {
     /* Declare OpMode members. */
@@ -106,7 +105,7 @@ public class Recording extends OpMode
     public void stop() {
 
         bot.stopMoving();
-        bot.getDrivetrain().resetEncoders();
+        bot.getTankDrive().resetEncoders();
 
     }
 

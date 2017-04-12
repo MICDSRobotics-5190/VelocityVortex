@@ -12,37 +12,37 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Robot {
 
-    private Drivetrain drivetrain;
-    private DcMotor launcher;
+    private TankDrive tankDrive;
+    private Launcher launcher;
     private CRServo slider;
 
     public Robot(){
-        drivetrain = null;
+        tankDrive = null;
         launcher = null;
         slider = null;
     }
 
     public Robot(HardwareMap hardwareMap){
-        drivetrain = new Drivetrain(hardwareMap);
-        launcher = hardwareMap.dcMotor.get("launcher");
+        tankDrive = new TankDrive(hardwareMap);
+        launcher = new Launcher(hardwareMap);
         slider = hardwareMap.crservo.get("slider");
 
-        drivetrain.getLeftMotors().setDirections(DcMotorSimple.Direction.REVERSE);
-        drivetrain.getRightMotors().setDirections(DcMotorSimple.Direction.FORWARD);
-        drivetrain.setModes(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        tankDrive.getLeftMotors().setDirections(DcMotorSimple.Direction.REVERSE);
+        tankDrive.getRightMotors().setDirections(DcMotorSimple.Direction.FORWARD);
+        tankDrive.setModes(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void stopMoving(){
-        drivetrain.setPower(0);
-        launcher.setPower(0);
+        tankDrive.setPower(0);
+        launcher.getLauncherMotor().setPower(0);
         slider.setPower(0);
     }
 
-    public Drivetrain getDrivetrain() {
-        return drivetrain;
+    public TankDrive getTankDrive() {
+        return tankDrive;
     }
 
-    public DcMotor getLauncher() {
+    public Launcher getLauncher() {
         return launcher;
     }
 
@@ -51,10 +51,10 @@ public class Robot {
     }
 
     public void setDrivetrain(Drivetrain drivetrain) {
-        this.drivetrain = drivetrain;
+        this.tankDrive = tankDrive;
     }
 
-    public void setLauncher(DcMotor launcher) {
+    public void setLauncher(Launcher launcher) {
         this.launcher = launcher;
     }
 
