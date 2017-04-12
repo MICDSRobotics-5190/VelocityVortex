@@ -11,9 +11,6 @@ public class Launcher {
 
     private DcMotor launcherMotor;
 
-    private final int GEAR_BOX_RATIO = 60; //andymark 60 motors
-    private final int PULSES_PER_ROTATION = 7;
-
     private double gearRatio;
 
     public Launcher(){
@@ -39,7 +36,7 @@ public class Launcher {
         launcherMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         launcherMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        launcherMotor.setTargetPosition((int)gearRatio * GEAR_BOX_RATIO * PULSES_PER_ROTATION);
+        launcherMotor.setTargetPosition((int)gearRatio * Drivetrain.GEAR_BOX_RATIO * Drivetrain.PULSES_PER_ROTATION);
         launcherMotor.setPower(1);
     }
 }

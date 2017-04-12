@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public interface Drivetrain {
 
+    int GEAR_BOX_RATIO = 60; //andymark 60 motors
+    int PULSES_PER_ROTATION = 7; //PPR, from the manufacturer website
+
     public void setPower(double power);
 
     public void setModes(DcMotor.RunMode runMode);
