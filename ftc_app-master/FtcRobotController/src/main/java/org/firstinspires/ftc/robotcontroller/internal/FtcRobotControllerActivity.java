@@ -113,7 +113,7 @@ public class FtcRobotControllerActivity extends Activity {
   protected ProgrammingModeController programmingModeController;
 
   protected UpdateUI.Callback callback;
-  protected static Context context;
+  protected Context context;
   protected Utility utility;
   protected AppUtil appUtil = AppUtil.getInstance();
 
@@ -135,6 +135,7 @@ public class FtcRobotControllerActivity extends Activity {
 
   protected FtcEventLoop eventLoop;
   protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
+
 
   protected class RobotRestarter implements Restarter {
 
@@ -541,9 +542,4 @@ public class FtcRobotControllerActivity extends Activity {
       });
     }
   }
-
-  public static Context getAppContext() {
-    return context;
-  }
-
 }

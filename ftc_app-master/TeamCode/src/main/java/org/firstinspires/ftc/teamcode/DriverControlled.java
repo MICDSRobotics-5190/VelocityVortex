@@ -32,21 +32,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-import org.firstinspires.ftc.teamcode.hardware.MotorPair;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
-import org.firstinspires.ftc.teamcode.inputtracking.Input;
-
-import java.io.File;
-import java.util.ArrayList;
+import org.firstinspires.ftc.teamcode.hardware.MotorPair;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -62,8 +56,8 @@ import java.util.ArrayList;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Recorder", group="Shadow")  // @Autonomous(...) is the other common choice
-public class Recording extends OpMode implements Playback
+@TeleOp(name="Driving", group="TeleOp")  // @Autonomous(...) is the other common choice
+public class DriverControlled extends OpMode
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -73,19 +67,14 @@ public class Recording extends OpMode implements Playback
     private MotorPair leftMotors;
     private MotorPair rightMotors;
 
-    private ArrayList<Input> inputs;
-    private File file;
-
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
 
-        //file = new File(context.getFilesDir, Playback.INPUTS_RED);
-
         bot = new Robot(hardwareMap);
-        inputs = new ArrayList<Input>();
+        tankDrive = bot.getTankDrive();
 
         tankDrive = bot.getTankDrive();
         leftMotors = bot.getTankDrive().getLeftMotors();
@@ -145,8 +134,7 @@ public class Recording extends OpMode implements Playback
             bot.getLifter().descend();
         }
 
-        inputs.add(new Input(gamepad1, runtime.time()));
-
+        /* Recording code here */
     }
 
     /*
@@ -159,8 +147,5 @@ public class Recording extends OpMode implements Playback
         bot.getTankDrive().resetEncoders();
 
     }
-
-    @Override
-    public void play(){}
 
 }
