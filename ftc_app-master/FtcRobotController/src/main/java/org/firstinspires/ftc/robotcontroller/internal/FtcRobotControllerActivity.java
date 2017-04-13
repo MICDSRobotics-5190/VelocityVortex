@@ -136,6 +136,7 @@ public class FtcRobotControllerActivity extends Activity {
   protected FtcEventLoop eventLoop;
   protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
 
+
   protected class RobotRestarter implements Restarter {
 
     public void requestRestart() {

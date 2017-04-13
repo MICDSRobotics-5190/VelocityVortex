@@ -76,6 +76,7 @@ public class DriverControlled extends OpMode
         bot = new Robot(hardwareMap);
         tankDrive = bot.getTankDrive();
 
+        tankDrive = bot.getTankDrive();
         leftMotors = bot.getTankDrive().getLeftMotors();
         rightMotors = bot.getTankDrive().getRightMotors();
 

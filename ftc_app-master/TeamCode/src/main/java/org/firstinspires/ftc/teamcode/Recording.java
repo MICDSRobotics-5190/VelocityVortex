@@ -32,15 +32,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+import org.firstinspires.ftc.teamcode.hardware.MotorPair;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.hardware.TankDrive;
 import org.firstinspires.ftc.teamcode.inputtracking.Input;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -58,13 +63,18 @@ import java.util.ArrayList;
  */
 
 @TeleOp(name="Recorder", group="Shadow")  // @Autonomous(...) is the other common choice
-public class Recording extends OpMode
+public class Recording extends OpMode implements Playback
 {
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
     private Robot bot = null;
 
+    private TankDrive tankDrive;
+    private MotorPair leftMotors;
+    private MotorPair rightMotors;
+
     private ArrayList<Input> inputs;
+    private File file;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -72,8 +82,14 @@ public class Recording extends OpMode
     @Override
     public void init() {
 
+        //file = new File(context.getFilesDir, Playback.INPUTS_RED);
+
         bot = new Robot(hardwareMap);
         inputs = new ArrayList<Input>();
+
+        tankDrive = bot.getTankDrive();
+        leftMotors = bot.getTankDrive().getLeftMotors();
+        rightMotors = bot.getTankDrive().getRightMotors();
 
         telemetry.addData("Status", "Initialized");
 
@@ -101,10 +117,36 @@ public class Recording extends OpMode
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
 
+        leftMotors.setPower(gamepad1.left_stick_y);
+        rightMotors.setPower(gamepad1.right_stick_y);
+
+        if(gamepad1.a){
+            bot.getLauncher().fullRotation();
+        }
+
+        if (gamepad1.b) {
+            bot.getLifter().stop();
+            bot.getIntake().stop();
+        }
+
+        if (gamepad1.dpad_left) {
+            bot.getIntake().takeInBall();
+        }
+
+        if (gamepad1.dpad_right) {
+            bot.getIntake().purgeBall();
+        }
+
+        if (gamepad1.dpad_up) {
+            bot.getLifter().ascend();
+        }
+
+        if (gamepad1.dpad_down) {
+            bot.getLifter().descend();
+        }
+
         inputs.add(new Input(gamepad1, runtime.time()));
 
-
-        /* Recording code here */
     }
 
     /*
@@ -117,5 +159,8 @@ public class Recording extends OpMode
         bot.getTankDrive().resetEncoders();
 
     }
+
+    @Override
+    public void play(){}
 
 }
