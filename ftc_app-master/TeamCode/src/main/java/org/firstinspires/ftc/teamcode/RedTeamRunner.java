@@ -32,11 +32,27 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.content.Context;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+
+import org.firstinspires.ftc.teamcode.inputtracking.Input;
+import org.firstinspires.ftc.teamcode.inputtracking.InputReader;
+
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+import org.firstinspires.ftc.teamcode.hardware.MotorPair;
+import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.hardware.TankDrive;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.util.ArrayList;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -54,12 +70,29 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 @Autonomous(name="Recent RedTeamRunner", group="Shadow")  // @Autonomous(...) is the other common choice
 public class RedTeamRunner extends LinearOpMode  implements Playback{
 
+    Context context;
+
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
     private Robot bot = null;
 
+    FileInputStream inputStream;
+    ArrayList<Input> inputs = new ArrayList<Input>();
+
     @Override
-    public void play(){
+    public void read(){
+
+        FtcRobotControllerActivity activity = new FtcRobotControllerActivity();
+        context = activity.getContext();
+
+        try {
+            inputStream = context.openFileInput(Playback.INPUTS_RED);
+            InputReader reader = new InputReader();
+            inputs = reader.readJson(inputStream);
+        } catch (IOException error){
+            error.printStackTrace();
+        }
+
 
     }
 
@@ -68,6 +101,8 @@ public class RedTeamRunner extends LinearOpMode  implements Playback{
 
         bot = new Robot(hardwareMap);
 
+        read();
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -75,17 +110,25 @@ public class RedTeamRunner extends LinearOpMode  implements Playback{
         waitForStart();
         runtime.reset();
 
-        play();
 
-        /* run until the end of the match (driver presses STOP)
+        int i = 0;
+        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
+            Input currentInput = inputs.get(i);
+
+            bot.getTankDrive().getLeftMotors().setPower(currentInput.getLeftStickY());
+            bot.getTankDrive().getRightMotors().setPower(currentInput.getRightStickY());
+
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Input Time", currentInput.getCurrentTime());
             telemetry.update();
+
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
             // leftMotor.setPower(-gamepad1.left_stick_y);
             // rightMotor.setPower(-gamepad1.right_stick_y);
-        } */
+        }
 
         bot.stopMoving();
     }
