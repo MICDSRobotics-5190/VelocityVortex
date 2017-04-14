@@ -32,16 +32,33 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+<<<<<<< HEAD
+=======
+import android.content.Context;
+
+import com.qualcomm.ftccommon.FtcRobotControllerService;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+>>>>>>> b00c189f080d2ffe1a6b05c6ef4785b123099e09
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+<<<<<<< HEAD
+=======
+import org.firstinspires.ftc.teamcode.inputtracking.Input;
+import org.firstinspires.ftc.teamcode.inputtracking.InputWriter;
+
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+>>>>>>> b00c189f080d2ffe1a6b05c6ef4785b123099e09
 import org.firstinspires.ftc.teamcode.hardware.MotorPair;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
 import org.firstinspires.ftc.teamcode.inputtracking.Input;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -62,8 +79,10 @@ import java.util.ArrayList;
 public class Recording extends OpMode implements Playback
 {
     /* Declare OpMode members. */
+
     private ElapsedTime runtime = new ElapsedTime();
     private Robot bot = null;
+    private Context context;
 
     private TankDrive tankDrive;
     private MotorPair leftMotors;
@@ -72,15 +91,24 @@ public class Recording extends OpMode implements Playback
     private ArrayList<Input> inputs;
     private File file;
 
+    FileOutputStream outputStream;
+
+    DcMotor frontLeft;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
 
-        //file = new File(context.getFilesDir, Playback.INPUTS_RED);
+        FtcRobotControllerActivity activity = new FtcRobotControllerActivity();
+
+        context = activity.getContext();
+
+        file = new File(context.getFilesDir(), Playback.INPUTS_RED);
 
         bot = new Robot(hardwareMap);
+
         inputs = new ArrayList<Input>();
 
         tankDrive = bot.getTankDrive();
@@ -150,6 +178,14 @@ public class Recording extends OpMode implements Playback
      */
     @Override
     public void stop() {
+
+        try {
+            outputStream = context.openFileOutput(Playback.INPUTS_RED, Context.MODE_PRIVATE);
+            InputWriter writer = new InputWriter();
+            writer.writeJson(outputStream, inputs);
+        } catch (IOException error){
+            error.printStackTrace();
+        }
 
         bot.stopMoving();
         bot.getTankDrive().resetEncoders();

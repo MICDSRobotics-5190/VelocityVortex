@@ -14,6 +14,10 @@ import java.util.ArrayList;
 
 public class InputWriter {
 
+    public InputWriter(){
+
+    }
+
     public void writeJson(OutputStream out, ArrayList<Input> inputs) throws IOException{
         JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
         writer.setIndent("    ");
