@@ -108,28 +108,37 @@ public class DriverControlled extends OpMode
         rightMotors.setPower(gamepad1.right_stick_y);
 
         if(gamepad1.a){
-            bot.getLauncher().fullRotation();
+            if(bot.getLauncher().getLauncherMotor().getPower() == 0) {
+                bot.getLauncher().fullRotation();
+            }
         }
 
         if (gamepad1.b) {
-            bot.getLifter().stop();
+            bot.stopMoving();
+        }
+
+        if (gamepad1.left_bumper) {
+            bot.getIntake().takeInBall();
+        } else if (gamepad1.right_bumper) {
+            bot.getIntake().purgeBall();
+        } else {
             bot.getIntake().stop();
         }
 
-        if (gamepad1.dpad_left) {
-            bot.getIntake().takeInBall();
-        }
-
-        if (gamepad1.dpad_right) {
-            bot.getIntake().purgeBall();
-        }
-
         if (gamepad1.dpad_up) {
-            bot.getLifter().ascend();
+            //bot.getLifter().ascend();
         }
 
         if (gamepad1.dpad_down) {
-            bot.getLifter().descend();
+            //bot.getLifter().descend();
+        }
+
+        if(gamepad1.dpad_left){
+            bot.getSlider().setPower(1);
+        } else if (gamepad1.dpad_right){
+            bot.getSlider().setPower(-1);
+        } else {
+            bot.getSlider().setPower(0);
         }
 
         /* Recording code here */

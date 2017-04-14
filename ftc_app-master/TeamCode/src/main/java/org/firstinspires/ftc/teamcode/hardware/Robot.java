@@ -15,14 +15,14 @@ public class Robot {
     private Launcher launcher;
     private CRServo slider;
     private Intake intake;
-    private Lifter lifter;
+    //private Lifter lifter;
 
     public Robot(){
         tankDrive = null;
         launcher = null;
         slider = null;
         intake = null;
-        lifter = null;
+        //lifter = null;
     }
 
     public Robot(HardwareMap hardwareMap){
@@ -30,10 +30,10 @@ public class Robot {
         launcher = new Launcher(hardwareMap);
         slider = hardwareMap.crservo.get("slider");
         intake = new Intake(hardwareMap);
-        lifter = new Lifter(hardwareMap);
+        //lifter = new Lifter(hardwareMap);
 
-        tankDrive.getLeftMotors().setDirections(DcMotorSimple.Direction.REVERSE);
-        tankDrive.getRightMotors().setDirections(DcMotorSimple.Direction.FORWARD);
+        tankDrive.getLeftMotors().setDirections(DcMotorSimple.Direction.FORWARD);
+        tankDrive.getRightMotors().setDirections(DcMotorSimple.Direction.REVERSE);
         tankDrive.setModes(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
@@ -42,7 +42,7 @@ public class Robot {
         launcher.getLauncherMotor().setPower(0);
         slider.setPower(0);
         intake.getIntakeMotor().setPower(0);
-        lifter.getLifterMotor().setPower(0);
+        //lifter.getLifterMotor().setPower(0);
     }
 
     public TankDrive getTankDrive() {
@@ -59,7 +59,7 @@ public class Robot {
 
     public Intake getIntake() { return intake; }
 
-    public Lifter getLifter() { return lifter; }
+    //public Lifter getLifter() { return lifter; }
 
     public void setDrivetrain(Drivetrain drivetrain) {
         this.tankDrive = tankDrive;

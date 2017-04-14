@@ -142,7 +142,7 @@ public class Recording extends OpMode implements Playback
         }
 
         if (gamepad1.b) {
-            bot.getLifter().stop();
+            //bot.getLifter().stop();
             bot.getIntake().stop();
         }
 
@@ -155,11 +155,19 @@ public class Recording extends OpMode implements Playback
         }
 
         if (gamepad1.dpad_up) {
-            bot.getLifter().ascend();
+            //bot.getLifter().ascend();
         }
 
         if (gamepad1.dpad_down) {
-            bot.getLifter().descend();
+            //bot.getLifter().descend();
+        }
+
+        if(gamepad1.left_bumper){
+            bot.getSlider().setPower(1);
+        } else if (gamepad1.right_bumper){
+            bot.getSlider().setPower(-1);
+        } else {
+            bot.getSlider().setPower(0);
         }
 
         inputs.add(new Input(gamepad1, runtime.time()));

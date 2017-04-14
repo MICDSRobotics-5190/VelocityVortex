@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
@@ -19,6 +20,7 @@ public class Launcher implements EncoderValues {
 
     public Launcher(HardwareMap hardwareMap){
         launcherMotor = hardwareMap.dcMotor.get("launcher");
+        launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         launcherMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
