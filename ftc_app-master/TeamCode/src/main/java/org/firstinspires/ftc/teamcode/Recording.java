@@ -32,24 +32,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-<<<<<<< HEAD
-=======
 import android.content.Context;
 
 import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
->>>>>>> b00c189f080d2ffe1a6b05c6ef4785b123099e09
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-<<<<<<< HEAD
-=======
+
 import org.firstinspires.ftc.teamcode.inputtracking.Input;
 import org.firstinspires.ftc.teamcode.inputtracking.InputWriter;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
->>>>>>> b00c189f080d2ffe1a6b05c6ef4785b123099e09
 import org.firstinspires.ftc.teamcode.hardware.MotorPair;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
@@ -92,8 +87,6 @@ public class Recording extends OpMode implements Playback
     private File file;
 
     FileOutputStream outputStream;
-
-    DcMotor frontLeft;
 
     /*
      * Code to run ONCE when the driver hits INIT
