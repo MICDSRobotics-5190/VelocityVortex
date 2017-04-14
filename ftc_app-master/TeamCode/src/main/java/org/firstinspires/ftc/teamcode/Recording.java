@@ -48,7 +48,6 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 import org.firstinspires.ftc.teamcode.hardware.MotorPair;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
-import org.firstinspires.ftc.teamcode.inputtracking.Input;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -194,6 +193,6 @@ public class Recording extends OpMode implements Playback
     }
 
     @Override
-    public void play(){}
+    public void read(){}
 
 }

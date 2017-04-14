@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 public class InputReader {
 
+    public InputReader(){}
+
     public ArrayList<Input> readJson(InputStream in) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
 
