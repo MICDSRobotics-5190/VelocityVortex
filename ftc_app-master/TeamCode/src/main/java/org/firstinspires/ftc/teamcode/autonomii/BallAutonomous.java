@@ -44,6 +44,13 @@ public class BallAutonomous extends LinearOpMode implements EncoderValues {
                 bot.getLauncher().fullRotation();
                 sleep(750);
             }
+
+            // intake new ball and shoot it
+            bot.getIntake().takeInBall();
+            bot.getLauncher().fullRotation();
+            sleep(100);
+            bot.getLauncher().fullRotation();
+            bot.getIntake().stop();
         }
     }
 }
