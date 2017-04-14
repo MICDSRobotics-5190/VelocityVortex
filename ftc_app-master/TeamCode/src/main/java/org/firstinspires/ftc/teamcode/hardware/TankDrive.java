@@ -33,6 +33,13 @@ public class TankDrive implements Drivetrain {
         this.rightMotors = rightMotors;
     }
 
+    public void setTargetPosition(int position) {
+        leftMotors.getMotor1().setTargetPosition(position);
+        leftMotors.getMotor2().setTargetPosition(position);
+        rightMotors.getMotor1().setTargetPosition(position);
+        rightMotors.getMotor2().setTargetPosition(position);
+    }
+
     @Override
     public void setPower(double power){
         rightMotors.setPower(power);
