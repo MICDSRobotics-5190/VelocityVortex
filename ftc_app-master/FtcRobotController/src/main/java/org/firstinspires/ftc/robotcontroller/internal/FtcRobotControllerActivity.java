@@ -136,6 +136,10 @@ public class FtcRobotControllerActivity extends Activity {
   protected FtcEventLoop eventLoop;
   protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
 
+  public Context getContext(){
+    return context;
+  }
+
 
   protected class RobotRestarter implements Restarter {
 

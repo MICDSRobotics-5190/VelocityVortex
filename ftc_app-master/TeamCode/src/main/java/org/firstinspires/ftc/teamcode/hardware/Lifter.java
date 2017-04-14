@@ -48,4 +48,5 @@ public class Lifter {
     public void stop() {
         lifterMotor.setPower(0);
     }
+
 }
