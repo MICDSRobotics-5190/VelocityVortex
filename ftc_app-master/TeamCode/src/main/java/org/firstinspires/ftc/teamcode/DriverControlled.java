@@ -34,8 +34,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.hardware.Launcher;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
 import org.firstinspires.ftc.teamcode.hardware.MotorPair;
@@ -65,6 +68,10 @@ public class DriverControlled extends OpMode
     private MotorPair leftMotors;
     private MotorPair rightMotors;
 
+    boolean doFullRotation = false;
+
+    private double power;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -77,6 +84,8 @@ public class DriverControlled extends OpMode
         tankDrive = bot.getTankDrive();
         leftMotors = bot.getTankDrive().getLeftMotors();
         rightMotors = bot.getTankDrive().getRightMotors();
+
+        power = 1;
 
         telemetry.addData("Status", "Initialized");
 
@@ -104,17 +113,40 @@ public class DriverControlled extends OpMode
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
 
-        leftMotors.setPower(gamepad1.left_stick_y);
-        rightMotors.setPower(gamepad1.right_stick_y);
+        leftMotors.setPower(gamepad1.left_stick_y * power);
+        rightMotors.setPower(gamepad1.right_stick_y * power);
+
+        //&& bot.getLauncher().getLauncherMotor().getCurrentPosition() != 0
+
+        telemetry.addData("Launcher", "Position" + bot.getLauncher().getLauncherMotor().getCurrentPosition());
+        telemetry.addData("Launcher", "Target" + bot.getLauncher().getLauncherMotor().getTargetPosition());
+        telemetry.addData("Launcher", "Power" + bot.getLauncher().getLauncherMotor().getPower());
 
         if(gamepad1.a){
-            if(bot.getLauncher().getLauncherMotor().getPower() == 0) {
-                bot.getLauncher().fullRotation();
+            doFullRotation = true;
+            bot.getLauncher().fullRotation();
+        }
+
+        if(doFullRotation) {
+            bot.getLauncher().getLauncherMotor().setPower(1);
+
+            if (bot.getLauncher().inPosition()){
+                bot.getLauncher().getLauncherMotor().setPower(0);
+                doFullRotation = false;
             }
+
         }
 
         if (gamepad1.b) {
             bot.stopMoving();
+        }
+
+        if(gamepad1.x){
+            power = 1;
+        }
+
+        if(gamepad1.y){
+            power = 0.5;
         }
 
         if (gamepad1.left_bumper) {

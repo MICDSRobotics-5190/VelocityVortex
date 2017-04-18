@@ -33,6 +33,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -83,21 +85,25 @@ public class Recording extends OpMode implements Playback
     private MotorPair rightMotors;
 
     private ArrayList<Input> inputs;
-    private File file;
+    private File file = new File(context.getFilesDir(), Playback.INPUTS_RED);
 
     FileOutputStream outputStream;
 
+    Looper looper;
+
+    public Looper getLooper() {
+        return looper;
+    }
+
     /*
-     * Code to run ONCE when the driver hits INIT
-     */
+             * Code to run ONCE when the driver hits INIT
+             */
     @Override
     public void init() {
 
         FtcRobotControllerActivity activity = new FtcRobotControllerActivity();
 
         context = activity.getContext();
-
-        file = new File(context.getFilesDir(), Playback.INPUTS_RED);
 
         bot = new Robot(hardwareMap);
 
