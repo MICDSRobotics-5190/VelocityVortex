@@ -6,12 +6,13 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 public interface EncoderValues {
     final int GEAR_BOX_RATIO = 60; //andymark 60 motors
-    final int PULSES_PER_ROTATION = 7; //PPR, from the manufacturer website
-    final double GEAR_RATIO = 0.666667;
+    final int PULSES_PER_REVOLUTION = 7; //PPR, from the manufacturer website
+    final int COUNTS_PER_REVOLUTION = 1680;
+    final double LAUNCHER_GEAR_RATIO = 0.66666666667;
+    final double REAL_WORLD_CONSTANT = 0.9;
 
-    // rotations
-    final int FULL_ROTATION = (int)(GEAR_BOX_RATIO * GEAR_RATIO * PULSES_PER_ROTATION);
-    final int HALF_ROTATION = FULL_ROTATION/2;
-    final int THIRD_ROTATION = FULL_ROTATION/3;
-    final int QUARTER_ROTATION = FULL_ROTATION/4;
+    // Launcher rotations
+    final int LAUNCHER_FULL_ROTATION = (int)(LAUNCHER_GEAR_RATIO * COUNTS_PER_REVOLUTION * REAL_WORLD_CONSTANT);
+
+
 }

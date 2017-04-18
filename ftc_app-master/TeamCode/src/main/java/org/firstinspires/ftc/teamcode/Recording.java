@@ -103,7 +103,7 @@ public class Recording extends OpMode implements Playback
 
         FtcRobotControllerActivity activity = new FtcRobotControllerActivity();
 
-        context = activity.getContext();
+        context = activity.getApplicationContext();
 
         bot = new Robot(hardwareMap);
 

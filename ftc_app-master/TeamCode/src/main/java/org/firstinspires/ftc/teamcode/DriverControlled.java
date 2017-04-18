@@ -67,6 +67,7 @@ public class DriverControlled extends OpMode
     private TankDrive tankDrive;
     private MotorPair leftMotors;
     private MotorPair rightMotors;
+    private Launcher launcher;
 
     boolean doFullRotation = false;
 
@@ -84,6 +85,7 @@ public class DriverControlled extends OpMode
         tankDrive = bot.getTankDrive();
         leftMotors = bot.getTankDrive().getLeftMotors();
         rightMotors = bot.getTankDrive().getRightMotors();
+        launcher = bot.getLauncher();
 
         power = 1;
 
@@ -118,9 +120,9 @@ public class DriverControlled extends OpMode
 
         //&& bot.getLauncher().getLauncherMotor().getCurrentPosition() != 0
 
-        telemetry.addData("Launcher", "Position" + bot.getLauncher().getLauncherMotor().getCurrentPosition());
-        telemetry.addData("Launcher", "Target" + bot.getLauncher().getLauncherMotor().getTargetPosition());
-        telemetry.addData("Launcher", "Power" + bot.getLauncher().getLauncherMotor().getPower());
+        telemetry.addData("Launcher", "Position " + launcher.getLauncherMotor().getCurrentPosition());
+        telemetry.addData("Left Drivetrain", "Power " + (leftMotors.getBackPower() + leftMotors.getFrontPower()) /2 );
+        telemetry.addData("Right Drivetrain", "Power " + (rightMotors.getBackPower() + rightMotors.getFrontPower()) /2 );
 
         if(gamepad1.a){
             doFullRotation = true;
@@ -128,10 +130,11 @@ public class DriverControlled extends OpMode
         }
 
         if(doFullRotation) {
-            bot.getLauncher().getLauncherMotor().setPower(1);
+            launcher.getLauncherMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            launcher.getLauncherMotor().setPower(1);
 
-            if (bot.getLauncher().inPosition()){
-                bot.getLauncher().getLauncherMotor().setPower(0);
+            if (launcher.getLauncherMotor().getCurrentPosition() >= launcher.getLauncherMotor().getTargetPosition()){
+                launcher.getLauncherMotor().setPower(0);
                 doFullRotation = false;
             }
 
@@ -139,6 +142,7 @@ public class DriverControlled extends OpMode
 
         if (gamepad1.b) {
             bot.stopMoving();
+            doFullRotation = false;
         }
 
         if(gamepad1.x){
@@ -149,9 +153,9 @@ public class DriverControlled extends OpMode
             power = 0.5;
         }
 
-        if (gamepad1.left_bumper) {
+        if (gamepad1.right_bumper) {
             bot.getIntake().takeInBall();
-        } else if (gamepad1.right_bumper) {
+        } else if (gamepad1.left_bumper) {
             bot.getIntake().purgeBall();
         } else {
             bot.getIntake().stop();

@@ -42,8 +42,8 @@ public class MotorPair implements Drivetrain{
         motor2.setPower(power);
     }
 
-    public void getFrontPower(double power) { motor1.getPower(); }
-    public void getBackPower(double power) { motor2.getPower(); }
+    public double getFrontPower() { return motor1.getPower(); }
+    public double getBackPower() { return motor2.getPower(); }
 
     public void setDirections(DcMotorSimple.Direction direction){
         motor1.setDirection(direction);

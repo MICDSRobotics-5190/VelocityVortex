@@ -36,7 +36,7 @@ public class BallAutonomous extends LinearOpMode implements EncoderValues {
         bot.getTankDrive().resetEncoders();
 
         while (opModeIsActive()) {
-            bot.getTankDrive().setTargetPosition(FULL_ROTATION);
+            bot.getTankDrive().setTargetPosition(LAUNCHER_FULL_ROTATION);
             bot.getTankDrive().setPower(1);
 
             // launch ball
