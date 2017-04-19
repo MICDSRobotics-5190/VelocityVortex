@@ -129,7 +129,7 @@ public class DriverControlled extends OpMode
         telemetry.addData("Right Drivetrain", "Power " + (rightMotors.getBackPower() + rightMotors.getFrontPower()) /2 );
         telemetry.addData("Mode State", modeState.getTelemetryStatus());
 
-        bot.getColorSensor().enableLed(true);
+        bot.getColorSensor().enableLed(false);
         bot.colorScan();
         int[] currentRGB = bot.getRgbValues();
         telemetry.addData("Red", currentRGB[0]);
