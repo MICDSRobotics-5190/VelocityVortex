@@ -21,10 +21,12 @@ import com.qualcomm.robotcore.util.Hardware;
 @Autonomous(name="BallAuto", group="Encoder Opmodes")
 public class BallAutonomous extends LinearOpMode implements EncoderValues {
     private Robot bot;
+    private int step;
 
     @Override
     public void runOpMode() {
         bot = new Robot(hardwareMap);
+        step = 0;
 
         MotorPair leftMotors = bot.getTankDrive().getLeftMotors();
         MotorPair rightMotors = bot.getTankDrive().getRightMotors();
@@ -35,22 +37,39 @@ public class BallAutonomous extends LinearOpMode implements EncoderValues {
         bot.getTankDrive().getLeftMotors().setModes(DcMotor.RunMode.RUN_USING_ENCODER);
         bot.getTankDrive().resetEncoders();
 
-        while (opModeIsActive()) {
-            bot.getTankDrive().setTargetPosition(LAUNCHER_FULL_ROTATION);
-            bot.getTankDrive().setPower(1);
+        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Step", String.valueOf(step));
+        telemetry.update();
 
-            // launch ball
-            for (int i = 0; i <= 2; i++) {
-                bot.getLauncher().fullRotation();
-                sleep(750);
+        waitForStart();
+
+        if (opModeIsActive()) {
+
+            switch (step) {
+                case 0:
+                    bot.getTankDrive().setTargetPosition(-LAUNCHER_FULL_ROTATION);
+                    bot.getTankDrive().setPower(1);
+                    break;
+                case 1:
+                    sleep(1000);
+                    break;
+                case 2:
+                    // launch ball
+                    bot.getLauncher().fullRotation();
+                    break;
+                case 3:
+                    bot.getIntake().takeInBall();
+                    bot.getLauncher().fullRotation();
+                    sleep(100);
+                    break;
+                case 4:
+                    // intake new ball and shoot it
+                    bot.getLauncher().fullRotation();
+                    bot.getIntake().stop();
+                    break;
             }
-
-            // intake new ball and shoot it
-            bot.getIntake().takeInBall();
-            bot.getLauncher().fullRotation();
-            sleep(100);
-            bot.getLauncher().fullRotation();
-            bot.getIntake().stop();
+            step++;
+            telemetry.update();
         }
     }
 }

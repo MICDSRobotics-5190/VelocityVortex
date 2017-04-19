@@ -35,10 +35,12 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.Launcher;
+import org.firstinspires.ftc.teamcode.hardware.ModeState;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
 import org.firstinspires.ftc.teamcode.hardware.MotorPair;
@@ -68,6 +70,7 @@ public class DriverControlled extends OpMode
     private MotorPair leftMotors;
     private MotorPair rightMotors;
     private Launcher launcher;
+    private ModeState modeState;
 
     boolean doFullRotation = false;
 
@@ -86,6 +89,7 @@ public class DriverControlled extends OpMode
         leftMotors = bot.getTankDrive().getLeftMotors();
         rightMotors = bot.getTankDrive().getRightMotors();
         launcher = bot.getLauncher();
+        modeState = new ModeState();
 
         power = 1;
 
@@ -123,6 +127,7 @@ public class DriverControlled extends OpMode
         telemetry.addData("Launcher", "Position " + launcher.getLauncherMotor().getCurrentPosition());
         telemetry.addData("Left Drivetrain", "Power " + (leftMotors.getBackPower() + leftMotors.getFrontPower()) /2 );
         telemetry.addData("Right Drivetrain", "Power " + (rightMotors.getBackPower() + rightMotors.getFrontPower()) /2 );
+        telemetry.addData("Mode State", modeState.getTelemetryStatus());
 
         if(gamepad1.a){
             doFullRotation = true;
@@ -138,6 +143,10 @@ public class DriverControlled extends OpMode
                 doFullRotation = false;
             }
 
+        }
+
+        if (gamepad1.guide) {
+            modeState.changeMode();
         }
 
         if (gamepad1.b) {
@@ -157,7 +166,9 @@ public class DriverControlled extends OpMode
             bot.getIntake().takeInBall();
         } else if (gamepad1.left_bumper) {
             bot.getIntake().purgeBall();
-        } else {
+        }
+        else if (modeState.isToggle()) {}
+        else {
             bot.getIntake().stop();
         }
 
