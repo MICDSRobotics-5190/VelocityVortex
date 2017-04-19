@@ -129,6 +129,13 @@ public class DriverControlled extends OpMode
         telemetry.addData("Right Drivetrain", "Power " + (rightMotors.getBackPower() + rightMotors.getFrontPower()) /2 );
         telemetry.addData("Mode State", modeState.getTelemetryStatus());
 
+        bot.getColorSensor().enableLed(true);
+        bot.colorScan();
+        int[] currentRGB = bot.getRgbValues();
+        telemetry.addData("Red", currentRGB[0]);
+        telemetry.addData("Green", currentRGB[1]);
+        telemetry.addData("Blue", currentRGB[2]);
+
         if(gamepad1.a){
             doFullRotation = true;
             bot.getLauncher().fullRotation();
