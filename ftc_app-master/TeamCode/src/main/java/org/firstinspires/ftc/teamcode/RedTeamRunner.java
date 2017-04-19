@@ -70,8 +70,6 @@ import java.util.ArrayList;
 @Autonomous(name="Recent RedTeamRunner", group="Shadow")  // @Autonomous(...) is the other common choice
 public class RedTeamRunner extends LinearOpMode  implements Playback{
 
-    Context context;
-
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
     private Robot bot = null;
@@ -82,10 +80,8 @@ public class RedTeamRunner extends LinearOpMode  implements Playback{
     @Override
     public void read(){
 
-        FtcRobotControllerActivity activity = new FtcRobotControllerActivity();
-
         try {
-            inputStream = context.openFileInput(Playback.INPUTS_RED);
+            inputStream = hardwareMap.appContext.openFileInput(Playback.INPUTS_RED);
             InputReader reader = new InputReader();
             inputs = reader.readJson(inputStream);
         } catch (IOException error){
