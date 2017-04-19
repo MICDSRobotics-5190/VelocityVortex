@@ -85,7 +85,7 @@ public class Recording extends OpMode implements Playback
     private MotorPair rightMotors;
 
     private ArrayList<Input> inputs;
-    private File file = new File(FtcRobotControllerActivity.getContext().getFilesDir(), Playback.INPUTS_RED);
+    private File file = new File(hardwareMap.appContext.getFilesDir(), Playback.INPUTS_RED);
 
     FileOutputStream outputStream;
 
@@ -182,7 +182,7 @@ public class Recording extends OpMode implements Playback
     public void stop() {
 
         try {
-            outputStream = FtcRobotControllerActivity.getContext().openFileOutput(Playback.INPUTS_RED, Context.MODE_PRIVATE);
+            outputStream = hardwareMap.appContext.openFileOutput(Playback.INPUTS_RED, Context.MODE_PRIVATE);
             InputWriter writer = new InputWriter();
             writer.writeJson(outputStream, inputs);
             telemetry.addData("Output", outputStream);
