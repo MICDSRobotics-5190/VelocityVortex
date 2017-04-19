@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.hardware;
  * Created by BAbel on 4/10/2017.
  */
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -15,6 +16,7 @@ public class Robot {
     private Launcher launcher;
     private CRServo slider;
     private Intake intake;
+    private ColorSensor colorSensor;
     //private Lifter lifter;
 
     public Robot(){
@@ -22,6 +24,7 @@ public class Robot {
         launcher = null;
         slider = null;
         intake = null;
+        colorSensor = null;
         //lifter = null;
     }
 
@@ -31,6 +34,7 @@ public class Robot {
         slider = hardwareMap.crservo.get("slider");
         intake = new Intake(hardwareMap);
         //lifter = new Lifter(hardwareMap);
+        colorSensor = hardwareMap.colorSensor.get("color");
 
         tankDrive.getLeftMotors().setDirections(DcMotorSimple.Direction.FORWARD);
         tankDrive.getRightMotors().setDirections(DcMotorSimple.Direction.REVERSE);
@@ -71,5 +75,13 @@ public class Robot {
 
     public void setSlider(CRServo slider) {
         this.slider = slider;
+    }
+
+    public ColorSensor getColorSensor() {
+        return colorSensor;
+    }
+
+    public void setColorSensor(ColorSensor colorSensor) {
+        this.colorSensor = colorSensor;
     }
 }

@@ -43,7 +43,7 @@ public class BallAutonomous extends LinearOpMode implements EncoderValues {
 
         waitForStart();
 
-        if (opModeIsActive()) {
+        while (opModeIsActive()) {
 
             switch (step) {
                 case 0:
