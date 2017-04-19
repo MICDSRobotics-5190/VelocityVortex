@@ -4,6 +4,8 @@ package org.firstinspires.ftc.teamcode.hardware;
  * Created by BAbel on 4/10/2017.
  */
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,6 +20,9 @@ public class Robot {
     private Intake intake;
     private ColorSensor colorSensor;
     //private Lifter lifter;
+
+    private float hsvValues[] = new float[3];
+    private int rgbValues[] = new int[3];
 
     public Robot(){
         tankDrive = null;
@@ -47,6 +52,7 @@ public class Robot {
         slider.setPower(0);
         intake.getIntakeMotor().setPower(0);
         //lifter.getLifterMotor().setPower(0);
+        colorSensor.enableLed(false);
     }
 
     public TankDrive getTankDrive() {
@@ -83,5 +89,20 @@ public class Robot {
 
     public void setColorSensor(ColorSensor colorSensor) {
         this.colorSensor = colorSensor;
+    }
+
+    public void colorScan(){
+        rgbValues[0] = colorSensor.red();
+        rgbValues[1] = colorSensor.green();
+        rgbValues[2] = colorSensor.blue();
+        Color.RGBToHSV(rgbValues[0], rgbValues[1], rgbValues[2], hsvValues);
+    }
+
+    public float[] getHsvValues() {
+        return hsvValues;
+    }
+
+    public int[] getRgbValues() {
+        return rgbValues;
     }
 }
