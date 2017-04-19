@@ -83,7 +83,6 @@ public class RedTeamRunner extends LinearOpMode  implements Playback{
     public void read(){
 
         FtcRobotControllerActivity activity = new FtcRobotControllerActivity();
-        context = activity.getContext();
 
         try {
             inputStream = context.openFileInput(Playback.INPUTS_RED);
