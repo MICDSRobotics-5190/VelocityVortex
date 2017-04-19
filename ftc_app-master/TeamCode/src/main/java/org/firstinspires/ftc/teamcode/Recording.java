@@ -43,6 +43,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.inputtracking.Input;
 import org.firstinspires.ftc.teamcode.inputtracking.InputWriter;
 
@@ -78,14 +79,13 @@ public class Recording extends OpMode implements Playback
 
     private ElapsedTime runtime = new ElapsedTime();
     private Robot bot = null;
-    private Context context;
 
     private TankDrive tankDrive;
     private MotorPair leftMotors;
     private MotorPair rightMotors;
 
     private ArrayList<Input> inputs;
-    private File file = new File(context.getFilesDir(), Playback.INPUTS_RED);
+    private File file = new File(FtcRobotControllerActivity.getContext().getFilesDir(), Playback.INPUTS_RED);
 
     FileOutputStream outputStream;
 
@@ -96,14 +96,10 @@ public class Recording extends OpMode implements Playback
     }
 
     /*
-             * Code to run ONCE when the driver hits INIT
-             */
+     * Code to run ONCE when the driver hits INIT
+     */
     @Override
     public void init() {
-
-        FtcRobotControllerActivity activity = new FtcRobotControllerActivity();
-
-        context = activity.getApplicationContext();
 
         bot = new Robot(hardwareMap);
 
@@ -186,9 +182,10 @@ public class Recording extends OpMode implements Playback
     public void stop() {
 
         try {
-            outputStream = context.openFileOutput(Playback.INPUTS_RED, Context.MODE_PRIVATE);
+            outputStream = FtcRobotControllerActivity.getContext().openFileOutput(Playback.INPUTS_RED, Context.MODE_PRIVATE);
             InputWriter writer = new InputWriter();
             writer.writeJson(outputStream, inputs);
+            telemetry.addData("Output", outputStream);
         } catch (IOException error){
             error.printStackTrace();
         }
