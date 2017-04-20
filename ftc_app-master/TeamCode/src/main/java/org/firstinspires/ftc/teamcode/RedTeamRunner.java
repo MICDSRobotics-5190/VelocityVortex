@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
+import android.os.Looper;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -76,6 +77,12 @@ public class RedTeamRunner extends LinearOpMode  implements Playback{
 
     FileInputStream inputStream;
     ArrayList<Input> inputs = new ArrayList<Input>();
+
+    Looper looper;
+
+    public Looper getLooper() {
+        return looper;
+    }
 
     @Override
     public void read(){
