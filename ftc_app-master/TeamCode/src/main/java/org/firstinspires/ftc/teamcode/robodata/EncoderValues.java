@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.hardware;
+package org.firstinspires.ftc.teamcode.robodata;
 
 /**
  * Created by amigala on 4/12/2017.
@@ -12,7 +12,7 @@ public interface EncoderValues {
     final double REAL_WORLD_CONSTANT = 0.9;
 
     // Launcher rotations
-    final int LAUNCHER_FULL_ROTATION = (int)(LAUNCHER_GEAR_RATIO * COUNTS_PER_REVOLUTION * REAL_WORLD_CONSTANT);
+    final int FULL_ROTATION = (int)(LAUNCHER_GEAR_RATIO * COUNTS_PER_REVOLUTION * REAL_WORLD_CONSTANT);
 
 
 }

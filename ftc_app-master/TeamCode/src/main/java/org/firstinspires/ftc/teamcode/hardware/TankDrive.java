@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.robodata.EncoderValues;
 
 /**
  * Created by BAbel on 4/11/2017.
  */
 
-public class TankDrive implements Drivetrain, EncoderValues{
+public class TankDrive implements Drivetrain, EncoderValues {
 
     private MotorPair leftMotors;
     private MotorPair rightMotors;
@@ -48,8 +49,8 @@ public class TankDrive implements Drivetrain, EncoderValues{
     public void turnDegrees(int degrees) {
         switch (degrees) {
             case 90 : // turn 90 degrees
-                this.getLeftMotors().getMotor1().setTargetPosition(LAUNCHER_FULL_ROTATION * 2);
-                this.getLeftMotors().getMotor2().setTargetPosition(LAUNCHER_FULL_ROTATION * 2);
+                this.getLeftMotors().getMotor1().setTargetPosition(FULL_ROTATION * 2);
+                this.getLeftMotors().getMotor2().setTargetPosition(FULL_ROTATION * 2);
                 break;
             default : break;
         }

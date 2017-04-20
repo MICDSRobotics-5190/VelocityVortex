@@ -1,19 +1,19 @@
-package org.firstinspires.ftc.teamcode.hardware;
+package org.firstinspires.ftc.teamcode.robodata.modestates;
 
 /**
  * Created by amigala on 4/19/2017.
  */
 
-public class ModeState {
+public class IntakeModeState {
     private boolean isToggle;
     private boolean isContinue;
 
-    public ModeState() {
+    public IntakeModeState() {
         isToggle = false;
         isContinue = true;
     }
 
-    public ModeState(String mode) {
+    public IntakeModeState(String mode) {
         switch (mode) {
             case "toggle" :
                 isToggle = true;
