@@ -79,4 +79,12 @@ public class MotorPair implements Drivetrain{
     public void setMotor2(DcMotor motor2) {
         this.motor2 = motor2;
     }
+
+    public int getCurrentPositionAverage(){
+        return (motor1.getCurrentPosition() + motor2.getCurrentPosition()) / 2;
+    }
+
+    public int getTargetPositionAverage(){
+        return (motor1.getTargetPosition() + motor2.getTargetPosition()) / 2;
+    }
 }

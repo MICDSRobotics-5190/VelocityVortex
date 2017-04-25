@@ -57,7 +57,7 @@ public class BallAutoRefactor extends LinearOpMode implements EncoderValues {
         telemetry.update();
         // take in a new ball
         bot.getIntake().takeInBall();
-        sleep(7000);
+        sleep(2000);
         bot.stopMoving();
 
         // launch a new ball
@@ -73,7 +73,7 @@ public class BallAutoRefactor extends LinearOpMode implements EncoderValues {
 
         // ram the big ball
         bot.getTankDrive().setPower(-1);
-        sleep(2000);
+        sleep(800);
         bot.stopMoving();
 
         idle();
