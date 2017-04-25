@@ -18,57 +18,64 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 @Autonomous(name = "BallAutoRefactor", group = "Encoder")
 public class BallAutoRefactor extends LinearOpMode implements EncoderValues {
     private static Robot bot;
-    private static AutonomousState autonomousState;
+    private static int step;
 
     @Override
     public void runOpMode() throws InterruptedException {
         bot = new Robot(hardwareMap);
-        autonomousState = new AutonomousState();
+        bot.getTankDrive().setModes(DcMotor.RunMode.RUN_USING_ENCODER);
+        step = 0;
 
-        // bot init
-        bot.getTankDrive().setModes(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        bot.getLauncher().getLauncherMotor().setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        bot.getIntake().getIntakeMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        telemetry.addData("Status","Initialized");
+        telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-        //init();
 
         waitForStart();
 
-        while(opModeIsActive()) {
-            // add telemetry data here
-            telemetry.addData("AutoState",autonomousState.getTelemetryState());
+        // move into position
+        //bot.getTankDrive().setTargetPosition(FULL_ROTATION);
+        bot.getTankDrive().setPower(-1);
+        sleep(400);
+        bot.stopMoving();
 
-            autonomousState.setState(-1);
-            autonomousState.incrementState();
 
+        sleep(1000);
+        bot.stopMoving();
 
-            switch (autonomousState.getState()) {
-                case 0 :
-                    bot.getTankDrive().setTargetPosition(FULL_ROTATION);
-                    bot.getTankDrive().setPower(-1);
-                    bot.getTankDrive().resetEncoders();
-                    break;
-                case 1 :
-                    bot.getLauncher().fullRotation();
-                    break;
-                case 2 :
-                    bot.getIntake().takeInBall();
-                    sleep(7000);
-                    bot.stopMoving();
-                    break;
-                case 3 :
-                    bot.getLauncher().fullRotation();
-                    sleep(1000);
-                    break;
-                case 4 :
-                    autonomousState.setState(0);
-                    throw new InterruptedException();
-            }
+        // launch ball
+        telemetry.addData("Status", "Launch");
+        sleep(1000);
+        telemetry.update();
 
-            telemetry.update();
-        }
+        bot.getLauncher().getLauncherMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bot.getLauncher().fullRotation();
+        bot.getLauncher().getLauncherMotor().setPower(1);
+        sleep(3000);
+        bot.stopMoving();
+
+        // take in a new ball
+        telemetry.addData("Status","Taking in ball...");
+        telemetry.update();
+        // take in a new ball
+        bot.getIntake().takeInBall();
+        sleep(7000);
+        bot.stopMoving();
+
+        // launch a new ball
+        telemetry.addData("Status", "Launch");
+        telemetry.update();
+        sleep(1000);
+
+        bot.getLauncher().getLauncherMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bot.getLauncher().fullRotation();
+        bot.getLauncher().getLauncherMotor().setPower(1);
+        sleep(3000);
+        bot.stopMoving();
+
+        // ram the big ball
+        bot.getTankDrive().setPower(-1);
+        sleep(2000);
+        bot.stopMoving();
+
+        idle();
     }
 }
