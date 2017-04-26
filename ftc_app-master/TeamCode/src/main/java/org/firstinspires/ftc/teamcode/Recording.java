@@ -32,20 +32,30 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+
 import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.inputtracking.Input;
+import org.firstinspires.ftc.teamcode.inputtracking.InputWriter;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.teamcode.hardware.MotorPair;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
-import org.firstinspires.ftc.teamcode.inputtracking.Input;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -66,6 +76,7 @@ import java.util.ArrayList;
 public class Recording extends OpMode implements Playback
 {
     /* Declare OpMode members. */
+
     private ElapsedTime runtime = new ElapsedTime();
     private Robot bot = null;
 
@@ -74,7 +85,15 @@ public class Recording extends OpMode implements Playback
     private MotorPair rightMotors;
 
     private ArrayList<Input> inputs;
-    private File file;
+    private File file = new File(hardwareMap.appContext.getFilesDir(), Playback.INPUTS_RED);
+
+    FileOutputStream outputStream;
+
+    Looper looper;
+
+    public Looper getLooper() {
+        return looper;
+    }
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -82,9 +101,8 @@ public class Recording extends OpMode implements Playback
     @Override
     public void init() {
 
-        //file = new File(context.getFilesDir, Playback.INPUTS_RED);
-
         bot = new Robot(hardwareMap);
+
         inputs = new ArrayList<Input>();
 
         tankDrive = bot.getTankDrive();
@@ -125,7 +143,7 @@ public class Recording extends OpMode implements Playback
         }
 
         if (gamepad1.b) {
-            bot.getLifter().stop();
+            //bot.getLifter().stop();
             bot.getIntake().stop();
         }
 
@@ -138,11 +156,19 @@ public class Recording extends OpMode implements Playback
         }
 
         if (gamepad1.dpad_up) {
-            bot.getLifter().ascend();
+            //bot.getLifter().ascend();
         }
 
         if (gamepad1.dpad_down) {
-            bot.getLifter().descend();
+            //bot.getLifter().descend();
+        }
+
+        if(gamepad1.left_bumper){
+            bot.getSlider().setPower(1);
+        } else if (gamepad1.right_bumper){
+            bot.getSlider().setPower(-1);
+        } else {
+            bot.getSlider().setPower(0);
         }
 
         inputs.add(new Input(gamepad1, runtime.time()));
@@ -155,12 +181,21 @@ public class Recording extends OpMode implements Playback
     @Override
     public void stop() {
 
+        try {
+            outputStream = hardwareMap.appContext.openFileOutput(Playback.INPUTS_RED, Context.MODE_PRIVATE);
+            InputWriter writer = new InputWriter();
+            writer.writeJson(outputStream, inputs);
+            telemetry.addData("Output", outputStream);
+        } catch (IOException error){
+            error.printStackTrace();
+        }
+
         bot.stopMoving();
         bot.getTankDrive().resetEncoders();
 
     }
 
     @Override
-    public void play(){}
+    public void read(){}
 
 }

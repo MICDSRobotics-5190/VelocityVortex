@@ -42,8 +42,8 @@ public class MotorPair implements Drivetrain{
         motor2.setPower(power);
     }
 
-    public void getFrontPower(double power) { motor1.getPower(); }
-    public void getBackPower(double power) { motor2.getPower(); }
+    public double getFrontPower() { return motor1.getPower(); }
+    public double getBackPower() { return motor2.getPower(); }
 
     public void setDirections(DcMotorSimple.Direction direction){
         motor1.setDirection(direction);
@@ -78,5 +78,13 @@ public class MotorPair implements Drivetrain{
 
     public void setMotor2(DcMotor motor2) {
         this.motor2 = motor2;
+    }
+
+    public int getCurrentPositionAverage(){
+        return (motor1.getCurrentPosition() + motor2.getCurrentPosition()) / 2;
+    }
+
+    public int getTargetPositionAverage(){
+        return (motor1.getTargetPosition() + motor2.getTargetPosition()) / 2;
     }
 }

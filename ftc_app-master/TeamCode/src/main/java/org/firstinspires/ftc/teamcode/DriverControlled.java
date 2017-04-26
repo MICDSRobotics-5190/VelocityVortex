@@ -32,15 +32,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.hardware.Launcher;
+import org.firstinspires.ftc.teamcode.robodata.modestates.DirectionModeState;
+import org.firstinspires.ftc.teamcode.robodata.modestates.IntakeModeState;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
 import org.firstinspires.ftc.teamcode.hardware.MotorPair;
+import org.firstinspires.ftc.teamcode.robodata.AccessControl;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -62,10 +65,19 @@ public class DriverControlled extends OpMode
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
     private Robot bot = null;
+    private AccessControl accessControl = new AccessControl();
 
     private TankDrive tankDrive;
     private MotorPair leftMotors;
     private MotorPair rightMotors;
+    private Launcher launcher;
+
+    private DirectionModeState directionModeState;
+    private IntakeModeState modeState;
+
+    boolean doFullRotation = false;
+
+    private double power;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -79,6 +91,13 @@ public class DriverControlled extends OpMode
         tankDrive = bot.getTankDrive();
         leftMotors = bot.getTankDrive().getLeftMotors();
         rightMotors = bot.getTankDrive().getRightMotors();
+        launcher = bot.getLauncher();
+
+        // modestates
+        modeState = new IntakeModeState();
+        directionModeState = new DirectionModeState();
+
+        power = 1;
 
         telemetry.addData("Status", "Initialized");
 
@@ -106,33 +125,111 @@ public class DriverControlled extends OpMode
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
 
-        leftMotors.setPower(gamepad1.left_stick_y);
-        rightMotors.setPower(gamepad1.right_stick_y);
+        if (accessControl.isG1Primary()) {
+            leftMotors.setPower(gamepad1.left_stick_y * power * directionModeState.getDirection());
+            rightMotors.setPower(gamepad1.right_stick_y * power * directionModeState.getDirection());
+        }
+        else if (accessControl.isG2Primary()) {
+            leftMotors.setPower(gamepad2.left_stick_y * power * directionModeState.getDirection());
+            rightMotors.setPower(gamepad2.right_stick_y * power * directionModeState.getDirection());
+        }
+        else {
+            leftMotors.setPower(gamepad1.left_stick_y * power * directionModeState.getDirection());
+            rightMotors.setPower(gamepad1.right_stick_y * power * directionModeState.getDirection());
+        }
 
-        if(gamepad1.a){
+        //&& bot.getLauncher().getLauncherMotor().getCurrentPosition() != 0
+
+        telemetry.addData("Launcher", "Position " + launcher.getLauncherMotor().getCurrentPosition());
+        telemetry.addData("Left Drivetrain", "Power " + (leftMotors.getBackPower() + leftMotors.getFrontPower()) /2 );
+        telemetry.addData("Right Drivetrain", "Power " + (rightMotors.getBackPower() + rightMotors.getFrontPower()) /2 );
+        telemetry.addData("Mode State", modeState.getTelemetryStatus());
+        telemetry.addData("Access Control", accessControl.getTelemetryState());
+        telemetry.addData("Gear", directionModeState.getTelemetryMessage());
+
+        bot.getColorSensor().enableLed(false);
+        bot.colorScan();
+        int[] currentRGB = bot.getRgbValues();
+        telemetry.addData("Red", currentRGB[0]);
+        telemetry.addData("Green", currentRGB[1]);
+        telemetry.addData("Blue", currentRGB[2]);
+
+        if(gamepad1.a || gamepad2.a){
+            doFullRotation = true;
             bot.getLauncher().fullRotation();
         }
 
-        if (gamepad1.b) {
-            bot.getLifter().stop();
+        if(doFullRotation) {
+            launcher.getLauncherMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            launcher.getLauncherMotor().setPower(1);
+
+            if (launcher.getLauncherMotor().getCurrentPosition() >= launcher.getLauncherMotor().getTargetPosition()){
+                launcher.getLauncherMotor().setPower(0);
+                doFullRotation = false;
+            }
+
+        }
+
+        if (gamepad1.guide || gamepad2.guide) {
+            modeState.changeMode();
+        }
+
+        if (gamepad1.b || gamepad2.b) {
+            bot.stopMoving();
+            doFullRotation = false;
+        }
+
+        if(gamepad1.x || gamepad2.x){
+            power = 1;
+        }
+
+        if(gamepad1.y || gamepad2.y){
+            power = 0.5;
+        }
+
+        if (gamepad1.right_bumper || gamepad2.right_bumper) {
+            bot.getIntake().takeInBall();
+        } else if (gamepad1.left_bumper || gamepad2.left_bumper) {
+            bot.getIntake().purgeBall();
+        }
+        else if (modeState.isToggle()) {}
+        else {
             bot.getIntake().stop();
         }
 
-        if (gamepad1.dpad_left) {
-            bot.getIntake().takeInBall();
+        if(gamepad1.dpad_left || gamepad2.dpad_left){
+            bot.getSlider().setPower(1);
+        } else if (gamepad1.dpad_right || gamepad2.dpad_right){
+            bot.getSlider().setPower(-1);
+        } else {
+            bot.getSlider().setPower(0);
         }
 
-        if (gamepad1.dpad_right) {
-            bot.getIntake().purgeBall();
+        if (gamepad1.dpad_down || gamepad2.dpad_down) {
+            directionModeState.shiftGears();
         }
 
-        if (gamepad1.dpad_up) {
-            bot.getLifter().ascend();
+
+        // access control requesting
+        if (gamepad1.dpad_up || gamepad2.dpad_up) {
+            accessControl.changeAccess();
         }
 
-        if (gamepad1.dpad_down) {
-            bot.getLifter().descend();
+        /*if (accessControl.isRequesting()) {
+            if (gamepad1.dpad_up || gamepad2.dpad_down) {
+                accessControl.setRequesting(false);
+            }
         }
+
+        if (gamepad1.dpad_down && accessControl.isG1Primary() && accessControl.isRequesting()) {
+            accessControl.changeAccess();
+            accessControl.setRequesting(false);
+        }
+
+        if (gamepad2.dpad_down && accessControl.isG2Primary() && accessControl.isRequesting()) {
+            accessControl.changeAccess();
+            accessControl.setRequesting(false);
+        }*/
 
         /* Recording code here */
     }

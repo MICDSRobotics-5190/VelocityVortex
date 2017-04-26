@@ -12,6 +12,6 @@ public interface Playback {
     String INPUTS_BLUE_SAFE = "BlueTeamSafeInputs.json";
     String RECENT_RUN = "RecentInputs.json";
 
-    void play();
+    void read();
 
 }
