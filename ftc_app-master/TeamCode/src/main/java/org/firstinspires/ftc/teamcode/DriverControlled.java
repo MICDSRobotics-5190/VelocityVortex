@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Launcher;
-import org.firstinspires.ftc.teamcode.robodata.modestates.DirectionModeState;
 import org.firstinspires.ftc.teamcode.robodata.modestates.IntakeModeState;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.hardware.TankDrive;
@@ -72,7 +71,6 @@ public class DriverControlled extends OpMode
     private MotorPair rightMotors;
     private Launcher launcher;
 
-    private DirectionModeState directionModeState;
     private IntakeModeState modeState;
 
     boolean doFullRotation = false;
@@ -95,7 +93,6 @@ public class DriverControlled extends OpMode
 
         // modestates
         modeState = new IntakeModeState();
-        directionModeState = new DirectionModeState();
 
         power = 1;
 
@@ -126,16 +123,16 @@ public class DriverControlled extends OpMode
         telemetry.addData("Status", "Running: " + runtime.toString());
 
         if (accessControl.isG1Primary()) {
-            leftMotors.setPower(gamepad1.left_stick_y * power * directionModeState.getDirection());
-            rightMotors.setPower(gamepad1.right_stick_y * power * directionModeState.getDirection());
+            leftMotors.setPower(gamepad1.left_stick_y * power);
+            rightMotors.setPower(gamepad1.right_stick_y * power);
         }
         else if (accessControl.isG2Primary()) {
-            leftMotors.setPower(gamepad2.left_stick_y * power * directionModeState.getDirection());
-            rightMotors.setPower(gamepad2.right_stick_y * power * directionModeState.getDirection());
+            leftMotors.setPower(gamepad2.left_stick_y * power);
+            rightMotors.setPower(gamepad2.right_stick_y * power);
         }
         else {
-            leftMotors.setPower(gamepad1.left_stick_y * power * directionModeState.getDirection());
-            rightMotors.setPower(gamepad1.right_stick_y * power * directionModeState.getDirection());
+            leftMotors.setPower(gamepad1.left_stick_y * power);
+            rightMotors.setPower(gamepad1.right_stick_y * power);
         }
 
         //&& bot.getLauncher().getLauncherMotor().getCurrentPosition() != 0
@@ -145,7 +142,6 @@ public class DriverControlled extends OpMode
         telemetry.addData("Right Drivetrain", "Power " + (rightMotors.getBackPower() + rightMotors.getFrontPower()) /2 );
         telemetry.addData("Mode State", modeState.getTelemetryStatus());
         telemetry.addData("Access Control", accessControl.getTelemetryState());
-        telemetry.addData("Gear", directionModeState.getTelemetryMessage());
 
         bot.getColorSensor().enableLed(false);
         bot.colorScan();
@@ -203,10 +199,6 @@ public class DriverControlled extends OpMode
             bot.getSlider().setPower(-1);
         } else {
             bot.getSlider().setPower(0);
-        }
-
-        if (gamepad1.dpad_down || gamepad2.dpad_down) {
-            directionModeState.shiftGears();
         }
 
 
