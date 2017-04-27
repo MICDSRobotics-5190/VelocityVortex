@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 public class Robot {
 
@@ -19,6 +20,7 @@ public class Robot {
     private CRServo slider;
     private Intake intake;
     private ColorSensor colorSensor;
+    private OpticalDistanceSensor opticalDistanceSensor;
     //private Lifter lifter;
 
     private float hsvValues[] = new float[3];
@@ -30,6 +32,7 @@ public class Robot {
         slider = null;
         intake = null;
         colorSensor = null;
+        opticalDistanceSensor = null;
         //lifter = null;
     }
 
@@ -40,6 +43,10 @@ public class Robot {
         intake = new Intake(hardwareMap);
         //lifter = new Lifter(hardwareMap);
         colorSensor = hardwareMap.colorSensor.get("color");
+
+        opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get("ods");
+        opticalDistanceSensor.enableLed(true);
+
 
         tankDrive.getLeftMotors().setDirections(DcMotorSimple.Direction.FORWARD);
         tankDrive.getRightMotors().setDirections(DcMotorSimple.Direction.REVERSE);
@@ -85,6 +92,10 @@ public class Robot {
 
     public ColorSensor getColorSensor() {
         return colorSensor;
+    }
+
+    public OpticalDistanceSensor getOpticalDistanceSensor() {
+        return opticalDistanceSensor;
     }
 
     public void setColorSensor(ColorSensor colorSensor) {

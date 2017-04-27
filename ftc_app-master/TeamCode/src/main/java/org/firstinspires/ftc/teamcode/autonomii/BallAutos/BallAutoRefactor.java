@@ -1,11 +1,12 @@
-package org.firstinspires.ftc.teamcode.autonomii;
+package org.firstinspires.ftc.teamcode.autonomii.BallAutos;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.robodata.AutonomousState;
 import org.firstinspires.ftc.teamcode.robodata.EncoderValues;
+import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 /**
  * Created by amigala on 4/20/2017.
@@ -14,8 +15,8 @@ import org.firstinspires.ftc.teamcode.robodata.EncoderValues;
 /**
  * Goal of this auto is to move forward, shoot a ball, pick up a ball, shoot it
  */
-@Autonomous(name = "BallAutoDelay", group = "Encoder")
-public class BallAutoDelay extends LinearOpMode implements EncoderValues {
+@Autonomous(name = "BallAutoRefactor", group = "Encoder")
+public class BallAutoRefactor extends LinearOpMode implements EncoderValues {
     private static Robot bot;
     private static int step;
 
@@ -29,8 +30,6 @@ public class BallAutoDelay extends LinearOpMode implements EncoderValues {
         telemetry.update();
 
         waitForStart();
-
-        sleep(10000);
 
         // move into position
         //bot.getTankDrive().setTargetPosition(FULL_ROTATION);
