@@ -10,10 +10,11 @@ import org.firstinspires.ftc.teamcode.robodata.EncoderValues;
 
 /**
  * Created by amigala on 4/27/2017.
+ * blue team goes right. red goes left
  */
 
-@Autonomous(name="RedRunnerBeacon",group="BeaconRunners")
-public class RedRunner extends LinearOpMode implements BeaconConfig {
+@Autonomous(name="BlueRunnerBeacon",group="BeaconRunners")
+public class BlueRunner extends LinearOpMode implements BeaconConfig {
     private Robot bot;
     private ElapsedTime elapsedTime;
     private int step;
