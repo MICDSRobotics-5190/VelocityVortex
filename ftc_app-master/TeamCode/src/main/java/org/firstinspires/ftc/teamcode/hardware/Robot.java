@@ -6,12 +6,16 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Robot {
 
@@ -21,6 +25,7 @@ public class Robot {
     private Intake intake;
     private ColorSensor colorSensor;
     private OpticalDistanceSensor opticalDistanceSensor;
+    private ModernRoboticsI2cGyro gyro;
     //private Lifter lifter;
 
     private float hsvValues[] = new float[3];
@@ -33,6 +38,7 @@ public class Robot {
         intake = null;
         colorSensor = null;
         opticalDistanceSensor = null;
+        gyro = null;
         //lifter = null;
     }
 
@@ -43,6 +49,7 @@ public class Robot {
         intake = new Intake(hardwareMap);
         //lifter = new Lifter(hardwareMap);
         colorSensor = hardwareMap.colorSensor.get("color");
+        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
         opticalDistanceSensor = hardwareMap.opticalDistanceSensor.get("ods");
         opticalDistanceSensor.enableLed(true);
@@ -115,5 +122,9 @@ public class Robot {
 
     public int[] getRgbValues() {
         return rgbValues;
+    }
+
+    public ModernRoboticsI2cGyro getGyro() {
+        return gyro;
     }
 }

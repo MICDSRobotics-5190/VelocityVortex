@@ -49,7 +49,6 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
 */
 @TeleOp(name = "Sensor: MR Gyro", group = "Sensor")
-@Disabled
 public class SensorMRGyro extends LinearOpMode {
 
   @Override

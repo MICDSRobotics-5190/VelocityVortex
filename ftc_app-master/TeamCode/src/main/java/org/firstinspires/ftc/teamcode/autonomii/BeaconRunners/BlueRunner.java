@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomii.BeaconRunners;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,17 +18,33 @@ import org.firstinspires.ftc.teamcode.robodata.EncoderValues;
 public class BlueRunner extends LinearOpMode implements BeaconConfig {
     private Robot bot;
     private ElapsedTime elapsedTime;
-    private int step;
+    private static int step;
+    private static ModernRoboticsI2cGyro gyro;
 
     @Override
     public void runOpMode() {
         bot = new Robot(hardwareMap);
         step = 0;
         elapsedTime = new ElapsedTime();
+        gyro = bot.getGyro();
 
         bot.getOpticalDistanceSensor().enableLed(true);
         bot.getTankDrive().setModes(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addData("Status","Initialized!");
+        telemetry.update();
+
+        // start calibrating the gyro.
+        telemetry.addData(">", "Gyro Calibrating. Do Not move!");
+        telemetry.update();
+        gyro.calibrate();
+
+        // make sure the gyro is calibrated.
+        while (!isStopRequested() && gyro.isCalibrating())  {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData(">", "Gyro Calibrated.  Press Start.");
         telemetry.update();
 
         waitForStart();
@@ -37,6 +54,7 @@ public class BlueRunner extends LinearOpMode implements BeaconConfig {
 
         while (opModeIsActive()) {
             telemetry.addData("Step",step);
+            telemetry.addData("Heading", gyro.getHeading());
 
             switch (step) {
                 case 0 :
@@ -46,21 +64,23 @@ public class BlueRunner extends LinearOpMode implements BeaconConfig {
                     step++;
                     break;
                 case 1 :
-                    bot.getTankDrive().getRightMotors().setPower(DRIVE_TRAIN_POWER);
-                    bot.getTankDrive().getLeftMotors().setPower(-DRIVE_TRAIN_POWER);
-                    sleep(ROTATION_TIME);
-                    bot.stopMoving();
-                    step++;
-                    break;
-                case 2 :
-                    if (bot.getOpticalDistanceSensor().getRawLightDetected() != LIGHT_DETECTED_THRESH) {
-                        bot.getTankDrive().setPower(0.2);
+                    if (gyro.getHeading() < 86 || gyro.getHeading() > 340) {
+                        bot.getTankDrive().getRightMotors().setPower(DRIVE_TRAIN_POWER);
+                        bot.getTankDrive().getLeftMotors().setPower(-DRIVE_TRAIN_POWER);
                     }
                     else {
+                        step++;
+                    }
+                    break;
+                case 2 :
+                    if (bot.getOpticalDistanceSensor().getRawLightDetected() <= LIGHT_DETECTED_THRESH) {
+                        bot.getTankDrive().setPower(0.2);
+                    }
+                    else if (bot.getOpticalDistanceSensor().getRawLightDetected() > LIGHT_DETECTED_THRESH){
                         bot.stopMoving();
                         step++;
-                        break;
                     }
+                    break;
                 case 3 :
                     // cap the color and then move slider
                     bot.getColorSensor().enableLed(false);
@@ -72,14 +92,12 @@ public class BlueRunner extends LinearOpMode implements BeaconConfig {
                         sleep(1000);
                         bot.stopMoving();
                         step++;
-                        break;
                     }
                     else if (currentRGB[2] > 2) {
                         bot.getSlider().setPower(0.2);
                         sleep(SLIDER_TIME);
                         bot.stopMoving();
                         step++;
-                        break;
                     }
                     else {
                         telemetry.addData("Program", "Not Risking it!");
@@ -87,10 +105,10 @@ public class BlueRunner extends LinearOpMode implements BeaconConfig {
                         telemetry.addData("Green", currentRGB[1]);
                         telemetry.addData("Blue", currentRGB[2]);
                         step++;
-                        break;
                     }
+                    break;
                 case 4 : // pull forward
-                    bot.getTankDrive().setPower(-1);
+                    bot.getTankDrive().setPower(-DRIVE_TRAIN_POWER);
                     sleep(PULL_FORWARD_TIME);
                     bot.stopMoving();
                     step++;

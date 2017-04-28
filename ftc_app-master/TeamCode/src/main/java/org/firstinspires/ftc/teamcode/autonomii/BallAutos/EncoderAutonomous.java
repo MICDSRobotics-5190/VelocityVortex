@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
  * Created by BAbel on 4/25/2017.
  */
 
-@Autonomous(name = "EncoderAuto", group = "Encoder")
+//@Autonomous(name = "EncoderAuto", group = "Encoder")
 public class EncoderAutonomous extends LinearOpMode implements EncoderValues {
 
     private Robot bot;

@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 /**
  * Goal of this auto is to move forward, shoot a ball, pick up a ball, shoot it
  */
-@Autonomous(name = "BallAutoRefactor", group = "Encoder")
+//@Autonomous(name = "BallAutoRefactor", group = "Encoder")
 public class BallAutoRefactor extends LinearOpMode implements EncoderValues {
     private static Robot bot;
     private static int step;

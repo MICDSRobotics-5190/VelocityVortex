@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.robodata.EncoderValues;
  * Created by BAbel on 4/25/2017.
  */
 
-@Autonomous(name = "Encoder Delay", group = "Encoder")
+//@Autonomous(name = "Encoder Delay", group = "Encoder")
 public class EncoderDelay extends LinearOpMode implements EncoderValues {
 
     private Robot bot;
