@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.robodata.EncoderValues;
  */
 
 @Autonomous(name="BlueRunnerBeacon",group="BeaconRunners")
+//@Disabled
 public class BlueRunner extends LinearOpMode implements BeaconConfig {
     private Robot bot;
     private ElapsedTime elapsedTime;
@@ -59,14 +60,14 @@ public class BlueRunner extends LinearOpMode implements BeaconConfig {
             switch (step) {
                 case 0 :
                     bot.getTankDrive().setPower(DRIVE_TRAIN_POWER);
-                    sleep(1010);
+                    sleep(1200);
                     bot.stopMoving();
                     step++;
                     break;
                 case 1 :
-                    if (gyro.getHeading() < 86 || gyro.getHeading() > 340) {
-                        bot.getTankDrive().getRightMotors().setPower(DRIVE_TRAIN_POWER);
-                        bot.getTankDrive().getLeftMotors().setPower(-DRIVE_TRAIN_POWER);
+                    if (gyro.getHeading() < 76 || gyro.getHeading() > 340) { // 84 original
+                        bot.getTankDrive().getRightMotors().setPower(0.8);
+                        bot.getTankDrive().getLeftMotors().setPower(-0.8);
                     }
                     else {
                         step++;
@@ -88,13 +89,15 @@ public class BlueRunner extends LinearOpMode implements BeaconConfig {
                     int[] currentRGB = bot.getRgbValues();
 
                     if (currentRGB[0] > 2) {
-                        bot.getTankDrive().setPower(0.2);
+                        telemetry.addData("Color","Blue");
+                        bot.getTankDrive().setPower(1);
                         sleep(1000);
                         bot.stopMoving();
                         step++;
                     }
                     else if (currentRGB[2] > 2) {
-                        bot.getSlider().setPower(0.2);
+                        telemetry.addData("Color","Red");
+                        bot.getSlider().setPower(-1);
                         sleep(SLIDER_TIME);
                         bot.stopMoving();
                         step++;
