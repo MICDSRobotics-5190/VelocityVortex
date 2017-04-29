@@ -249,7 +249,8 @@ public class FtcRobotControllerActivity extends Activity {
 
     PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-    WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+    //fixed memory leak here: used to be just (WifiManager) getSystemServicer(Context.WIFI_SERVICE);
+    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "");
 
     hittingMenuButtonBrightensScreen();
